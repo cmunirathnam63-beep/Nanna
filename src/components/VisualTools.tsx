@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Minus, RotateCcw, AlertCircle, HelpCircle } from "lucide-react";
+import { Plus, Minus, RotateCcw, AlertCircle, HelpCircle, Clock, Sparkles, Award, Check, ThumbsUp, ArrowRight, Star } from "lucide-react";
 
 interface VisualToolsProps {
   chapterId?: string;
-  initialTool?: "fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers";
+  initialTool?: "fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers" | "clock";
   initialHighlightMode?: string;
   onActionComplete?: (points: number, badgeUnlocked?: string) => void;
 }
 
-const CHAPTER_TABS_MAP: Record<string, ("fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers")[]> = {
+const CHAPTER_TABS_MAP: Record<string, ("fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers" | "clock")[]> = {
   numbersystem: ["typesofnumbers", "placevalue"],
   fractions: ["fraction", "numberline"],
   decimals: ["placevalue"],
   algebra: ["perimeter"],
   integers: ["numberline", "typesofnumbers"],
   geometry: ["perimeter"],
-  mensuration: ["perimeter"]
+  mensuration: ["perimeter"],
+  g1_clock: ["clock"]
 };
 
 export default function VisualTools({ chapterId, initialTool = "fraction", initialHighlightMode = "all", onActionComplete }: VisualToolsProps) {
-  const [activeTab, setActiveTab] = useState<"fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers">(initialTool);
+  const [activeTab, setActiveTab] = useState<"fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers" | "clock">(initialTool as any);
   
   // 1. Fractions State
   const [numerator, setNumerator] = useState<number>(3);
@@ -50,6 +51,100 @@ export default function VisualTools({ chapterId, initialTool = "fraction", initi
   const [realSubsetFilter, setRealSubsetFilter] = useState<"all" | "natural" | "whole" | "integer" | "rational" | "irrational">("all");
   const [complexReal, setComplexReal] = useState<number>(3);
   const [complexImag, setComplexImag] = useState<number>(4);
+
+  // 6. Clock Reading Lab State
+  const CLOCK_CHALLENGES = [
+    { targetHour: 3, targetMinute: 0, timeStr: "3:00", description: "Three o'clock" },
+    { targetHour: 10, targetMinute: 30, timeStr: "10:30", description: "Half-past ten" },
+    { targetHour: 6, targetMinute: 0, timeStr: "6:00", description: "Six o'clock" },
+    { targetHour: 1, targetMinute: 30, timeStr: "1:30", description: "Half-past one" },
+    { targetHour: 8, targetMinute: 0, timeStr: "8:00", description: "Eight o'clock" },
+    { targetHour: 12, targetMinute: 30, timeStr: "12:30", description: "Half-past twelve" },
+    { targetHour: 5, targetMinute: 0, timeStr: "5:00", description: "Five o'clock" }
+  ];
+
+  const [currentClockIndex, setCurrentClockIndex] = useState<number>(0);
+  const [placedHour, setPlacedHour] = useState<number | null>(null);
+  const [placedMinute, setPlacedMinute] = useState<number | null>(null);
+  const [draggingHand, setDraggingHand] = useState<'hour' | 'minute' | null>(null);
+  const [selectedHandType, setSelectedHandType] = useState<'hour' | 'minute' | null>(null);
+  const [clockFeedback, setClockFeedback] = useState<string>("Namaste! I am Ganit Mitra. Let's set the clock together! Look at the Target Time. Remember: Set the short Hour hand FIRST!");
+  const [clockEmotion, setClockEmotion] = useState<'happy' | 'thinking' | 'victory' | 'neutral'>("neutral");
+  const [clockSuccess, setClockSuccess] = useState<boolean>(false);
+  const [clockHoverNum, setClockHoverNum] = useState<number | null>(null);
+
+  const challenge = CLOCK_CHALLENGES[currentClockIndex];
+
+  const handlePlaceHand = (hand: 'hour' | 'minute', num: number) => {
+    if (clockSuccess) return;
+
+    if (hand === 'hour') {
+      setPlacedHour(num);
+      setSelectedHandType(null);
+      
+      const isCorrectHour = num === challenge.targetHour;
+      if (isCorrectHour) {
+        setClockFeedback("Aha! Shabash! 👏 You set the Hour Hand pointing to " + num + " first. That is correct! Now the long Minute Hand is unlocked. Drag and drop the long blue minute hand next!");
+        setClockEmotion("happy");
+        awardPoints(5);
+      } else {
+        setClockFeedback("Hmm... pointing to " + num + "? Look closely! Our target time is " + challenge.timeStr + ". Let's drag the short red Hour Hand FIRST to point to " + challenge.targetHour + "!");
+        setClockEmotion("thinking");
+      }
+    } else if (hand === 'minute') {
+      if (placedHour !== challenge.targetHour) {
+        setClockFeedback("Hold on, beta! 🚦 Remember the Golden Rule: We always set the short Hour hand FIRST before setting the Minute hand! Set your Hour Hand to " + challenge.targetHour + " first!");
+        setClockEmotion("thinking");
+        return;
+      }
+
+      setPlacedMinute(num);
+      setSelectedHandType(null);
+      
+      const expectedMinuteNum = challenge.targetMinute === 30 ? 6 : 12;
+      const isCorrectMinute = num === expectedMinuteNum;
+
+      if (isCorrectMinute) {
+        setClockSuccess(true);
+        setClockFeedback("Mubarak ho! 🎉 Excellent! You read hours first (" + challenge.targetHour + ") and minutes next (" + (challenge.targetMinute === 30 ? "30" : "00") + "). The time is indeed " + challenge.timeStr + "! You've earned 15 XP. Let's go to the next challenge!");
+        setClockEmotion("victory");
+        awardPoints(15);
+      } else {
+        const expectedLabel = challenge.targetMinute === 30 ? "6 (for 30 minutes)" : "12 (for 00 minutes)";
+        setClockFeedback("Oops! You placed the Minute Hand on " + num + ", which is " + (num === 6 ? "30 minutes" : num === 12 ? "00 minutes" : (num * 5) + " minutes") + ". But we need " + (challenge.targetMinute === 30 ? "half-past (30 minutes)" : "o'clock (00 minutes)") + ". Try dragging the long blue hand to " + expectedLabel + "!");
+        setClockEmotion("thinking");
+      }
+    }
+  };
+
+  const handleResetHands = () => {
+    setPlacedHour(null);
+    setPlacedMinute(null);
+    setSelectedHandType(null);
+    setClockSuccess(false);
+    setClockFeedback("Let's try again! Drag the short red Hour Hand FIRST to the hour " + challenge.targetHour + "!");
+    setClockEmotion("neutral");
+  };
+
+  const handleNextChallenge = () => {
+    const nextIdx = (currentClockIndex + 1) % CLOCK_CHALLENGES.length;
+    setCurrentClockIndex(nextIdx);
+    setPlacedHour(null);
+    setPlacedMinute(null);
+    setSelectedHandType(null);
+    setClockSuccess(false);
+    const nextChallenge = CLOCK_CHALLENGES[nextIdx];
+    setClockFeedback("New Challenge! Can you set the clock to " + nextChallenge.timeStr + " (" + nextChallenge.description + ")? Remember: Hour hand FIRST!");
+    setClockEmotion("neutral");
+  };
+
+  const getCoords = (num: number, r: number) => {
+    const angleRad = ((num * 30 - 90) * Math.PI) / 180;
+    return {
+      x: 110 + r * Math.cos(angleRad),
+      y: 110 + r * Math.sin(angleRad)
+    };
+  };
 
   useEffect(() => {
     if (chapterId) {
@@ -117,14 +212,15 @@ export default function VisualTools({ chapterId, initialTool = "fraction", initi
         {(() => {
           const allowedTabs = chapterId && CHAPTER_TABS_MAP[chapterId]
             ? CHAPTER_TABS_MAP[chapterId]
-            : (["fraction", "numberline", "placevalue", "perimeter", "typesofnumbers"] as const);
+            : (["fraction", "numberline", "placevalue", "perimeter", "typesofnumbers", "clock"] as const);
 
           const tabDetails = [
             { id: "fraction", label: "🍕 Fractions Circle", idAttr: "btn_tab_fraction" },
             { id: "numberline", label: "🔢 Integer Line", idAttr: "btn_tab_numberline" },
             { id: "placevalue", label: "🪙 Decimal Grid", idAttr: "btn_tab_placevalue" },
             { id: "perimeter", label: "📏 Rectangle Lab", idAttr: "btn_tab_perimeter" },
-            { id: "typesofnumbers", label: "🔢 Types of Numbers", idAttr: "btn_tab_typesofnumbers" }
+            { id: "typesofnumbers", label: "🔢 Types of Numbers", idAttr: "btn_tab_typesofnumbers" },
+            { id: "clock", label: "⏰ Clock Reading Lab", idAttr: "btn_tab_clock" }
           ] as const;
 
           return tabDetails.filter(tab => allowedTabs.includes(tab.id)).map(tab => (
@@ -1443,6 +1539,398 @@ export default function VisualTools({ chapterId, initialTool = "fraction", initi
                     )}
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CLOCK READING PRACTICE MODULE */}
+        {activeTab === "clock" && (
+          <div className="flex flex-col lg:flex-row gap-6 h-full" id="clock_tool_container">
+            {/* Left side: Analog Clock Interactive Face */}
+            <div className="flex-1 flex flex-col justify-center items-center bg-amber-50/20 rounded-2xl border border-amber-100/60 p-6 shadow-xs relative">
+              <span className="text-[10px] font-black text-amber-700 uppercase tracking-widest bg-amber-100 px-3 py-1 rounded-full mb-4">
+                Interactive Wood-Rimmed Clock
+              </span>
+
+              {/* Clock Outer Rim Wrapper with Pointer Events */}
+              <div 
+                className="relative w-56 h-56 md:w-64 md:h-64 select-none touch-none"
+                onPointerLeave={() => {
+                  if (draggingHand) {
+                    setDraggingHand(null);
+                  }
+                }}
+              >
+                {/* SVG Dial */}
+                <svg viewBox="0 0 220 220" className="w-full h-full drop-shadow-md">
+                  {/* Outer Wood Bezel */}
+                  <circle cx="110" cy="110" r="105" fill="#8b5a2b" stroke="#704214" strokeWidth="2" />
+                  {/* Metallic Inner Bezel */}
+                  <circle cx="110" cy="110" r="101" fill="#e5e7eb" stroke="#d1d5db" strokeWidth="1.5" />
+                  {/* Clock Face White Area */}
+                  <circle cx="110" cy="110" r="95" fill="#fdfbf7" />
+
+                  {/* Ring of Minute Tick Marks */}
+                  <circle cx="110" cy="110" r="90" stroke="#f1f5f9" strokeWidth="2" fill="none" />
+                  {Array.from({ length: 60 }).map((_, i) => {
+                    if (i % 5 === 0) return null; // skip hour ticks to not clutter
+                    const rad = (i * 6 * Math.PI) / 180;
+                    const x1 = 110 + 91 * Math.cos(rad);
+                    const y1 = 110 + 91 * Math.sin(rad);
+                    const x2 = 110 + 93 * Math.cos(rad);
+                    const y2 = 110 + 93 * Math.sin(rad);
+                    return (
+                      <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#cbd5e1" strokeWidth="1" />
+                    );
+                  })}
+                  {/* Hour markers line ticks */}
+                  {Array.from({ length: 12 }).map((_, i) => {
+                    const rad = (i * 30 * Math.PI) / 180;
+                    const x1 = 110 + 88 * Math.cos(rad);
+                    const y1 = 110 + 88 * Math.sin(rad);
+                    const x2 = 110 + 93 * Math.cos(rad);
+                    const y2 = 110 + 93 * Math.sin(rad);
+                    return (
+                      <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#64748b" strokeWidth="1.5" />
+                    );
+                  })}
+
+                  {/* 1. Placed Hour Hand */}
+                  {(() => {
+                    const coords = placedHour ? getCoords(placedHour, 48) : null;
+                    return coords && (
+                      <line
+                        x1="110"
+                        y1="110"
+                        x2={coords.x}
+                        y2={coords.y}
+                        stroke="#ef4444"
+                        strokeWidth="5"
+                        strokeLinecap="round"
+                      />
+                    );
+                  })()}
+
+                  {/* 1.5 Hour Hand Drag Preview */}
+                  {(() => {
+                    const coords = clockHoverNum && draggingHand === 'hour' ? getCoords(clockHoverNum, 48) : null;
+                    return coords && (
+                      <line
+                        x1="110"
+                        y1="110"
+                        x2={coords.x}
+                        y2={coords.y}
+                        stroke="#ef4444"
+                        strokeWidth="4"
+                        strokeDasharray="4 4"
+                        strokeLinecap="round"
+                        className="opacity-50"
+                      />
+                    );
+                  })()}
+
+                  {/* 2. Placed Minute Hand */}
+                  {(() => {
+                    const coords = placedMinute ? getCoords(placedMinute, 72) : null;
+                    return coords && (
+                      <line
+                        x1="110"
+                        y1="110"
+                        x2={coords.x}
+                        y2={coords.y}
+                        stroke="#3b82f6"
+                        strokeWidth="3.5"
+                        strokeLinecap="round"
+                      />
+                    );
+                  })()}
+
+                  {/* 2.5 Minute Hand Drag Preview */}
+                  {(() => {
+                    const coords = clockHoverNum && draggingHand === 'minute' ? getCoords(clockHoverNum, 72) : null;
+                    return coords && (
+                      <line
+                        x1="110"
+                        y1="110"
+                        x2={coords.x}
+                        y2={coords.y}
+                        stroke="#3b82f6"
+                        strokeWidth="3"
+                        strokeDasharray="4 4"
+                        strokeLinecap="round"
+                        className="opacity-50"
+                      />
+                    );
+                  })()}
+
+                  {/* 3. Center golden pivot pin */}
+                  <circle cx="110" cy="110" r="5.5" fill="#f59e0b" stroke="#b45309" strokeWidth="1.5" />
+
+                  {/* Render Clock numbers 1 to 12 as interactive drop targets */}
+                  {Array.from({ length: 12 }).map((_, idx) => {
+                    const num = idx === 0 ? 12 : idx;
+                    const coords = getCoords(num, 75);
+                    const isHovered = clockHoverNum === num;
+                    const isHourSelected = placedHour === num;
+                    const isMinuteSelected = placedMinute === num;
+
+                    return (
+                      <g
+                        key={num}
+                        className="cursor-pointer group select-none"
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          if (draggingHand === 'hour' || (draggingHand === 'minute' && placedHour === challenge.targetHour)) {
+                            setClockHoverNum(num);
+                          }
+                        }}
+                        onDragLeave={() => setClockHoverNum(null)}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const hand = e.dataTransfer.getData("handType") as 'hour' | 'minute';
+                          if (hand) {
+                            handlePlaceHand(hand, num);
+                          }
+                          setClockHoverNum(null);
+                        }}
+                        onClick={() => {
+                          if (selectedHandType) {
+                            handlePlaceHand(selectedHandType, num);
+                          } else {
+                            if (placedHour !== challenge.targetHour) {
+                              handlePlaceHand('hour', num);
+                            } else {
+                              handlePlaceHand('minute', num);
+                            }
+                          }
+                        }}
+                      >
+                        {/* Enlarged touch target */}
+                        <circle
+                          cx={coords.x}
+                          cy={coords.y}
+                          r="18"
+                          className="fill-transparent group-hover:fill-amber-100/10 transition-colors"
+                        />
+                        {/* Target ring */}
+                        <circle
+                          cx={coords.x}
+                          cy={coords.y}
+                          r="12.5"
+                          className={`transition-all duration-300 stroke-[1.5] ${
+                            isHovered
+                              ? "fill-amber-100 stroke-amber-500 scale-110"
+                              : isHourSelected
+                              ? "fill-rose-100 stroke-rose-500"
+                              : isMinuteSelected
+                              ? "fill-sky-100 stroke-sky-500"
+                              : "fill-white stroke-slate-200 group-hover:stroke-amber-400"
+                          }`}
+                        />
+                        {/* Number text */}
+                        <text
+                          x={coords.x}
+                          y={coords.y}
+                          dy="3.5"
+                          textAnchor="middle"
+                          className={`text-[10.5px] font-extrabold font-sans select-none pointer-events-none ${
+                            isHourSelected
+                              ? "fill-rose-700"
+                              : isMinuteSelected
+                              ? "fill-sky-700"
+                              : "fill-slate-700"
+                          }`}
+                        >
+                          {num}
+                        </text>
+
+                        {/* Standard minute guidelines for Class 1 support */}
+                        {(num === 12 || num === 6) && (
+                          <text
+                            x={coords.x}
+                            y={coords.y + 19}
+                            textAnchor="middle"
+                            className="text-[7px] font-black font-mono fill-slate-400 select-none pointer-events-none"
+                          >
+                            {num === 12 ? ":00" : ":30"}
+                          </text>
+                        )}
+                      </g>
+                    );
+                  })}
+                </svg>
+              </div>
+
+              {/* Status Indicator Bar */}
+              <div className="mt-4 flex gap-3 text-xs">
+                <span className={`px-2.5 py-1 rounded-full font-black ${placedHour === challenge.targetHour ? "bg-rose-100 text-rose-800 border border-rose-200" : "bg-slate-100 text-slate-500"}`}>
+                  🔴 Hour Hand: {placedHour ? `Set at ${placedHour}` : "Empty"}
+                </span>
+                <span className={`px-2.5 py-1 rounded-full font-black ${clockSuccess ? "bg-sky-100 text-sky-800 border border-sky-200" : "bg-slate-100 text-slate-500"}`}>
+                  🔵 Minute Hand: {placedMinute ? `Set at ${placedMinute === 6 ? "30 mins" : "00 mins"}` : "Empty"}
+                </span>
+              </div>
+            </div>
+
+            {/* Right side: Ganit Mitra, Challenge Info, Hand Trays */}
+            <div className="flex-1 flex flex-col justify-between gap-4">
+              {/* Challenge Target Card */}
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-2xl p-4 shadow-xs">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[9px] font-extrabold text-amber-700 uppercase tracking-widest bg-amber-100 px-2 py-0.5 rounded-md">
+                    Level 1 Time Teller
+                  </span>
+                  <span className="text-[10px] font-black text-slate-500">
+                    Challenge {currentClockIndex + 1} of {CLOCK_CHALLENGES.length}
+                  </span>
+                </div>
+                <h3 className="text-xs font-black text-slate-600">Challenge Mission:</h3>
+                <div className="flex items-baseline gap-2 mt-1">
+                  <span className="text-2xl font-black text-amber-800 tracking-tight font-sans">
+                    Set Clock to: <span className="text-rose-600 font-extrabold underline decoration-dashed decoration-2 underline-offset-4">{challenge.timeStr}</span>
+                  </span>
+                  <span className="text-xs font-extrabold text-slate-500 font-sans">
+                    ({challenge.description})
+                  </span>
+                </div>
+              </div>
+
+              {/* Ganit Mitra Speech Box */}
+              <div className="bg-amber-50/40 border border-amber-200/50 rounded-2xl p-4 flex gap-3 items-start shadow-xs relative">
+                <div className="text-3xl shrink-0 select-none">
+                  {clockEmotion === "happy" && "😊"}
+                  {clockEmotion === "thinking" && "🤔"}
+                  {clockEmotion === "victory" && "🥳"}
+                  {clockEmotion === "neutral" && "🎓"}
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
+                    Ganit Mitra (AI Math Guru)
+                  </span>
+                  <p className="text-xs text-amber-950 font-bold leading-normal">
+                    {clockFeedback}
+                  </p>
+                </div>
+              </div>
+
+              {/* Hands Tray */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                    🛠️ Hands Tool Tray (Drag or Tap to Place)
+                  </span>
+                  <button 
+                    onClick={() => {
+                      setClockFeedback("First, click a hand below to select it, then click any circle number on the clock face to place it there! Or drag and drop!");
+                    }}
+                    className="text-[9px] font-black text-indigo-600 underline flex items-center gap-0.5 cursor-pointer"
+                  >
+                    <HelpCircle size={10} /> Need help?
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Hour Hand Token */}
+                  <button
+                    draggable={!clockSuccess}
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData("handType", "hour");
+                      setDraggingHand("hour");
+                    }}
+                    onDragEnd={() => setDraggingHand(null)}
+                    onClick={() => setSelectedHandType(selectedHandType === 'hour' ? null : 'hour')}
+                    className={`flex items-center justify-between p-3 border rounded-xl text-left transition-all relative ${
+                      clockSuccess
+                        ? "bg-slate-100 border-slate-200 opacity-60 cursor-not-allowed"
+                        : selectedHandType === 'hour'
+                        ? "bg-rose-50 border-rose-500 ring-2 ring-rose-500/20 scale-[1.02] shadow-xs"
+                        : "bg-white border-slate-200 hover:border-rose-400 hover:bg-rose-50/10"
+                    }`}
+                  >
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-extrabold text-rose-600 uppercase tracking-wide block">
+                        🔴 Step 1: Hour Hand
+                      </span>
+                      <p className="text-[11px] font-black text-slate-800">Short Red Hand</p>
+                      <span className="text-[8px] font-bold text-slate-400 block">
+                        Drag me, or Tap & Click clock!
+                      </span>
+                    </div>
+                    <div className="p-1.5 bg-rose-100 text-rose-600 rounded-lg select-none">
+                      <Clock size={16} />
+                    </div>
+                  </button>
+
+                  {/* Minute Hand Token */}
+                  {(() => {
+                    const isMinuteLocked = placedHour !== challenge.targetHour;
+                    return (
+                      <button
+                        disabled={isMinuteLocked || clockSuccess}
+                        draggable={!isMinuteLocked && !clockSuccess}
+                        onDragStart={(e) => {
+                          e.dataTransfer.setData("handType", "minute");
+                          setDraggingHand("minute");
+                        }}
+                        onDragEnd={() => setDraggingHand(null)}
+                        onClick={() => setSelectedHandType(selectedHandType === 'minute' ? null : 'minute')}
+                        className={`flex items-center justify-between p-3 border rounded-xl text-left transition-all relative ${
+                          isMinuteLocked
+                            ? "bg-slate-100 border-slate-200 opacity-50 cursor-not-allowed"
+                            : clockSuccess
+                            ? "bg-slate-100 border-slate-200 opacity-60 cursor-not-allowed"
+                            : selectedHandType === 'minute'
+                            ? "bg-sky-50 border-sky-500 ring-2 ring-sky-500/20 scale-[1.02] shadow-xs"
+                            : "bg-white border-slate-200 hover:border-sky-400 hover:bg-sky-50/10"
+                        }`}
+                      >
+                        <div className="space-y-1">
+                          <span className={`text-[9px] font-extrabold uppercase tracking-wide block ${isMinuteLocked ? "text-slate-400" : "text-sky-600"}`}>
+                            🔵 Step 2: Minute Hand
+                          </span>
+                          <p className="text-[11px] font-black text-slate-800">
+                            {isMinuteLocked ? "🔒 Locked" : "Long Blue Hand"}
+                          </p>
+                          <span className="text-[8px] font-bold text-slate-400 block">
+                            {isMinuteLocked ? "Set correct Hour first!" : "Drag me, or Tap & Click!"}
+                          </span>
+                        </div>
+                        <div className={`p-1.5 rounded-lg select-none ${isMinuteLocked ? "bg-slate-200 text-slate-400" : "bg-sky-100 text-sky-600"}`}>
+                          <Clock size={16} />
+                        </div>
+                      </button>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 mt-1">
+                <button
+                  onClick={handleResetHands}
+                  className="flex-1 py-2.5 px-4 border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition cursor-pointer"
+                  id="btn_reset_clock_hands"
+                >
+                  <RotateCcw size={12} /> Reset Hands
+                </button>
+
+                {clockSuccess ? (
+                  <button
+                    onClick={handleNextChallenge}
+                    className="flex-1 py-2.5 px-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition cursor-pointer shadow-md"
+                    id="btn_next_clock_challenge"
+                  >
+                    Next Challenge <ArrowRight size={12} />
+                  </button>
+                ) : (
+                  <button
+                    disabled
+                    className="flex-1 py-2.5 px-4 bg-slate-100 text-slate-400 border border-slate-200 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 cursor-not-allowed opacity-60"
+                  >
+                    Solve to Continue
+                  </button>
+                )}
               </div>
             </div>
           </div>

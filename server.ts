@@ -332,35 +332,40 @@ function getClockFallback(attempt: number): any[] {
   return [
     {
       id: "1",
-      question: "Which hand on the clock shows the HOURS? ⏰",
-      options: ["A) The long hand", "B) The short hand", "C) The fast hand", "D) None of them"],
+      question: "When reading a clock, which hand do we look at FIRST? ⏰",
+      options: ["A) The long minute hand", "B) The short hour hand", "C) The fast second hand", "D) Any hand we want"],
       correctAnswer: "B",
-      hint: "It moves slowly and is shorter.",
-      explanation: "On a clock, the short hand is the hour hand, and the long hand is the minute hand."
+      hint: "Remember our golden rule: we find the hour first!",
+      explanation: "Golden Rule: Always look at the short hour hand FIRST to find the hour, and then the long minute hand NEXT to find the minutes."
     },
     {
       id: "2",
-      question: "If the short hand is pointing at 3, and the long hand is pointing at 12, what time is it?",
+      question: "If the short hand is pointing at 3 (read FIRST), and the long hand points at 12 (read NEXT), what time is it?",
       options: ["A) 12 o'clock", "B) 3 o'clock", "C) 6 o'clock", "D) 1 o'clock"],
       correctAnswer: "B",
-      hint: "The short hand tells the hour. Since the long hand is at 12, it is exactly that hour!",
-      explanation: "When the minute (long) hand is at 12 and the hour (short) hand is at 3, the time is exactly 3:00 or 3 o'clock."
+      hint: "The short hand points to the hour 3. The long hand at 12 means exactly 00 minutes.",
+      explanation: "Following our two steps: 1. Read the short hand first (pointing to 3, so hour is 3). 2. Read the long hand next (pointing to 12 means exactly 00 minutes). This gives exactly 3 o'clock."
     },
     {
       id: "3",
-      question: "How many minutes are there in 1 full hour? ⏳",
-      options: ["A) 12 minutes", "B) 30 minutes", "C) 60 minutes", "D) 100 minutes"],
-      correctAnswer: "C",
-      hint: "The long hand goes all the way around, which takes sixty steps.",
-      explanation: "There are exactly 60 minutes in one hour."
+      question: "What is the correct order for telling time on any clock? ⏳",
+      options: [
+        "A) Read the long minute hand first, then short hour hand next",
+        "B) Read the short hour hand first, then long minute hand next",
+        "C) Only read the long minute hand",
+        "D) Read whatever hand is faster"
+      ],
+      correctAnswer: "B",
+      hint: "We read hours first and minutes next!",
+      explanation: "To tell time easily and correctly, we always read the hour (short hand) first and then the minutes (long hand) next."
     },
     {
       id: "4",
-      question: "If the long hand points to 6, it is half-past. How many minutes is that?",
-      options: ["A) 15 minutes", "B) 30 minutes", "C) 45 minutes", "D) 60 minutes"],
+      question: "If the short hand is at 10 (read first) and the long hand is at 6 (read next), what time is it?",
+      options: ["A) 6:10", "B) 10:30", "C) 10:06", "D) 6:30"],
       correctAnswer: "B",
-      hint: "It is half of 60 minutes.",
-      explanation: "Half-past means half of an hour, which is 30 minutes."
+      hint: "Read the short hour hand first (10), then read the long hand pointing to 6 (30 minutes) next.",
+      explanation: "Step 1: The short hand points to 10 (hour is 10). Step 2: The long hand points to 6 (minutes are 30). Putting them together: 10:30!"
     }
   ];
 }

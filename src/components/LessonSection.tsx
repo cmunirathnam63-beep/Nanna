@@ -367,7 +367,7 @@ function DeprecatedEvenGame() {
 
 interface LessonSectionProps {
   selectedChapter: Chapter;
-  onOpenTool: (toolId: "fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers", highlightMode?: string) => void;
+  onOpenTool: (toolId: "fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers" | "clock", highlightMode?: string) => void;
   onOpenWorksheet: () => void;
   onActionComplete?: (points: number) => void;
 }
@@ -397,11 +397,13 @@ export default function LessonSection({
 
   const [selectedNumberPage, setSelectedNumberPage] = React.useState<"even" | "odd" | "prime" | "composite" | "square" | "multiples" | "divisibility" | "real" | "imaginary" | "whole" | "integers" | null>(null);
   const [selectedG9Topic, setSelectedG9Topic] = React.useState<"rational_intro" | "irrational_numbers" | "decimal_expansions" | "real_operations" | "rationalizing" | "exponent_laws" | null>(null);
+  const [g1SecretOpen, setG1SecretOpen] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setSelectedFractionPage(null);
     setSelectedNumberPage(null);
     setSelectedG9Topic(null);
+    setG1SecretOpen(false);
   }, [selectedChapter]);
 
   const handleToolNavigation = (toolName: string, highlightMode?: string) => {
@@ -409,7 +411,8 @@ export default function LessonSection({
       toolName === "fraction" ? "fraction" :
       toolName === "numberline" ? "numberline" :
       toolName === "placevalue" ? "placevalue" :
-      toolName === "typesofnumbers" ? "typesofnumbers" : "perimeter";
+      toolName === "typesofnumbers" ? "typesofnumbers" :
+      toolName === "clock" ? "clock" : "perimeter";
       
     onOpenTool(matchedTool, highlightMode);
     if (onActionComplete) onActionComplete(5); // Award points for exploring
@@ -1269,9 +1272,34 @@ export default function LessonSection({
         <h2 className="text-[20px] font-black tracking-tight mt-1" id="chapter_title">
           {lesson.title}
         </h2>
-        <p className="text-xs text-natural-beige-light mt-2 max-w-xl leading-relaxed">
-          {lesson.introduction}
-        </p>
+        {selectedChapter.id.startsWith("g1_") ? (
+          <div className="mt-3 flex items-start gap-3 bg-white/10 backdrop-blur-xs p-3 rounded-xl border border-white/10 max-w-xl">
+            <span className="text-2xl animate-bounce">🦜</span>
+            <div className="space-y-1">
+              <span className="text-[8px] font-black uppercase tracking-wider text-amber-300 block">Chintu's Bubble:</span>
+              <p className="text-xs font-bold leading-normal text-natural-cream">
+                "Hi! I'm Chintu! 🌟 Let's play a fun game to learn all about this!"
+              </p>
+              <button 
+                onClick={() => {
+                  if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const cleanText = lesson.title.replace(/[^\w\s\u0c00-\u0c7f\u0900-\u097f]/g, '') + ". Hi! I am Chintu! Let's play a fun game to learn all about this!";
+                    const utterance = new SpeechSynthesisUtterance(cleanText);
+                    window.speechSynthesis.speak(utterance);
+                  }
+                }}
+                className="mt-1 flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white font-black px-2 py-0.5 rounded-full text-[8px] uppercase tracking-wide cursor-pointer transition active:scale-95"
+              >
+                <span>🔊 Read Aloud</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-natural-beige-light mt-2 max-w-xl leading-relaxed">
+            {lesson.introduction}
+          </p>
+        )}
 
         {/* Types of fractions button explorer */}
         {selectedChapter.id === "fractions" && (
@@ -1630,66 +1658,11 @@ export default function LessonSection({
               chapterId={selectedChapter.id}
               onActionComplete={onActionComplete}
             />
-
-            {/* Fun Classroom Notes and Cartoon Steps */}
-            <div className="bg-gradient-to-br from-[#fbf8f3] to-amber-50/10 rounded-2xl border border-natural-beige-dark/55 p-5 space-y-5" id="g1_classroom_notes">
-              <div className="flex items-center gap-2 border-b border-natural-beige-dark/40 pb-3">
-                <span className="text-xl">📚</span>
-                <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-natural-terracotta leading-none">Classroom Notes</h4>
-                  <p className="text-[9px] font-bold text-natural-sage">Let's learn key concepts together!</p>
-                </div>
-              </div>
-
-              {/* Key Formulas/Rules */}
-              {lesson && lesson.keyFormulas && lesson.keyFormulas.length > 0 && (
-                <div className="space-y-3">
-                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider block">Key Highlights</span>
-                  <div className="grid grid-cols-1 gap-3">
-                    {lesson.keyFormulas.map((kf, i) => (
-                      <div key={i} className="bg-white p-3.5 rounded-xl border border-natural-beige-dark/30 shadow-xs space-y-1.5">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[10px] bg-amber-100 text-amber-800 font-black px-1.5 py-0.5 rounded-md">{kf.name}</span>
-                        </div>
-                        <p className="text-xs font-black text-natural-primary">{kf.formula}</p>
-                        <p className="text-[10px] text-slate-600 font-bold leading-normal">{kf.explanation}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Easy Fun Steps */}
-              {lesson && lesson.steps && lesson.steps.length > 0 && (
-                <div className="space-y-3">
-                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider block">Fun Steps & Examples</span>
-                  <div className="space-y-3">
-                    {lesson.steps.map((st, i) => (
-                      <div key={i} className="flex gap-3 bg-white p-3.5 rounded-xl border border-natural-beige-dark/30 shadow-xs relative">
-                        <div className="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center font-black text-xs shrink-0 border border-indigo-100">
-                          {i + 1}
-                        </div>
-                        <div className="space-y-1">
-                          <h5 className="text-[11px] font-black text-slate-800">{st.title}</h5>
-                          <p className="text-[10px] text-slate-600 font-bold leading-normal">{st.desc}</p>
-                          {st.example && (
-                            <div className="mt-1 bg-amber-50/40 px-2 py-1.5 rounded-lg border border-amber-100 border-dashed text-[9.5px] font-mono text-amber-900 leading-normal">
-                              <strong className="font-sans text-[8px] uppercase font-black text-amber-700 tracking-wide block mb-0.5">Example:</strong>
-                              {st.example}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
         )}
 
         {/* Play and Practice Shortcuts banner */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className={`grid grid-cols-1 ${selectedChapter.id.startsWith("g1_") ? "" : "sm:grid-cols-2"} gap-3`}>
           <button
             onClick={() => handleToolNavigation(lesson.visualContext)}
             className="flex items-center justify-between p-3.5 bg-gradient-to-r from-natural-cream to-[#eeddbb] hover:from-[#eeddbb] border border-natural-terracotta/30 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-xs hover:scale-[1.01]"
@@ -1712,42 +1685,90 @@ export default function LessonSection({
             </div>
           </button>
 
-          <button
-            onClick={() => {
-              onOpenWorksheet();
-              if (onActionComplete) onActionComplete(5);
-            }}
-            className="flex items-center justify-between p-3.5 bg-gradient-to-r from-natural-cream to-natural-gold-accent hover:to-natural-gold-accent/80 border border-natural-primary/30 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-xs hover:scale-[1.01]"
-            id="btn_launch_quiz"
-          >
-            <div>
-              <h4 className="text-xs font-black uppercase tracking-wider text-natural-primary">
-                {selectedChapter.id === "g9_numbersystems"
-                  ? "Grade 9 Chapter 1 Quiz"
-                  : "Test"}
-              </h4>
-              <p className="text-[10px] text-natural-sage mt-0.5">
-                {selectedChapter.id === "g9_numbersystems"
-                  ? "Practice rationalizing, locating irrationals, and applying exponent laws"
-                  : "Solve questions & earn 1000 points"}
-              </p>
-            </div>
-            <div className="p-2 bg-natural-primary text-white rounded-lg">
-              <FileText size={14} />
-            </div>
-          </button>
+          {!selectedChapter.id.startsWith("g1_") && (
+            <button
+              onClick={() => {
+                onOpenWorksheet();
+                if (onActionComplete) onActionComplete(5);
+              }}
+              className="flex items-center justify-between p-3.5 bg-gradient-to-r from-natural-cream to-natural-gold-accent hover:to-natural-gold-accent/80 border border-natural-primary/30 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-xs hover:scale-[1.01]"
+              id="btn_launch_quiz"
+            >
+              <div>
+                <h4 className="text-xs font-black uppercase tracking-wider text-natural-primary">
+                  {selectedChapter.id === "g9_numbersystems"
+                    ? "Grade 9 Chapter 1 Quiz"
+                    : "Test"}
+                </h4>
+                <p className="text-[10px] text-natural-sage mt-0.5">
+                  {selectedChapter.id === "g9_numbersystems"
+                    ? "Practice rationalizing, locating irrationals, and applying exponent laws"
+                    : "Solve questions & earn 1000 points"}
+                </p>
+              </div>
+              <div className="p-2 bg-natural-primary text-white rounded-lg">
+                <FileText size={14} />
+              </div>
+            </button>
+          )}
         </div>
 
         {/* Indian History / Trivia Section */}
-        <div className="bg-natural-cream border border-natural-beige-dark/60 rounded-2xl p-5 relative overflow-hidden" id="did_you_know_box">
-          <div className="absolute -right-2 -bottom-2 text-6xl opacity-10 select-none">🇮🇳</div>
-          <h4 className="text-xs font-black text-natural-terracotta uppercase tracking-wider flex items-center gap-1.5 mb-2">
-            <Sparkles size={14} className="text-natural-terracotta animate-pulse" /> Did You Know? (Ganit Itihas)
-          </h4>
-          <p className="text-xs text-natural-dark leading-relaxed">
-            {lesson.didYouKnow}
-          </p>
-        </div>
+        {selectedChapter.id.startsWith("g1_") ? (
+          <div 
+            onClick={() => {
+              setG1SecretOpen(!g1SecretOpen);
+              if ('speechSynthesis' in window && !g1SecretOpen) {
+                window.speechSynthesis.cancel();
+                const cleanTrivia = "Magic Secret! " + lesson.didYouKnow;
+                const utterance = new SpeechSynthesisUtterance(cleanTrivia);
+                window.speechSynthesis.speak(utterance);
+              } else if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+              }
+            }}
+            className={`border-2 border-dashed p-5 rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden text-center select-none ${
+              g1SecretOpen 
+                ? "bg-amber-50 border-amber-400 scale-[1.01] shadow-md" 
+                : "bg-gradient-to-r from-violet-50 to-indigo-50 hover:from-violet-100 hover:to-indigo-100 border-indigo-200 hover:scale-[1.01]"
+            }`}
+            id="g1_interactive_secret"
+          >
+            <div className="absolute -right-2 -bottom-2 text-5xl opacity-15 select-none">🎁</div>
+            <h4 className="text-xs font-black text-indigo-700 uppercase tracking-wider flex items-center justify-center gap-1.5 mb-1.5">
+              <Sparkles size={14} className="text-indigo-600 animate-pulse" /> 
+              {g1SecretOpen ? "Chintu's Magic Secret! 🤫✨" : "Tap to open Chintu's Magic Secret! 🤫✨"}
+            </h4>
+            
+            {g1SecretOpen ? (
+              <div className="space-y-2">
+                <p className="text-xs font-bold text-slate-800 leading-relaxed">
+                  {lesson.didYouKnow}
+                </p>
+                <span className="text-[9px] font-black uppercase text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full inline-block">
+                  🔊 Speaking... Tap to Close ❌
+                </span>
+              </div>
+            ) : (
+              <div className="py-2 flex flex-col items-center gap-1.5">
+                <span className="text-3xl animate-bounce">🎁</span>
+                <span className="text-[9px] font-black uppercase text-indigo-500">
+                  Click to Unbox Fun Trivia & Speak!
+                </span>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="bg-natural-cream border border-natural-beige-dark/60 rounded-2xl p-5 relative overflow-hidden" id="did_you_know_box">
+            <div className="absolute -right-2 -bottom-2 text-6xl opacity-10 select-none">🇮🇳</div>
+            <h4 className="text-xs font-black text-natural-terracotta uppercase tracking-wider flex items-center gap-1.5 mb-2">
+              <Sparkles size={14} className="text-natural-terracotta animate-pulse" /> Did You Know? (Ganit Itihas)
+            </h4>
+            <p className="text-xs text-natural-dark leading-relaxed">
+              {lesson.didYouKnow}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

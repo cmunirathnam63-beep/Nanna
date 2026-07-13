@@ -1,6 +1,74 @@
 import React, { useState, useEffect } from "react";
 import { Sparkles, Trophy, RotateCcw, Check, X, Clock, HelpCircle, ArrowRight } from "lucide-react";
 
+// Self-contained high-fidelity sound synthesis engine using Web Audio API
+const playSynthSound = (type: 'tap' | 'correct' | 'wrong' | 'victory') => {
+  try {
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    
+    if (type === 'tap') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(450, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.08);
+    } else if (type === 'correct') {
+      const now = ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 chime
+      notes.forEach((freq, index) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + index * 0.06);
+        gain.gain.setValueAtTime(0.08, now + index * 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.005, now + index * 0.06 + 0.22);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + index * 0.06);
+        osc.stop(now + index * 0.06 + 0.22);
+      });
+    } else if (type === 'wrong') {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.linearRampToValueAtTime(80, now + 0.22);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.005, now + 0.22);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(now + 0.22);
+    } else if (type === 'victory') {
+      const now = ctx.currentTime;
+      const chords = [523.25, 659.25, 783.99, 1046.50];
+      chords.forEach((freq, index) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + index * 0.05);
+        gain.gain.setValueAtTime(0.07, now + index * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.05 + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + index * 0.05);
+        osc.stop(now + index * 0.05 + 0.35);
+      });
+    }
+  } catch (e) {
+    console.warn("Audio Context failed", e);
+  }
+};
+
 interface Grade1InteractiveGameProps {
   chapterId: string;
   onActionComplete?: (points: number) => void;
@@ -22,6 +90,9 @@ export default function Grade1InteractiveGame({ chapterId, onActionComplete }: G
 
   // Clock-specific states (to draw analog clock)
   const [clockTarget, setClockTarget] = useState<{ hour: number; minute: number }>({ hour: 3, minute: 0 });
+
+  // Spin degree for interactive shapes
+  const [spinDegree, setSpinDegree] = useState<number>(0);
 
   // Generate a random round based on the chapter ID
   const generateRoundData = () => {
@@ -88,12 +159,15 @@ export default function Grade1InteractiveGame({ chapterId, onActionComplete }: G
         const options = Array.from(new Set([timeStr, alt1, alt2])).sort(() => Math.random() - 0.5);
 
         return {
-          question: "Look at the magic clock hands! What digital time matches the analog clock?",
+          question: "Look at the magic clock hands! Remember our rule: read the short Hour hand FIRST, then read the long Minute hand NEXT. What time is it?",
           hour,
           minute,
           options,
           correctAnswer: timeStr,
-          explanation: `The short hour hand points to or past ${hour}, and the long minute hand points to ${minute === 30 ? "6 (which is 30 minutes)" : "12 (which is 00 minutes)"}!`
+          explanation: `Let's read it step-by-step:
+1. Hour (Short Red Hand) FIRST: It is pointing to or past ${hour}, so the hour is ${hour}.
+2. Minutes (Long Blue Hand) NEXT: It points to ${minute === 30 ? "6, which represents 30 minutes" : "12, which represents 00 minutes"}.
+Combining them, the time is ${hour}:${minute === 0 ? "00" : "30"}!`
         };
       }
       case "g1_compare": {
@@ -302,6 +376,7 @@ export default function Grade1InteractiveGame({ chapterId, onActionComplete }: G
 
     // Check counting condition
     if (chapterId === "g1_counting" && tappedApples.length < roundData.targetCount) {
+      playSynthSound('wrong');
       setFeedback({
         isCorrect: false,
         message: `Oops! Please tap and count all ${roundData.targetCount} apples in the garden first to learn easily! 🍎`
@@ -312,6 +387,7 @@ export default function Grade1InteractiveGame({ chapterId, onActionComplete }: G
     setAnswered(true);
     const correct = option === roundData.correctAnswer;
     if (correct) {
+      playSynthSound('correct');
       setScore(prev => prev + 10);
       setStreak(prev => prev + 1);
       if (score + 10 > highScore) {
@@ -323,6 +399,7 @@ export default function Grade1InteractiveGame({ chapterId, onActionComplete }: G
       });
       if (onActionComplete) onActionComplete(10);
     } else {
+      playSynthSound('wrong');
       setStreak(0);
       setFeedback({
         isCorrect: false,
@@ -332,6 +409,7 @@ export default function Grade1InteractiveGame({ chapterId, onActionComplete }: G
   };
 
   const handleAppleTap = (index: number) => {
+    playSynthSound('tap');
     if (tappedApples.includes(index)) {
       setTappedApples(prev => prev.filter(i => i !== index));
     } else {
@@ -478,8 +556,16 @@ export default function Grade1InteractiveGame({ chapterId, onActionComplete }: G
         )}
 
         {chapterId === "g1_clock" && (
-          <div className="py-2">
+          <div className="py-2 space-y-4">
             {renderClockSVG(roundData.hour, roundData.minute)}
+            <div className="bg-amber-50/50 border border-amber-200/50 rounded-2xl p-3 max-w-xs mx-auto text-center space-y-2 shadow-xs">
+              <p className="text-[11px] font-extrabold text-rose-600 uppercase tracking-wide flex items-center justify-center gap-1.5">
+                🔴 Step 1: Look at Short Hand (Hour) FIRST
+              </p>
+              <p className="text-[11px] font-extrabold text-sky-600 uppercase tracking-wide flex items-center justify-center gap-1.5">
+                🔵 Step 2: Look at Long Hand (Minute) NEXT
+              </p>
+            </div>
           </div>
         )}
 
@@ -523,43 +609,217 @@ export default function Grade1InteractiveGame({ chapterId, onActionComplete }: G
 
         {chapterId === "g1_shapes" && (
           <div className="flex justify-center py-2">
-            <div className="px-6 py-4 bg-amber-50/40 border-2 border-dashed border-amber-200 text-center rounded-2xl shadow-xs text-3xl">
-              📦✨
+            <div 
+              onClick={() => {
+                setSpinDegree(prev => prev + 360);
+                playSynthSound('tap');
+              }}
+              className="cursor-pointer select-none p-4 bg-amber-50/20 border-2 border-dashed border-amber-200/60 rounded-3xl flex flex-col items-center gap-2 hover:scale-[1.03] transition-all duration-300 animate-fade-in"
+              style={{ transform: `rotate(${spinDegree}deg)`, transition: 'transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}
+            >
+              {roundData.correctAnswer.toLowerCase().includes("circle") && (
+                <svg className="w-24 h-24 drop-shadow-md" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" className="fill-amber-400 stroke-amber-600 stroke-[3px]" />
+                  <circle cx="50" cy="50" r="30" className="fill-white stroke-amber-500 stroke-[2px]" strokeDasharray="3 3" />
+                  <circle cx="50" cy="50" r="6" className="fill-amber-700" />
+                  <line x1="50" y1="50" x2="50" y2="25" className="stroke-amber-700 stroke-[3px] stroke-linecap-round" />
+                  <line x1="50" y1="50" x2="70" y2="50" className="stroke-amber-700 stroke-[2px] stroke-linecap-round" />
+                </svg>
+              )}
+              {roundData.correctAnswer.toLowerCase().includes("square") && (
+                <svg className="w-24 h-24 drop-shadow-md" viewBox="0 0 100 100">
+                  <rect x="15" y="15" width="70" height="70" rx="8" className="fill-indigo-400 stroke-indigo-600 stroke-[3px]" />
+                  <rect x="25" y="25" width="25" height="25" className="fill-indigo-700" />
+                  <rect x="50" y="50" width="25" height="25" className="fill-indigo-700" />
+                  <rect x="50" y="25" width="25" height="25" className="fill-white" />
+                  <rect x="25" y="50" width="25" height="25" className="fill-white" />
+                </svg>
+              )}
+              {roundData.correctAnswer.toLowerCase().includes("triangle") && (
+                <svg className="w-24 h-24 drop-shadow-md" viewBox="0 0 100 100">
+                  <polygon points="50,15 15,80 85,80" className="fill-rose-400 stroke-rose-600 stroke-[3px]" />
+                  <circle cx="45" cy="65" r="4" className="fill-rose-700" />
+                  <circle cx="55" cy="55" r="3" className="fill-rose-700" />
+                  <circle cx="50" cy="72" r="3" className="fill-rose-700" />
+                </svg>
+              )}
+              {roundData.correctAnswer.toLowerCase().includes("rectangle") && (
+                <svg className="w-24 h-24 drop-shadow-md" viewBox="0 0 120 100">
+                  <rect x="15" y="25" width="90" height="50" rx="6" className="fill-emerald-400 stroke-emerald-600 stroke-[3px]" />
+                  <line x1="25" y1="35" x2="95" y2="35" className="stroke-white stroke-[2px]" />
+                  <line x1="25" y1="45" x2="95" y2="45" className="stroke-white stroke-[2px]" />
+                  <line x1="25" y1="55" x2="65" y2="55" className="stroke-white stroke-[2px]" />
+                </svg>
+              )}
+              <span className="text-[9px] font-black text-amber-800 bg-white px-2.5 py-0.5 rounded-full shadow-xs uppercase tracking-wide">
+                Tap to Spin! 🌀
+              </span>
             </div>
           </div>
         )}
 
         {chapterId === "g1_comparison" && (
-          <div className="flex justify-center py-2">
-            <div className="px-6 py-4 bg-sky-50/40 border-2 border-dashed border-sky-200 text-center rounded-2xl shadow-xs text-3xl">
-              📏🦁
+          <div className="grid grid-cols-2 gap-3.5 bg-sky-50/20 p-4 rounded-3xl border border-sky-150/50 animate-fade-in">
+            {roundData.options.map((opt: string) => {
+              const isGiraffe = opt.includes("Giraffe");
+              const isPencilLong = opt.includes("✏️=");
+              const isElephant = opt.includes("Elephant");
+              const isPuppy = opt.includes("Puppy");
+              const isTree = opt.includes("Tree");
+              const isButterfly = opt.includes("Butterfly");
+              const isRabbit = opt.includes("Rabbit");
+
+              let visualHeight = "h-20";
+              let emojiSize = "text-3xl";
+              let extraClasses = "";
+              let emoji = "❓";
+
+              if (isGiraffe) { emoji = "🦒"; visualHeight = "h-28"; emojiSize = "text-5xl"; extraClasses = "bg-amber-100/40 border-amber-300"; }
+              else if (isPuppy) { emoji = "🐶"; visualHeight = "h-16"; emojiSize = "text-3xl"; extraClasses = "bg-orange-50/40 border-orange-200"; }
+              else if (isElephant) { emoji = "🐘"; visualHeight = "h-24"; emojiSize = "text-5xl"; extraClasses = "bg-slate-100/50 border-slate-300"; }
+              else if (isButterfly) { emoji = "🦋"; visualHeight = "h-14"; emojiSize = "text-2xl animate-pulse"; extraClasses = "bg-pink-50/40 border-pink-200"; }
+              else if (isTree) { emoji = "🌴"; visualHeight = "h-28"; emojiSize = "text-5xl"; extraClasses = "bg-emerald-100/40 border-emerald-300"; }
+              else if (isRabbit) { emoji = "🐰"; visualHeight = "h-16"; emojiSize = "text-3xl"; extraClasses = "bg-zinc-50/40 border-zinc-200"; }
+              else if (isPencilLong) {
+                const isShort = opt.includes("Short");
+                emoji = "✏️";
+                visualHeight = "h-16";
+                emojiSize = isShort ? "text-2xl" : "text-4xl";
+                extraClasses = isShort ? "bg-yellow-100/20 border-yellow-200" : "bg-yellow-50/40 border-yellow-300";
+              }
+              else { emoji = "📦"; }
+
+              const isCorrectAnswer = opt === roundData.correctAnswer;
+              
+              return (
+                <button
+                  key={opt}
+                  disabled={answered}
+                  onClick={() => handleOptionClick(opt)}
+                  className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all duration-300 cursor-pointer shadow-xs ${extraClasses} ${
+                    answered
+                      ? isCorrectAnswer
+                        ? "bg-emerald-50 border-emerald-500 scale-102 ring-4 ring-emerald-100"
+                        : "bg-slate-50 border-slate-150 opacity-40 scale-95"
+                      : "bg-white border-slate-200 hover:border-sky-400 hover:scale-102 hover:shadow-md active:scale-98"
+                  }`}
+                >
+                  <div className={`flex items-center justify-center ${visualHeight} transition-all duration-300`}>
+                    <span className={`${emojiSize} transform hover:scale-110 transition-transform duration-200`}>{emoji}</span>
+                  </div>
+                  <span className="text-[10px] font-black text-slate-700 mt-2 text-center leading-tight">
+                    {opt.split(" (")[0]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {(chapterId === "g1_tel_achulu" || chapterId === "g1_hin_swar" || chapterId === "g1_eng_alphabet") && (
+          <div className="flex flex-col items-center justify-center py-4 bg-violet-50/20 rounded-3xl border border-violet-150/50 p-5 space-y-3 animate-fade-in">
+            <span className="text-[9px] font-black uppercase text-violet-400 tracking-wider">Tap the letter to hear it!</span>
+            <div 
+              onClick={() => {
+                playSynthSound('tap');
+                if ('speechSynthesis' in window) {
+                  window.speechSynthesis.cancel();
+                  const letter = roundData.letter || (chapterId === "g1_eng_alphabet" ? roundData.question.match(/'([^']+)'/)?.[1] : "");
+                  if (letter) {
+                    const utterance = new SpeechSynthesisUtterance(letter);
+                    utterance.lang = chapterId === "g1_tel_achulu" ? "te-IN" : chapterId === "g1_hin_swar" ? "hi-IN" : "en-US";
+                    window.speechSynthesis.speak(utterance);
+                  }
+                }
+              }}
+              className="w-20 h-20 bg-white rounded-2xl border-2 border-violet-300 flex items-center justify-center shadow-md cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200"
+            >
+              <span className="text-4xl font-black text-violet-800 font-sans">
+                {roundData.letter || (chapterId === "g1_eng_alphabet" ? roundData.question.match(/'([^']+)'/)?.[1] : "🔡")}
+              </span>
+            </div>
+            <button 
+              onClick={() => {
+                const letter = roundData.letter || (chapterId === "g1_eng_alphabet" ? roundData.question.match(/'([^']+)'/)?.[1] : "letter");
+                if ('speechSynthesis' in window) {
+                  window.speechSynthesis.cancel();
+                  const utterance = new SpeechSynthesisUtterance(letter);
+                  utterance.lang = chapterId === "g1_tel_achulu" ? "te-IN" : chapterId === "g1_hin_swar" ? "hi-IN" : "en-US";
+                  window.speechSynthesis.speak(utterance);
+                }
+              }}
+              className="flex items-center gap-1 px-3 py-1 bg-violet-100 hover:bg-violet-200 text-violet-700 font-black rounded-full text-[8px] uppercase tracking-wide transition cursor-pointer"
+            >
+              <span>🔊 Read Aloud</span>
+            </button>
+          </div>
+        )}
+
+        {(chapterId === "g1_evs_family" || chapterId === "g1_evs_animals" || chapterId === "g1_evs_seasons") && (
+          <div className="flex flex-col items-center justify-center py-4 bg-emerald-50/20 rounded-3xl border border-emerald-150/50 p-5 space-y-3 animate-fade-in">
+            <span className="text-[9px] font-black uppercase text-emerald-400 tracking-wider">Interactive Explorer</span>
+            <div className="flex items-center justify-center gap-4">
+              <span className="text-5xl animate-bounce duration-1000 select-none">
+                {roundData.question.includes("rainbow") ? "🌈" : 
+                 roundData.question.includes("bell") ? "🔔" : 
+                 roundData.question.includes("rose") ? "🌹" : 
+                 roundData.question.includes("mango") ? "🥭" : 
+                 roundData.question.includes("teddy") ? "🧸" : 
+                 roundData.question.includes("Lion") ? "🦁" : 
+                 roundData.question.includes("Cow") ? "🐄" : 
+                 roundData.question.includes("Puppy") ? "🐶" : 
+                 roundData.question.includes("Tiger") ? "🐯" : 
+                 roundData.question.includes("Sheep") ? "🐑" : 
+                 roundData.question.includes("Raincoat") ? "🧥" : 
+                 roundData.question.includes("Cap") ? "🧶" : 
+                 roundData.question.includes("Cream") ? "🍦" : 
+                 roundData.question.includes("Umbrella") ? "☂️" : "🌍"}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {(chapterId === "g1_tel_words" || chapterId === "g1_hin_fruits") && (
+          <div className="flex flex-col items-center justify-center py-4 bg-pink-50/20 rounded-3xl border border-pink-150/50 p-5 space-y-3 animate-fade-in">
+            <span className="text-[9px] font-black uppercase text-pink-400 tracking-wider">Word Challenge</span>
+            <div className="text-5xl animate-pulse select-none">
+              {roundData.question.includes("ఆట") || roundData.question.includes("⚽") ? "⚽" :
+               roundData.question.includes("అల") || roundData.question.includes("🌊") ? "🌊" :
+               roundData.question.includes("కల") || roundData.question.includes("💭") ? "💭" :
+               roundData.question.includes("ఈల") || roundData.question.includes("😙") ? "😙" :
+               roundData.question.includes("आम") || roundData.question.includes("🥭") ? "🥭" :
+               roundData.question.includes("गुलाब") || roundData.question.includes("🌹") ? "🌹" :
+               roundData.question.includes("सेब") || roundData.question.includes("🍎") ? "🍎" :
+               roundData.question.includes("कमल") || roundData.question.includes("🪷") ? "🪷" : "🍉"}
             </div>
           </div>
         )}
 
         {/* Options grid */}
-        <div className={`grid ${roundData.options.length === 2 ? "grid-cols-2" : "grid-cols-3"} gap-2.5`}>
-          {roundData.options.map((opt: string) => {
-            const isCorrectAnswer = opt === roundData.correctAnswer;
-            return (
-              <button
-                key={opt}
-                disabled={answered}
-                onClick={() => handleOptionClick(opt)}
-                className={`py-3 px-1 rounded-2xl text-xs font-black transition-all duration-200 cursor-pointer shadow-sm text-center border-2 ${
-                  answered
-                    ? isCorrectAnswer
-                      ? "bg-emerald-50 border-emerald-500 text-emerald-800 scale-102"
-                      : "bg-slate-50 border-slate-100 text-slate-300 opacity-40"
-                    : "bg-white hover:bg-indigo-50 hover:border-indigo-400 border-slate-200 text-slate-700 active:scale-98"
-                }`}
-                id={`btn_game_opt_${opt}`}
-              >
-                {opt}
-              </button>
-            );
-          })}
-        </div>
+        {chapterId !== "g1_comparison" && (
+          <div className={`grid ${roundData.options.length === 2 ? "grid-cols-2" : "grid-cols-3"} gap-2.5`}>
+            {roundData.options.map((opt: string) => {
+              const isCorrectAnswer = opt === roundData.correctAnswer;
+              return (
+                <button
+                  key={opt}
+                  disabled={answered}
+                  onClick={() => handleOptionClick(opt)}
+                  className={`py-3 px-1 rounded-2xl text-xs font-black transition-all duration-200 cursor-pointer shadow-sm text-center border-2 ${
+                    answered
+                      ? isCorrectAnswer
+                        ? "bg-emerald-50 border-emerald-500 text-emerald-800 scale-102"
+                        : "bg-slate-50 border-slate-100 text-slate-300 opacity-40"
+                      : "bg-white hover:bg-indigo-50 hover:border-indigo-400 border-slate-200 text-slate-700 active:scale-98"
+                  }`}
+                  id={`btn_game_opt_${opt}`}
+                >
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Feedback display */}
         {feedback && (

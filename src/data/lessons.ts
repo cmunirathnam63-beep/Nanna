@@ -283,6 +283,85 @@ export const GRADE_9_CHAPTERS: Chapter[] = [
   }
 ];
 
+export const GRADE_9_SOCIALSCIENCE_CHAPTERS: Chapter[] = [
+  {
+    id: "g9_french_revolution",
+    title: "🏰 The French Revolution",
+    iconName: "Layers",
+    badge: "Chapter 1",
+    topicSummary: "Explore the downfall of the monarchy, storming of the Bastille, and birth of liberty, equality, and fraternity.",
+    colorClass: "bg-indigo-50 hover:bg-indigo-100 border-indigo-200",
+    textColorClass: "text-indigo-700",
+    progress: 40,
+  },
+  {
+    id: "g9_physical_features",
+    title: "🏔️ Physical Features of India",
+    iconName: "Compass",
+    badge: "Chapter 2",
+    topicSummary: "Discover India's majestic mountains, northern plains, peninsular plateau, coastal plains, and islands.",
+    colorClass: "bg-emerald-50 hover:bg-emerald-100 border-emerald-200",
+    textColorClass: "text-emerald-700",
+    progress: 60,
+  },
+  {
+    id: "g9_democracy",
+    title: "🗳️ What is Democracy? Why Democracy?",
+    iconName: "Sparkle",
+    badge: "Chapter 3",
+    topicSummary: "Understand the key features of democracy, its merits and demerits, and the broader meaning of a democratic society.",
+    colorClass: "bg-rose-50 hover:bg-rose-100 border-rose-200",
+    textColorClass: "text-rose-700",
+    progress: 85,
+  }
+];
+
+export const GRADE_9_PHYSICS_CHAPTERS: Chapter[] = [
+  {
+    id: "g9_physics_motion",
+    title: "🌌 Motion",
+    iconName: "Compass",
+    badge: "Chapter 1",
+    topicSummary: "Study of speed, velocity, acceleration, distance, displacement, and equations of motion.",
+    colorClass: "bg-sky-50 hover:bg-sky-100 border-sky-200",
+    textColorClass: "text-sky-700",
+    progress: 50,
+  },
+  {
+    id: "g9_physics_force",
+    title: "🧲 Force and Laws of Motion",
+    iconName: "Ruler",
+    badge: "Chapter 2",
+    topicSummary: "Discover inertia, Newton's three laws of motion, and the conservation of momentum.",
+    colorClass: "bg-violet-50 hover:bg-violet-100 border-violet-200",
+    textColorClass: "text-violet-700",
+    progress: 25,
+  }
+];
+
+export const GRADE_9_CHEMISTRY_CHAPTERS: Chapter[] = [
+  {
+    id: "g9_chem_matter",
+    title: "🧪 Matter in Our Surroundings",
+    iconName: "Layers",
+    badge: "Chapter 1",
+    topicSummary: "Understand the physical nature of matter, states of matter, and effects of temperature/pressure.",
+    colorClass: "bg-emerald-50 hover:bg-emerald-100 border-emerald-200",
+    textColorClass: "text-emerald-700",
+    progress: 70,
+  },
+  {
+    id: "g9_chem_atoms",
+    title: "⚛️ Atoms and Molecules",
+    iconName: "Sparkles",
+    badge: "Chapter 2",
+    topicSummary: "Explore chemical combination laws, molecular formulas, atomic mass, and the mole concept.",
+    colorClass: "bg-amber-50 hover:bg-amber-100 border-amber-200",
+    textColorClass: "text-amber-700",
+    progress: 40,
+  }
+];
+
 export const CHAPTERS_DATA: Chapter[] = GRADE_6_CHAPTERS;
 
 export const LESSONS_DATA: Record<string, LessonContent> = {
@@ -649,43 +728,43 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
   g1_clock: {
     chapterId: "g1_clock",
     title: "⏰ Chapter 4: Clock Reading (Time)",
-    introduction: "What time is it? Let's learn how to tell time! A clock has numbers from 1 to 12, a short Hour hand, and a long Minute hand. Let's discover how they work together to show hours and minutes!",
+    introduction: "What time is it? Let's learn how to tell time! Remember the golden rule: we always read the short Hour hand FIRST, and then the long Minute hand NEXT! Let's discover how they work together to show hours and minutes step-by-step.",
     keyFormulas: [
       {
-        name: "The Hour Hand",
-        formula: "Short Hand ➡️ Points to the hour",
-        explanation: "If the short hand points to 3, it is something o'clock! It moves slowly from one number to the next."
+        name: "Step 1: The Hour Hand (Read First!)",
+        formula: "Short Hand ➡️ Points to the Hour",
+        explanation: "Always check the short hand FIRST. It tells you what hour it is! If it points to 3, the hour is 3."
       },
       {
-        name: "The Minute Hand",
-        formula: "Long Hand ➡️ Points to the minutes",
-        explanation: "If the long hand is at 12, it is exactly 0 minutes (o'clock). If it points to 6, it is 30 minutes (half past)."
+        name: "Step 2: The Minute Hand (Read Next!)",
+        formula: "Long Hand ➡️ Points to the Minutes",
+        explanation: "Check the long hand SECOND. If it is at 12, it is exactly 00 minutes (o'clock). If it points to 6, it is 30 minutes (half past)."
       },
       {
-        name: "Time Units",
-        formula: "1 Hour = 60 Minutes",
-        explanation: "The long minute hand takes 60 steps to go all the way around the clock face once!"
+        name: "The Golden Rule",
+        formula: "Hours First ➡️ Minutes Next",
+        explanation: "To read any clock, find the hour first with the short hand, then find the minutes next with the long hand!"
       }
     ],
     steps: [
       {
-        title: "Step 1: Look at the Short Hour Hand",
-        desc: "Find which number the short hand is pointing to or has just passed. This tells you the hour!",
-        example: "If the short hand points to 10, the hour is 10."
+        title: "Step 1: Look at the Short Hour Hand First",
+        desc: "Find which number the short hand is pointing to or has just passed. This tells you the hour FIRST!",
+        example: "If the short hand is between 10 and 11, it has passed 10, so the hour is 10."
       },
       {
-        title: "Step 2: Look at the Long Minute Hand",
-        desc: "Check where the long hand points. If it points to 12, it is exactly 00 minutes. If it points to 6, it is 30 minutes.",
-        example: "Short hand on 10, long hand on 12 means the time is 10:00 (Ten o'clock)!"
+        title: "Step 2: Look at the Long Minute Hand Next",
+        desc: "Check where the long hand points NEXT. If it points to 12, it is exactly 00 minutes. If it points to 6, it is 30 minutes.",
+        example: "Short hand on 10 (Hour) first, long hand on 12 (Minute) next means the time is 10:00 (Ten o'clock)!"
       },
       {
-        title: "Step 3: Counting Minutes in 5s",
-        desc: "Each number on the clock is 5 minutes. 1 is 5 mins, 2 is 10 mins, 3 is 15 mins... up to 12 which is 60 mins!",
-        example: "If short hand is at 2 and long hand is at 3, the time is 2:15 (Quarter past two)!"
+        title: "Step 3: Combine them together",
+        desc: "Put the hour number first, then the minutes number next! That gives you the complete time.",
+        example: "If the short hand is at 3 (read first) and the long hand is at 6 (read next), the time is 3:30!"
       }
     ],
     didYouKnow: "A grandfather clock uses a heavy swinging pendulum to keep time perfectly tick-tocking!",
-    visualContext: "placevalue"
+    visualContext: "clock"
   },
   g1_compare: {
     chapterId: "g1_compare",
@@ -1050,6 +1129,233 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
       }
     ],
     didYouKnow: "Even sleeping is an action! 'Sleep' is an action word because it tells us what someone is doing.",
+    visualContext: "placevalue"
+  },
+  g9_french_revolution: {
+    chapterId: "g9_french_revolution",
+    title: "🏰 The French Revolution",
+    introduction: "In 1789, France erupted in revolution, ending absolute monarchy and establishing human rights, liberty, and democratic ideals that shook the entire world.",
+    keyFormulas: [
+      {
+        name: "Three Estates",
+        formula: "Clergy (1st), Nobility (2nd), Commoners (3rd)",
+        explanation: "The 3rd Estate (97% of population) paid all taxes while the first two estates held privileges."
+      },
+      {
+        name: "Declaration of Rights",
+        formula: "Liberty, Equality, Fraternity",
+        explanation: "The core slogan asserting all citizens are born free and equal in rights."
+      }
+    ],
+    steps: [
+      {
+        title: "July 14, 1789: Storming of the Bastille",
+        desc: "Angry crowds stormed the royal prison fortress 'Bastille', a symbol of the king's absolute power, marking the start of the revolution.",
+        example: "This day is now celebrated as France's National Day (Bastille Day)."
+      },
+      {
+        title: "Abolition of Feudalism & Monarchy",
+        desc: "The National Assembly abolished feudal privileges, drafted a constitution, and eventually executed King Louis XVI, declaring France a Republic.",
+        example: "Maximilian Robespierre led the radical Reign of Terror during this period."
+      }
+    ],
+    didYouKnow: "The French Revolution introduced the metric system (meters, kilograms, liters) to replace a chaotic mess of regional units!",
+    visualContext: "typesofnumbers"
+  },
+  g9_physical_features: {
+    chapterId: "g9_physical_features",
+    title: "🏔️ Physical Features of India",
+    introduction: "India is a land of vast geographical diversity. From the snow-capped Himalayan mountains to the golden sands of the Thar desert, we explore the country's six major physiographic divisions.",
+    keyFormulas: [
+      {
+        name: "The Great Himalayas",
+        formula: "Himadri (Inner), Himachal (Lesser), Shiwaliks (Outer)",
+        explanation: "The three parallel ranges of the Himalayas, stretching from west to east."
+      },
+      {
+        name: "Tectonic Plates",
+        formula: "Convergent, Divergent, and Transform boundaries",
+        explanation: "Movement of tectonic plates that shapes the landforms of the Earth over millions of years."
+      }
+    ],
+    steps: [
+      {
+        title: "The Himalayan Mountains & Northern Plains",
+        desc: "Young fold mountains formed by the collision of Indo-Australian and Eurasian plates. The alluvial deposits from Himalayan rivers formed the highly fertile Northern Plains.",
+        example: "Mount Everest (8,848m) is the highest peak in the Himadri range."
+      },
+      {
+        title: "The Peninsular Plateau & Coastal Plains",
+        desc: "An ancient tableland made of old crystalline, igneous, and metamorphic rocks, flanked by the Western and Eastern Ghats along the coastlines.",
+        example: "The Deccan Trap is famous for fertile black cotton soil (regur soil)."
+      }
+    ],
+    didYouKnow: "The Himalayas are still rising at a rate of about 1 to 2 centimeters per year because the Indian tectonic plate continues to push northward into Asia!",
+    visualContext: "perimeter"
+  },
+  g9_democracy: {
+    chapterId: "g9_democracy",
+    title: "🗳️ What is Democracy? Why Democracy?",
+    introduction: "Democracy is a form of government in which the rulers are elected by the people. We study the essential traits that distinguish democracy from non-democratic regimes, and why it is the most preferred system.",
+    keyFormulas: [
+      {
+        name: "Key Pillar 1",
+        formula: "Major decisions by elected leaders",
+        explanation: "Only those representatives chosen by citizens must have the final authority to govern."
+      },
+      {
+        name: "Key Pillar 2",
+        formula: "Free and fair electoral competition",
+        explanation: "Elections must offer a real choice with a fair chance for the current ruling party to lose."
+      },
+      {
+        name: "Key Pillar 3",
+        formula: "One person, one vote, one value",
+        explanation: "Every adult citizen must have one vote and each vote must hold equal weight."
+      }
+    ],
+    steps: [
+      {
+        title: "Step 1: Define Democratic Governance",
+        desc: "Rulers are elected through regular intervals, laws protect individual rights, and an independent judiciary resolves disputes.",
+        example: "India's independent Election Commission ensures free and fair voting."
+      },
+      {
+        title: "Step 2: Argue For Democracy",
+        desc: "Democracy improves the quality of decision-making, provides a method to deal with differences, and enhances citizen dignity.",
+        example: "Unlike non-democratic regimes, a democratic government is highly accountable to its people."
+      }
+    ],
+    didYouKnow: "The word democracy comes from two Greek words: 'demos' meaning people, and 'kratos' meaning power or rule!",
+    visualContext: "placevalue"
+  },
+  g9_physics_motion: {
+    chapterId: "g9_physics_motion",
+    title: "🌌 Motion",
+    introduction: "Motion is a change of position of an object over time. It can be described in terms of distance, displacement, speed, velocity, and acceleration.",
+    keyFormulas: [
+      {
+        name: "Average Speed",
+        formula: "Speed = Total Distance / Total Time",
+        explanation: "The scalar measure of how fast an object moves without regard to its direction."
+      },
+      {
+        name: "First Equation of Motion",
+        formula: "v = u + at",
+        explanation: "Where v is final velocity, u is initial velocity, a is acceleration, and t is time."
+      },
+      {
+        name: "Second Equation of Motion",
+        formula: "s = ut + (1/2)at²",
+        explanation: "Where s is the distance covered under uniform acceleration."
+      }
+    ],
+    steps: [
+      {
+        title: "Understand Distance vs. Displacement",
+        desc: "Distance is the total path length traveled, whereas displacement is the shortest straight-line distance from the start to the end point.",
+        example: "If you run 400m around a circular track and finish where you started, your distance is 400m, but your displacement is 0m!"
+      },
+      {
+        title: "Analyze Uniform and Non-Uniform Motion",
+        desc: "An object moving equal distances in equal intervals of time has uniform motion; otherwise, it is non-uniform.",
+        example: "A car moving through heavy city traffic is in non-uniform motion."
+      }
+    ],
+    didYouKnow: "The fastest animal on earth is the Peregrine Falcon, reaching diving speeds of over 320 km/h (89 m/s)!",
+    visualContext: "numberline"
+  },
+  g9_physics_force: {
+    chapterId: "g9_physics_force",
+    title: "🧲 Force and Laws of Motion",
+    introduction: "Why do things move or stop? Force is a push or pull that changes or tends to change the state of rest or uniform motion of an object. Newton's laws govern how these forces behave.",
+    keyFormulas: [
+      {
+        name: "Newton's Second Law",
+        formula: "F = m * a",
+        explanation: "Force equals mass times acceleration. Unit of Force is the Newton (N)."
+      },
+      {
+        name: "Conservation of Momentum",
+        formula: "m₁u₁ + m₂u₂ = m₁v₁ + m₂v₂",
+        explanation: "The total momentum of two objects before collision is equal to the total momentum after collision, in the absence of external forces."
+      }
+    ],
+    steps: [
+      {
+        title: "Newton's First Law (Law of Inertia)",
+        desc: "An object continues to be in a state of rest or uniform motion unless compelled by an external unbalanced force.",
+        example: "You fall forward when a moving bus brakes suddenly because your lower body stops but your upper body tends to keep moving (Inertia of motion)."
+      },
+      {
+        title: "Newton's Third Law (Action and Reaction)",
+        desc: "To every action, there is an equal and opposite reaction.",
+        example: "When a gun fires a bullet, the gun recoils backwards with an equal force."
+      }
+    ],
+    didYouKnow: "Sir Isaac Newton formulated these legendary laws of motion in 1687, which laid the foundation for classical mechanics!",
+    visualContext: "placevalue"
+  },
+  g9_chem_matter: {
+    chapterId: "g9_chem_matter",
+    title: "🧪 Matter in Our Surroundings",
+    introduction: "Everything around us is matter! Matter is anything that occupies space and has mass. It exists in three primary physical states: Solid, Liquid, and Gas.",
+    keyFormulas: [
+      {
+        name: "Latent Heat",
+        formula: "Q = m * L",
+        explanation: "Heat energy absorbed or released during a phase change without changing the temperature."
+      },
+      {
+        name: "Temperature Conversion",
+        formula: "K = °C + 273.15",
+        explanation: "Converting Celsius to Kelvin scale, the SI unit of temperature."
+      }
+    ],
+    steps: [
+      {
+        title: "Explore States of Matter",
+        desc: "Solids have definite shape and volume. Liquids have a definite volume but take the shape of their container. Gases have neither definite shape nor definite volume.",
+        example: "Ice (solid), water (liquid), and steam (gas) are the three states of H₂O."
+      },
+      {
+        title: "Observe Diffusion and Evaporation",
+        desc: "Diffusion is the intermixing of particles of different matter on their own. Evaporation is the surface phenomenon where liquid turns to vapor below its boiling point.",
+        example: "The smell of hot cooking food reaches us several meters away due to high diffusion rates at high temperatures."
+      }
+    ],
+    didYouKnow: "There are actually two additional exotic states of matter beyond Solid, Liquid, and Gas: Plasma and Bose-Einstein Condensates (BEC)!",
+    visualContext: "typesofnumbers"
+  },
+  g9_chem_atoms: {
+    chapterId: "g9_chem_atoms",
+    title: "⚛️ Atoms and Molecules",
+    introduction: "Atoms are the building blocks of all matter. Molecules are groups of two or more atoms chemically bonded together. Together, they form the compounds that make up our universe.",
+    keyFormulas: [
+      {
+        name: "Law of Conservation of Mass",
+        formula: "Mass of Reactants = Mass of Products",
+        explanation: "Mass can neither be created nor destroyed in a chemical reaction."
+      },
+      {
+        name: "The Mole Concept",
+        formula: "1 Mole = 6.022 * 10²³ Particles",
+        explanation: "Avogadro's number represents the number of atoms, molecules, or ions in one mole of a substance."
+      }
+    ],
+    steps: [
+      {
+        title: "Learn Dalton's Atomic Theory",
+        desc: "All matter is made of indivisible particles called atoms. Atoms of a given element are identical in mass and chemical properties.",
+        example: "An atom of hydrogen is different in mass and chemical behavior from an atom of oxygen."
+      },
+      {
+        title: "Write Chemical Formulas",
+        desc: "Formulas represent the composition of molecules. They are written based on valencies or combining capacities of elements.",
+        example: "Sodium chloride is represented as NaCl, and Water is represented as H₂O."
+      }
+    ],
+    didYouKnow: "An atom is so incredibly tiny that a single sheet of paper is about one million atoms thick!",
     visualContext: "placevalue"
   }
 };
