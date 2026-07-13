@@ -1,0 +1,6 @@
+{
+  "name": "CBSE Grade 6 Math",
+  "description": "An interactive, gamified Android-style learning application for Grade 6 CBSE Mathematics, featuring illustrated lessons, dynamic quizzes, visual math tools, and an AI tutor 'Ganit Mitra' powered by Gemini.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

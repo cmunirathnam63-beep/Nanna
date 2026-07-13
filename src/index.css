@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-natural-bg: #fdfcf8;
+  --color-natural-primary: #7c9070;
+  --color-natural-dark: #5a5a40;
+  --color-natural-sage: #8a8a70;
+  --color-natural-beige-dark: #e8e4d8;
+  --color-natural-beige-light: #f4f1ea;
+  --color-natural-cream: #f9f2e7;
+  --color-natural-terracotta: #b5835a;
+  --color-natural-gold-accent: #e9e4d1;
+}

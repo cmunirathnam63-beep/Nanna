@@ -1,0 +1,53 @@
+export interface Chapter {
+  id: string;
+  title: string;
+  iconName: string;
+  badge: string;
+  topicSummary: string;
+  colorClass: string;
+  textColorClass: string;
+  progress: number;
+}
+
+export interface LessonContent {
+  chapterId: string;
+  title: string;
+  introduction: string;
+  keyFormulas: { name: string; formula: string; explanation: string }[];
+  steps: { title: string; desc: string; example: string }[];
+  didYouKnow: string;
+  visualContext: string;
+}
+
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswer: string; // "A" | "B" | "C" | "D"
+  hint: string;
+  explanation: string;
+}
+
+export interface Worksheet {
+  title: string;
+  chapter: string;
+  problems: QuizQuestion[];
+}
+
+export interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  timestamp: Date;
+}
+
+export interface StudentStats {
+  scorePoints: number;
+  completedQuizzes: number;
+  streakDays: number;
+  activeTutorSessions: number;
+  solvedProblemsCount: number;
+  unlockedBadges: string[];
+}
+
+export type MathToolType = "fraction" | "numberline" | "placevalue" | "perimeter";
