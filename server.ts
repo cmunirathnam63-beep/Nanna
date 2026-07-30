@@ -33,6 +33,51 @@ function getAiClient() {
   return aiClient;
 }
 
+// Robust helper to generate content with fallback models and retries for 503 / 429 errors
+async function generateContentWithRetry(client: GoogleGenAI, params: {
+  contents: any;
+  systemInstruction?: string;
+  responseMimeType?: string;
+  responseSchema?: any;
+  temperature?: number;
+}): Promise<string> {
+  const modelsToTry = ["gemini-3.6-flash", "gemini-flash-latest", "gemini-2.5-flash"];
+  let lastError: any = null;
+
+  for (const model of modelsToTry) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const config: any = {};
+        if (params.systemInstruction) config.systemInstruction = params.systemInstruction;
+        if (params.temperature !== undefined) config.temperature = params.temperature;
+        if (params.responseMimeType) config.responseMimeType = params.responseMimeType;
+        if (params.responseSchema) config.responseSchema = params.responseSchema;
+
+        const response = await client.models.generateContent({
+          model,
+          contents: params.contents,
+          config,
+        });
+
+        if (response && response.text) {
+          return response.text;
+        }
+      } catch (err: any) {
+        lastError = err;
+        const errStr = String(err?.message || err);
+        console.warn(`Attempt ${attempt + 1} with model '${model}' failed: ${errStr.slice(0, 150)}`);
+        if (errStr.includes("503") || errStr.includes("UNAVAILABLE") || errStr.includes("429")) {
+          await new Promise((resolve) => setTimeout(resolve, 400 * (attempt + 1)));
+        } else {
+          break;
+        }
+      }
+    }
+  }
+
+  throw lastError || new Error("All Gemini model generation attempts failed.");
+}
+
 // 1. AI Math Tutor Endpoint: "Ganit Mitra"
 app.post("/api/math-tutor", async (req, res) => {
   const { message, chatHistory, chapterContext, mathToolContext } = req.body;
@@ -67,49 +112,51 @@ Current student focus:
       { role: "user", parts: [{ text: message }] }
     ];
 
-    const response = await client.models.generateContent({
-      model: "gemini-3.5-flash",
+    const text = await generateContentWithRetry(client, {
       contents,
-      config: {
-        systemInstruction,
-        temperature: 0.7,
-      }
+      systemInstruction,
+      temperature: 0.7
     });
 
-    res.json({ response: response.text || "I was thinking, but my mind wandered. Could you ask again?" });
+    res.json({ response: text || "I was thinking, but my mind wandered. Could you ask again?" });
   } catch (error: any) {
-    console.error("Gemini API Error in Tutor:", error);
-    res.status(500).json({ 
-      error: "Tutor is temporarily offline", 
-      response: "Oh! It seems my chalk broke. 🖍️ Let's try that again. Here is a helpful tip: in Grade 6 math, breaking down problems into smaller blocks or drawing a diagram always helps! Can you try explaining what you want to solve?" 
-    });
+    console.warn("Gemini API Tutor switched to offline fallback due to API status:", error?.message || error);
+    const fallbackResponse = getFallbackTutorResponse(message, chapterContext, mathToolContext);
+    res.json({ response: fallbackResponse });
   }
 });
 
 // 2. Custom CBSE Worksheet Generator
 app.post("/api/generate-worksheet", async (req, res) => {
-  const { chapter, attempt } = req.body;
+  const { chapter, chapterId, attempt } = req.body;
   const client = getAiClient();
   const currentAttempt = Number(attempt) || 0;
+  const targetChapterKey = chapterId || chapter || "Fractions";
   
   if (!client) {
     // Generate high-quality predefined CBSE worksheet questions
-    const fallbackWorksheet = getPredefinedWorksheet(chapter || "Fractions", currentAttempt);
+    const fallbackWorksheet = getPredefinedWorksheet(targetChapterKey, currentAttempt);
     return res.json(fallbackWorksheet);
   }
 
   try {
     const numQuestions = 20;
-    const prompt = `Generate a CBSE Grade 6 Mathematics practice worksheet of exactly ${numQuestions} interesting questions for the chapter: "${chapter}".
-IMPORTANT: The questions MUST be strictly ordered by increasing difficulty from beginner to expert:
-- Questions 1 to 7: Beginner level (Fundamental concepts, simple visualizations, very easy)
-- Questions 8 to 14: Intermediate level (Simple calculations, application of rules, medium difficulty)
-- Questions 15 to 20: Expert level (Challenging word problems, multi-step calculations, higher-order thinking)
+    const prompt = `Generate an authentic, high-quality practice worksheet of exactly ${numQuestions} questions strictly related ONLY to the following specific chapter topic:
+Chapter Title / Topic: "${chapter || targetChapterKey}"
+Chapter ID / Context: "${targetChapterKey}"
 
-Make sure questions are tailored to Grade 6 curriculum standard, including a mix of basic conceptual questions, simple calculations, and relatable Indian school/classroom examples.
-${currentAttempt > 0 ? `IMPORTANT: This is attempt #${currentAttempt + 1} (a retake) for this student. You MUST generate a COMPLETELY NEW and DIFFERENT set of exactly ${numQuestions} questions than previous attempts, varying the numbers, real-world context, and sub-topics to keep the worksheet fresh, challenging, and educational. Make sure none of the questions are identical to previous attempts.` : ""}
+CRITICAL RULE: ALL ${numQuestions} questions MUST be 100% focused on and directly relevant ONLY to "${chapter || targetChapterKey}". Do NOT include questions from unrelated chapters, grades, or subjects.
+
+Difficulty progression requirement:
+- Questions 1 to 7: Beginner level (Fundamental concepts, simple recall, easy definitions or basic applications)
+- Questions 8 to 14: Intermediate level (Standard problem solving, calculations, or analysis)
+- Questions 15 to 20: Expert level (Challenging word problems, multi-step reasoning, or higher-order thinking)
+
+Make sure questions match the curriculum level of this chapter (e.g. Grade 9, Grade 6, Grade 1, Social Science, Physics, Chemistry, Math, Telugu, Hindi, or English as appropriate for the chapter).
+${currentAttempt > 0 ? `IMPORTANT: This is attempt #${currentAttempt + 1} (a retake) for this student. You MUST generate a COMPLETELY NEW and DIFFERENT set of questions than previous attempts, varying numbers, scenarios, and contexts.` : ""}
+
 Provide:
-- A title (e.g. "${chapter} - Progressive Practice Sheet")
+- A title (e.g. "${chapter || targetChapterKey} - Practice Worksheet")
 - ${numQuestions} problems, each with:
   - id (1 to ${numQuestions})
   - question text
@@ -118,46 +165,43 @@ Provide:
   - hint (a short, encouraging clue)
   - explanation (step-by-step, easy to understand)`;
 
-    const response = await client.models.generateContent({
-      model: "gemini-3.5-flash",
+    const rawText = await generateContentWithRetry(client, {
       contents: prompt,
-      config: {
-        systemInstruction: "You are a professional CBSE mathematics curriculum developer for secondary schools in India.",
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            title: { type: Type.STRING },
-            chapter: { type: Type.STRING },
-            problems: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  id: { type: Type.STRING },
-                  question: { type: Type.STRING },
-                  options: {
-                    type: Type.ARRAY,
-                    items: { type: Type.STRING }
-                  },
-                  correctAnswer: { type: Type.STRING, description: "Exactly A, B, C, or D" },
-                  hint: { type: Type.STRING },
-                  explanation: { type: Type.STRING }
+      systemInstruction: "You are an expert school curriculum developer creating targeted, chapter-specific practice worksheets for students in India.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          title: { type: Type.STRING },
+          chapter: { type: Type.STRING },
+          problems: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                id: { type: Type.STRING },
+                question: { type: Type.STRING },
+                options: {
+                  type: Type.ARRAY,
+                  items: { type: Type.STRING }
                 },
-                required: ["id", "question", "options", "correctAnswer", "hint", "explanation"]
-              }
+                correctAnswer: { type: Type.STRING, description: "Exactly A, B, C, or D" },
+                hint: { type: Type.STRING },
+                explanation: { type: Type.STRING }
+              },
+              required: ["id", "question", "options", "correctAnswer", "hint", "explanation"]
             }
-          },
-          required: ["title", "chapter", "problems"]
-        }
+          }
+        },
+        required: ["title", "chapter", "problems"]
       }
     });
 
-    const data = JSON.parse(response.text || "{}");
+    const data = JSON.parse(rawText || "{}");
     // Ensure we actually got 20 questions; otherwise, pad them with fallback
     if (data && data.problems && data.problems.length < 20) {
       console.warn(`Generated worksheet had only ${data.problems.length} questions. Padding to 20...`);
-      const fallback = getPredefinedWorksheet(chapter || "Fractions", currentAttempt);
+      const fallback = getPredefinedWorksheet(targetChapterKey, currentAttempt);
       while (data.problems.length < 20) {
         const extraProb = fallback.problems[data.problems.length % fallback.problems.length];
         data.problems.push({
@@ -168,9 +212,9 @@ Provide:
     }
     res.json(data);
   } catch (error: any) {
-    console.error("Gemini API Error in Worksheet:", error);
-    // Fallback to our high-quality predefined database
-    res.json(getPredefinedWorksheet(chapter || "Fractions", currentAttempt));
+    console.warn("Gemini API Worksheet switched to predefined fallback due to API status:", error?.message || error);
+    // Fallback gracefully to our high-quality predefined database
+    res.json(getPredefinedWorksheet(targetChapterKey, currentAttempt));
   }
 });
 
@@ -454,6 +498,91 @@ function getEvsSeasonsFallback(attempt: number): any[] {
   ];
 }
 
+function getEvsComputerFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "Which computer part looks like a TV screen and displays pictures and text? 🖥️",
+      options: ["A) Keyboard", "B) Mouse", "C) Monitor", "D) CPU"],
+      correctAnswer: "C",
+      hint: "It lets you see cartoons and drawings.",
+      explanation: "The Monitor looks like a TV and shows everything happening on the computer."
+    },
+    {
+      id: "2",
+      question: "Which computer part is known as the 'Brain of the Computer'? 🧠",
+      options: ["A) Monitor", "B) CPU", "C) Mouse", "D) Printer"],
+      correctAnswer: "B",
+      hint: "It controls all computer tasks and calculations.",
+      explanation: "The CPU (Central Processing Unit) acts as the brain of the computer."
+    },
+    {
+      id: "3",
+      question: "Which computer part has keys with letters A-Z and numbers 0-9 for typing? ⌨️",
+      options: ["A) Keyboard", "B) Speakers", "C) Mouse", "D) Monitor"],
+      correctAnswer: "A",
+      hint: "You use it to type your name.",
+      explanation: "The Keyboard has keys used to type words, numbers, and symbols."
+    },
+    {
+      id: "4",
+      question: "Which handheld computer part is used to point, click, and draw on the screen? 🖱️",
+      options: ["A) CPU", "B) Mouse", "C) Keyboard", "D) Printer"],
+      correctAnswer: "B",
+      hint: "It moves an arrow cursor on the monitor.",
+      explanation: "The Mouse helps us point, click, and select items on the computer screen."
+    },
+    {
+      id: "5",
+      question: "Which computer helper device prints your drawings onto real paper? 🖨️",
+      options: ["A) Printer", "B) Speakers", "C) Microphone", "D) Monitor"],
+      correctAnswer: "A",
+      hint: "It gives you a hard copy paper printout.",
+      explanation: "A Printer prints screen pictures and text onto physical paper sheets."
+    },
+    {
+      id: "6",
+      question: "Which device allows you to hear music and sound effects from the computer? 🔊",
+      options: ["A) Mouse", "B) Keyboard", "C) Speakers", "D) CPU"],
+      correctAnswer: "C",
+      hint: "They produce sound for videos and songs.",
+      explanation: "Speakers produce sound so you can hear music, voice lessons, and sound effects."
+    },
+    {
+      id: "7",
+      question: "Which of these is a GOOD habit in the computer room? 💻",
+      options: ["A) Eating food near the keyboard", "B) Pressing keys gently", "C) Pulling wires and cables", "D) Touching the screen with wet hands"],
+      correctAnswer: "B",
+      hint: "Always treat the computer gently and keep it clean.",
+      explanation: "We should always press keyboard keys gently to care for the computer."
+    },
+    {
+      id: "8",
+      question: "Why is a computer called a 'Smart Machine'? ⚡",
+      options: ["A) It works very slowly", "B) It gets tired easily", "C) It works very fast and accurately", "D) It eats lunch"],
+      correctAnswer: "C",
+      hint: "It solves math problems quickly without making mistakes.",
+      explanation: "A computer is a smart machine because it works very fast, remembers data, and doesn't get tired."
+    },
+    {
+      id: "9",
+      question: "Small portable computers that fit in our hands or backpacks are called... 📱",
+      options: ["A) Laptops and Tablets", "B) Desktop CPU boxes", "C) Television towers", "D) Refrigerators"],
+      correctAnswer: "A",
+      hint: "You can carry them everywhere easily.",
+      explanation: "Laptops, tablets, and smartphones are portable smart computers."
+    },
+    {
+      id: "10",
+      question: "What should you always do before leaving the computer lab? 🚪",
+      options: ["A) Leave the computer turned on forever", "B) Shut down the computer properly with teacher guidance", "C) Pull the main electricity plug out", "D) Throw paper at the screen"],
+      correctAnswer: "B",
+      hint: "Always turn off electric devices safely.",
+      explanation: "Always shut down the computer properly with help from a teacher or parent."
+    }
+  ];
+}
+
 function getTeluguAchuluFallback(attempt: number): any[] {
   return [
     {
@@ -476,6 +605,48 @@ function getTeluguWordsFallback(attempt: number): any[] {
       correctAnswer: "B",
       hint: "Count them: ఆ... ట...",
       explanation: "'ఆట' అనే పదం లో రెండు అక్షరాలు (ఆ, ట) ఉన్నాయి."
+    }
+  ];
+}
+
+function getTeluguGuninthaluFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "'క' అక్షరానికి గుడి (ి) చేరిస్తే ఏమవుతుంది?",
+      options: ["A) కా", "B) కి", "C) కు", "D) కే"],
+      correctAnswer: "B",
+      hint: "క + ి = కి",
+      explanation: "'క' కి గుడి (ి) చేరిస్తే 'కి' అక్షరం వస్తుంది."
+    },
+    {
+      id: "2",
+      question: "'కిటికి' 🪟 పదంలో ఏ గుణింతపు గురుతు ఉంది?",
+      options: ["A) దీర్ఘం (ా)", "B) గుడి (ి)", "C) కొమ్ము (ు)", "D) ఏత్వము (ే)"],
+      correctAnswer: "B",
+      hint: "కి... టి... కి...",
+      explanation: "'కిటికి' లో గుడి (ి) గురుతు ఉంది."
+    }
+  ];
+}
+
+function getTeluguOttuluFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "'అమ్మ' 👩‍🍼 పదంలో ఏ అక్షరపు ఒత్తు ఉంది?",
+      options: ["A) క-ఒత్తు (్క)", "B) మ-ఒత్తు (్మ)", "C) త-ఒత్తు (్త)", "D) ప-ఒత్తు (్ప)"],
+      correctAnswer: "B",
+      hint: "'మ' కింద ఉన్న ఒత్తు చూసి చెప్పండి.",
+      explanation: "'అమ్మ' లో 'మ' కింద మ-ఒత్తు (్మ) ఉంది."
+    },
+    {
+      id: "2",
+      question: "'క' అక్షరం యొక్క ఒత్తు ఏది?",
+      options: ["A) ్క", "B) ్త", "C) ్ప", "D) ్మ"],
+      correctAnswer: "A",
+      hint: "అక్క, కుక్క పదాలలో ఈ ఒత్తు ఉంటుంది.",
+      explanation: "'క' యొక్క ఒత్తు ్క."
     }
   ];
 }
@@ -558,6 +729,171 @@ function getEnglishVerbsFallback(attempt: number): any[] {
   ];
 }
 
+function getEnglishVocabularyFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "Choose the vocabulary word that means physical hurt or wound to the body 🩹:",
+      options: ["A) injury", "B) flower", "C) garden", "D) song"],
+      correctAnswer: "A",
+      hint: "I-N-J-U-R-Y happens when you get a cut or scrape.",
+      explanation: "'injury' means physical hurt or damage to the body."
+    },
+    {
+      id: "2",
+      question: "What is the correct spelling of the word that means paying close attention to avoid harm? ⚠️",
+      options: ["A) carful", "B) careful", "C) carefull", "D) carfulle"],
+      correctAnswer: "B",
+      hint: "C-A-R-E-F-U-L!",
+      explanation: "'careful' is spelled C-A-R-E-F-U-L."
+    },
+    {
+      id: "3",
+      question: "Which vocabulary word warns us of a high risk of getting hurt? 🚨",
+      options: ["A) danger", "B) quiet", "C) happy", "D) smile"],
+      correctAnswer: "A",
+      hint: "Red warning signs alert us to 'danger'.",
+      explanation: "'danger' refers to a situation where someone could get hurt."
+    },
+    {
+      id: "4",
+      question: "We ____ toys safely inside a wooden box to keep our room clean. 🏬",
+      options: ["A) store", "B) shock", "C) burning", "D) candles"],
+      correctAnswer: "A",
+      hint: "S-T-O-R-E means keeping items put away safely.",
+      explanation: "'store' means to keep things safely in place."
+    },
+    {
+      id: "5",
+      question: "Never touch a hot, ____ candle or matchstick! 🔥",
+      options: ["A) burning", "B) away", "C) should", "D) stay"],
+      correctAnswer: "A",
+      hint: "B-U-R-N-I-N-G describes active fire.",
+      explanation: "'burning' describes something on fire or giving off heat."
+    },
+    {
+      id: "6",
+      question: "You must stay far ____ from boiling water and hot stoves. 🏃",
+      options: ["A) away", "B) injury", "C) danger", "D) store"],
+      correctAnswer: "A",
+      hint: "A-W-A-Y means at a safe distance.",
+      explanation: "'away' means keeping a safe distance."
+    },
+    {
+      id: "7",
+      question: "Touching open electric wires can cause a dangerous electric ____! ⚡",
+      options: ["A) shock", "B) candles", "C) stay", "D) careful"],
+      correctAnswer: "A",
+      hint: "S-H-O-C-K happens when electricity surges through an unsafe contact.",
+      explanation: "'shock' is the painful reaction from electric currents."
+    },
+    {
+      id: "8",
+      question: "We light bright wax ____ on birthday cakes and Diwali. 🕯️",
+      options: ["A) candles", "B) injury", "C) store", "D) danger"],
+      correctAnswer: "A",
+      hint: "C-A-N-D-L-E-S produce light when lit.",
+      explanation: "'candles' are wax sticks with wicks that produce light."
+    },
+    {
+      id: "9",
+      question: "During heavy rain or storms, you should ____ safely inside. 🛑",
+      options: ["A) stay", "B) burning", "C) shock", "D) away"],
+      correctAnswer: "A",
+      hint: "S-T-A-Y means to remain in place.",
+      explanation: "'stay' means remaining in a safe location."
+    },
+    {
+      id: "10",
+      question: "You ____ always wash your hands before eating meals. ✅",
+      options: ["A) should", "B) candles", "C) injury", "D) shock"],
+      correctAnswer: "A",
+      hint: "S-H-O-U-L-D shows good safety advice.",
+      explanation: "'should' is used to express advice or duty."
+    },
+    {
+      id: "11",
+      question: "Choose the missing letter in 'i n _ u r y' (cut or wound):",
+      options: ["A) j", "B) z", "C) k", "D) x"],
+      correctAnswer: "A",
+      hint: "I-N-J-U-R-Y",
+      explanation: "'injury' has 'j' as its third letter."
+    },
+    {
+      id: "12",
+      question: "Which of these words is the opposite of 'careful'?",
+      options: ["A) careless", "B) stay", "C) store", "D) candles"],
+      correctAnswer: "A",
+      hint: "'careless' means not taking care.",
+      explanation: "Careless is the direct antonym of careful."
+    },
+    {
+      id: "13",
+      question: "Identify the safety word in: 'Red signs indicate danger.' 🚨",
+      options: ["A) danger", "B) signs", "C) indicate", "D) Red"],
+      correctAnswer: "A",
+      hint: "The warning word!",
+      explanation: "'danger' is the safety vocabulary word."
+    },
+    {
+      id: "14",
+      question: "Complete the sentence: 'We ____ our raincoats in the wardrobe during summer.'",
+      options: ["A) store", "B) shock", "C) injury", "D) candles"],
+      correctAnswer: "A",
+      hint: "S-T-O-R-E",
+      explanation: "'store' means to keep objects for future use."
+    },
+    {
+      id: "15",
+      question: "What is the safest action around a burning candle?",
+      options: ["A) Keep it away from paper and curtains", "B) Blow it onto books", "C) Touch the hot wax flame", "D) Run around it"],
+      correctAnswer: "A",
+      hint: "Keep burning objects away from things that catch fire easily.",
+      explanation: "Burning candles must be kept away from flammable objects."
+    },
+    {
+      id: "16",
+      question: "Choose the two safety words in: 'Be careful to avoid an electric shock!'",
+      options: ["A) careful and shock", "B) electric and avoid", "C) Be and avoid", "D) shock and an"],
+      correctAnswer: "A",
+      hint: "Look for 'careful' and 'shock'.",
+      explanation: "'careful' and 'shock' are key Grade 1 safety words."
+    },
+    {
+      id: "17",
+      question: "Complete the rule: 'Children ____ never touch sharp knives alone.'",
+      options: ["A) should", "B) candles", "C) store", "D) burning"],
+      correctAnswer: "A",
+      hint: "S-H-O-U-L-D",
+      explanation: "'should' is used to state safety rules."
+    },
+    {
+      id: "18",
+      question: "Which word means 'to remain at home or in a safe place'?",
+      options: ["A) stay", "B) shock", "C) injury", "D) burning"],
+      correctAnswer: "A",
+      hint: "S-T-A-Y",
+      explanation: "'stay' means to remain in place."
+    },
+    {
+      id: "19",
+      question: "Select the correct plural spelling for wax lights:",
+      options: ["A) candles", "B) candels", "C) candilz", "D) candels"],
+      correctAnswer: "A",
+      hint: "C-A-N-D-L-E-S",
+      explanation: "'candles' is the correct spelling."
+    },
+    {
+      id: "20",
+      question: "Combine the safety words: 'To avoid an ____, stay far ____ from hot stoves!'",
+      options: ["A) injury, away", "B) shock, store", "C) danger, stay", "D) careful, should"],
+      correctAnswer: "A",
+      hint: "injury (hurt) and away (distance)!",
+      explanation: "'injury' and 'away' complete the safety sentence correctly."
+    }
+  ];
+}
+
 // Fallback worksheet generators for Grade 9
 function getRealNumbersFallback(attempt: number): any[] {
   return [
@@ -576,6 +912,22 @@ function getRealNumbersFallback(attempt: number): any[] {
       correctAnswer: "B",
       hint: "Multiply both numerator and denominator by √3.",
       explanation: "(1 * √3) / (√3 * √3) = √3 / 3."
+    },
+    {
+      id: "3",
+      question: "Simplify: (2³)⁴",
+      options: ["A) 2⁷", "B) 2¹²", "C) 2⁶", "D) 2¹"],
+      correctAnswer: "B",
+      hint: "Use the exponent law (a^m)^n = a^(m*n).",
+      explanation: "(2³)⁴ = 2^(3*4) = 2¹²."
+    },
+    {
+      id: "4",
+      question: "Expressed in p/q form, 0.333... is equal to:",
+      options: ["A) 3/10", "B) 1/3", "C) 3/100", "D) 33/100"],
+      correctAnswer: "B",
+      hint: "Let x = 0.333... then 10x = 3.333... Subtract x from 10x.",
+      explanation: "9x = 3 => x = 3/9 = 1/3."
     }
   ];
 }
@@ -597,6 +949,22 @@ function getPolynomialsFallback(attempt: number): any[] {
       correctAnswer: "B",
       hint: "Use the identity (a + b)² = a² + 2ab + b².",
       explanation: "(x + 3)² = x² + 2(x)(3) + 3² = x² + 6x + 9."
+    },
+    {
+      id: "3",
+      question: "If p(x) = x² - 2x + 1, find p(2).",
+      options: ["A) 0", "B) 1", "C) 2", "D) 4"],
+      correctAnswer: "B",
+      hint: "Substitute x = 2 into p(x).",
+      explanation: "p(2) = (2)² - 2(2) + 1 = 4 - 4 + 1 = 1."
+    },
+    {
+      id: "4",
+      question: "Factorize: x² - 9",
+      options: ["A) (x - 3)(x - 3)", "B) (x + 3)(x - 3)", "C) (x + 9)(x - 1)", "D) x(x - 9)"],
+      correctAnswer: "B",
+      hint: "Use the identity a² - b² = (a + b)(a - b).",
+      explanation: "x² - 3² = (x + 3)(x - 3)."
     }
   ];
 }
@@ -616,8 +984,368 @@ function getCoordinateFallback(attempt: number): any[] {
       question: "What are the coordinates of the origin?",
       options: ["A) (1, 1)", "B) (0, 1)", "C) (0, 0)", "D) (-1, -1)"],
       correctAnswer: "C",
-      hint: "The origin is where the two axes intersect.",
+      hint: "The origin is where the x-axis and y-axis intersect.",
       explanation: "The origin has coordinates (0, 0)."
+    },
+    {
+      id: "3",
+      question: "What is the x-coordinate of a point called?",
+      options: ["A) Ordinate", "B) Abscissa", "C) Origin", "D) Quadrant"],
+      correctAnswer: "B",
+      hint: "The x-axis distance is called the abscissa, while y is the ordinate.",
+      explanation: "In Cartesian coordinates (x, y), x is the Abscissa and y is the Ordinate."
+    }
+  ];
+}
+
+function getProbabilityFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "What is the Theoretical Probability of getting a Head when flipping a fair coin once?",
+      options: ["A) 1", "B) 1/2", "C) 1/4", "D) 0"],
+      correctAnswer: "B",
+      hint: "Number of favorable outcomes = 1 (Head), Total outcomes = 2 (Head, Tail).",
+      explanation: "Theoretical P(Head) = Favorable Outcomes / Total Outcomes = 1/2 = 0.5."
+    },
+    {
+      id: "2",
+      question: "A coin is tossed 100 times and Heads appears 54 times. What is the Experimental Probability of getting Heads?",
+      options: ["A) 0.50", "B) 0.54", "C) 0.46", "D) 0.58"],
+      correctAnswer: "B",
+      hint: "Experimental P(E) = (Number of trials in which E occurred) / (Total number of trials).",
+      explanation: "Experimental P(Heads) = 54 / 100 = 0.54."
+    },
+    {
+      id: "3",
+      question: "If a standard die is rolled, what is the Theoretical Probability of rolling an even number?",
+      options: ["A) 1/6", "B) 1/3", "C) 1/2", "D) 2/3"],
+      correctAnswer: "C",
+      hint: "Even numbers on a die are {2, 4, 6} out of total outcomes {1, 2, 3, 4, 5, 6}.",
+      explanation: "Favorable outcomes = 3. Total possible = 6. Theoretical P(Even) = 3/6 = 1/2."
+    },
+    {
+      id: "4",
+      question: "In a die roll experiment conducted 500 times, the face 6 appeared 85 times. What is the Experimental Probability of rolling a 6?",
+      options: ["A) 1/6 (≈ 0.167)", "B) 85/500 = 0.17", "C) 0.20", "D) 85/1000 = 0.085"],
+      correctAnswer: "B",
+      hint: "Experimental P(6) = (Number of times 6 appeared) / (Total rolls).",
+      explanation: "Experimental P(6) = 85 / 500 = 17 / 100 = 0.17."
+    },
+    {
+      id: "5",
+      question: "What happens to the Experimental Probability of an event as the number of trials becomes very large (n → ∞)?",
+      options: ["A) It becomes 0", "B) It approaches the Theoretical Probability", "C) It becomes 1", "D) It keeps fluctuating wildly"],
+      correctAnswer: "B",
+      hint: "This fundamental property is known as the Law of Large Numbers.",
+      explanation: "According to the Law of Large Numbers, as total trials n grows very large, empirical results converge to the theoretical probability."
+    },
+    {
+      id: "6",
+      question: "Which of the following values CANNOT be a probability of an event?",
+      options: ["A) 0.7", "B) 2/3", "C) -1.5", "D) 15%"],
+      correctAnswer: "C",
+      hint: "Probability is always bounded between 0 and 1 inclusive (0% to 100%).",
+      explanation: "Probability can never be negative or greater than 1. Therefore, -1.5 is impossible."
+    },
+    {
+      id: "7",
+      question: "If the theoretical probability of winning a game is 0.35, what is the complementary probability of NOT winning?",
+      options: ["A) 0.35", "B) 0.65", "C) 0.70", "D) 1.35"],
+      correctAnswer: "B",
+      hint: "P(E) + P(not E) = 1 => P(not E) = 1 - P(E).",
+      explanation: "P(NOT winning) = 1 - 0.35 = 0.65."
+    },
+    {
+      id: "8",
+      question: "A bag contains 5 red balls and 3 blue balls. What is the Theoretical Probability of drawing a blue ball?",
+      options: ["A) 3/5", "B) 3/8", "C) 5/8", "D) 1/8"],
+      correctAnswer: "B",
+      hint: "Total balls = 5 + 3 = 8. Favorable blue balls = 3.",
+      explanation: "Theoretical P(Blue) = Favorable / Total = 3 / 8."
+    },
+    {
+      id: "9",
+      question: "A factory inspected 1,000 bulbs and found 20 defective bulbs. What is the Experimental Probability of a bulb being non-defective?",
+      options: ["A) 0.02", "B) 0.98", "C) 0.20", "D) 0.80"],
+      correctAnswer: "B",
+      hint: "Non-defective bulbs = 1000 - 20 = 980.",
+      explanation: "P(Non-defective) = 980 / 1000 = 0.98."
+    },
+    {
+      id: "10",
+      question: "What is the theoretical probability of drawing an Ace from a well-shuffled deck of 52 playing cards?",
+      options: ["A) 1/52", "B) 1/13", "C) 4/13", "D) 1/4"],
+      correctAnswer: "B",
+      hint: "There are 4 Aces in a deck of 52 cards.",
+      explanation: "Theoretical P(Ace) = 4 / 52 = 1 / 13."
+    },
+    {
+      id: "11",
+      question: "What is the probability of a sure (certain) event?",
+      options: ["A) 0", "B) 0.5", "C) 1", "D) Infinite"],
+      correctAnswer: "C",
+      hint: "A sure event happens 100% of the time.",
+      explanation: "The probability of a certain event is always 1."
+    },
+    {
+      id: "12",
+      question: "What is the probability of an impossible event (e.g. rolling a 7 on a standard die)?",
+      options: ["A) 0", "B) 1/7", "C) 1", "D) -1"],
+      correctAnswer: "A",
+      hint: "An outcome that can never occur has a frequency of 0.",
+      explanation: "The probability of an impossible event is 0."
+    },
+    {
+      id: "13",
+      question: "A weather survey recorded rain on 12 out of 30 days in July. What is the empirical probability that it will rain on a chosen day?",
+      options: ["A) 12/30 = 2/5", "B) 18/30 = 3/5", "C) 1/2", "D) 12/18"],
+      correctAnswer: "A",
+      hint: "Empirical P(Rain) = Days rained / Total days observed.",
+      explanation: "Experimental P(Rain) = 12 / 30 = 2 / 5 = 0.4."
+    },
+    {
+      id: "14",
+      question: "In a single roll of a fair die, what is the theoretical probability of getting a prime number?",
+      options: ["A) 1/6", "B) 2/6 = 1/3", "C) 3/6 = 1/2", "D) 4/6 = 2/3"],
+      correctAnswer: "C",
+      hint: "Prime numbers on a die {1, 2, 3, 4, 5, 6} are {2, 3, 5}.",
+      explanation: "Favorable prime numbers = {2, 3, 5} (3 outcomes). P(Prime) = 3 / 6 = 1 / 2."
+    },
+    {
+      id: "15",
+      question: "If P(E) = 0.05, what is P(not E)?",
+      options: ["A) -0.05", "B) 0.50", "C) 0.95", "D) 1.05"],
+      correctAnswer: "C",
+      hint: "P(not E) = 1 - P(E).",
+      explanation: "P(not E) = 1 - 0.05 = 0.95."
+    },
+    {
+      id: "16",
+      question: "Two coins are tossed simultaneously. What is the theoretical probability of getting at least one Head?",
+      options: ["A) 1/4", "B) 1/2", "C) 3/4", "D) 1"],
+      correctAnswer: "C",
+      hint: "Sample space = {HH, HT, TH, TT}. Favorable = {HH, HT, TH}.",
+      explanation: "Favorable outcomes = 3 out of 4. P(At least 1 Head) = 3/4."
+    },
+    {
+      id: "17",
+      question: "A student performs a die roll experiment 60 times and gets face '3' 14 times. What is the difference between Experimental and Theoretical probability for face '3'?",
+      options: ["A) 14/60 - 1/6 = 7/30 - 5/30 = 2/30 = 1/15", "B) 14/60 + 1/6", "C) 0", "D) 1/6"],
+      correctAnswer: "A",
+      hint: "Experimental = 14/60 = 7/30. Theoretical = 1/6 = 5/30.",
+      explanation: "Difference = 7/30 - 5/30 = 2/30 = 1/15 ≈ 0.067."
+    },
+    {
+      id: "18",
+      question: "Which type of probability relies on logical deduction without conducting physical trials?",
+      options: ["A) Experimental Probability", "B) Theoretical Probability", "C) Empirical Probability", "D) Subjective Probability"],
+      correctAnswer: "B",
+      hint: "Calculated assuming all outcomes are equally likely.",
+      explanation: "Theoretical probability is based on reasoning about equally likely outcomes."
+    },
+    {
+      id: "19",
+      question: "In a survey of 200 people, 130 prefer Tea and 70 prefer Coffee. What is the empirical probability that a person chosen at random prefers Coffee?",
+      options: ["A) 130/200 = 0.65", "B) 70/200 = 0.35", "C) 70/130", "D) 0.50"],
+      correctAnswer: "B",
+      hint: "Favorable count = 70. Total sample = 200.",
+      explanation: "Empirical P(Coffee) = 70 / 200 = 0.35."
+    },
+    {
+      id: "20",
+      question: "What is the sum of probabilities of all elementary events of an experiment?",
+      options: ["A) 0", "B) 0.5", "C) 1", "D) 100"],
+      correctAnswer: "C",
+      hint: "The sum of all mutually exclusive possible outcomes equals certainty.",
+      explanation: "The sum of probabilities of all elementary outcomes of an experiment always equals 1."
+    }
+  ];
+}
+
+function getFrenchRevolutionFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "Which fortress-prison was stormed by the people of Paris on 14th July 1789?",
+      options: ["A) Versailles", "B) Bastille", "C) Tuileries", "D) Louvre"],
+      correctAnswer: "B",
+      hint: "It symbolized the despotic power of the French king.",
+      explanation: "The storming of the Bastille marked the beginning of the French Revolution."
+    },
+    {
+      id: "2",
+      question: "Who belonged to the Third Estate in 18th century French society?",
+      options: ["A) Clergy", "B) Nobility", "C) Peasants, artisans, merchants, and lawyers", "D) Royal Family"],
+      correctAnswer: "C",
+      hint: "The Third Estate comprised about 98% of the population who paid all the taxes.",
+      explanation: "The Third Estate included peasants, workers, merchants, and educated professionals."
+    },
+    {
+      id: "3",
+      question: "What were the core revolutionary principles of the French Revolution?",
+      options: ["A) Monarchy, Oligarchy, Empire", "B) Liberty, Equality, Fraternity", "C) Faith, Loyalty, Obedience", "D) Peace, Land, Bread"],
+      correctAnswer: "B",
+      hint: "These three words became the national motto of France.",
+      explanation: "Liberty, Equality, and Fraternity were the defining ideals of the 1789 Revolution."
+    }
+  ];
+}
+
+function getPhysicalFeaturesFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "Which is the geologically youngest fold mountain range in India?",
+      options: ["A) Aravalli Range", "B) Himalayas", "C) Western Ghats", "D) Vindhya Range"],
+      correctAnswer: "B",
+      hint: "Formed due to the collision of the Indo-Australian and Eurasian tectonic plates.",
+      explanation: "The Himalayas are young fold mountains extending across northern India."
+    },
+    {
+      id: "2",
+      question: "What is the fertile alluvial plain formed by the Indus, Ganga, and Brahmaputra called?",
+      options: ["A) Peninsular Plateau", "B) Northern Plains", "C) Coastal Plains", "D) Thar Desert"],
+      correctAnswer: "B",
+      hint: "It is one of the most densely populated agricultural regions in the world.",
+      explanation: "The Northern Plains are formed by the deposition of alluvium brought by the three major river systems."
+    },
+    {
+      id: "3",
+      question: "Which Indian coral island group is situated in the Arabian Sea?",
+      options: ["A) Andaman & Nicobar", "B) Lakshadweep", "C) Majuli", "D) Sri Lanka"],
+      correctAnswer: "B",
+      hint: "Its administrative headquarters is Kavaratti.",
+      explanation: "Lakshadweep consists of 36 small coral islands in the Arabian Sea."
+    }
+  ];
+}
+
+function getDemocracyFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "What is the primary feature of a democratic government?",
+      options: ["A) Rule by a hereditary king", "B) Rulers elected by the people", "C) Military dictatorship", "D) Single-party rule without elections"],
+      correctAnswer: "B",
+      hint: "Democracy comes from Greek words meaning 'people rule'.",
+      explanation: "In a democracy, ultimate political power rests with citizens who elect their representatives."
+    },
+    {
+      id: "2",
+      question: "What does 'One Person, One Vote, One Value' mean?",
+      options: ["A) Rich citizens get 2 votes", "B) Every adult citizen has one vote, and each vote has equal weight", "C) Only educated people can vote", "D) Voting is optional for politicians"],
+      correctAnswer: "B",
+      hint: "It is the principle of universal adult suffrage.",
+      explanation: "Universal adult franchise guarantees that every citizen's vote carries equal statistical value."
+    }
+  ];
+}
+
+function getPhysicsMotionFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "What is the SI unit of acceleration?",
+      options: ["A) m/s", "B) m/s²", "C) km/h", "D) N"],
+      correctAnswer: "B",
+      hint: "Acceleration is the rate of change of velocity over time.",
+      explanation: "Acceleration = (v - u) / t, so its unit is meters per second squared (m/s²)."
+    },
+    {
+      id: "2",
+      question: "An object moves in a circular path of radius R. What is its displacement after one complete round?",
+      options: ["A) 2πR", "B) πR²", "C) 0", "D) R"],
+      correctAnswer: "C",
+      hint: "Displacement is the shortest distance between initial and final position.",
+      explanation: "Since the object returns to its starting point, initial and final positions are identical, so displacement = 0."
+    },
+    {
+      id: "3",
+      question: "Which equation represents Newton's first equation of motion?",
+      options: ["A) s = ut + ½at²", "B) v = u + at", "C) v² - u² = 2as", "D) F = ma"],
+      correctAnswer: "B",
+      hint: "Relates final velocity (v), initial velocity (u), acceleration (a), and time (t).",
+      explanation: "v = u + at is the first equation of uniform acceleration."
+    }
+  ];
+}
+
+function getPhysicsForceFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "According to Newton's First Law of Motion, an object at rest will remain at rest unless acted upon by an:",
+      options: ["A) Internal force", "B) Unbalanced external force", "C) Gravitational field alone", "D) Equal and opposite force"],
+      correctAnswer: "B",
+      hint: "This property of resisting a change in state of motion is called inertia.",
+      explanation: "Inertia keeps objects in their current state unless an unbalanced net external force acts on them."
+    },
+    {
+      id: "2",
+      question: "What is the mathematical formula for Newton's Second Law of Motion?",
+      options: ["A) F = m/a", "B) F = m × a", "C) F = m + a", "D) F = a/m"],
+      correctAnswer: "B",
+      hint: "Force equals mass multiplied by acceleration.",
+      explanation: "Force = mass × acceleration (F = ma)."
+    },
+    {
+      id: "3",
+      question: "To every action, there is an equal and opposite reaction. This is Newton's:",
+      options: ["A) First Law", "B) Second Law", "C) Third Law", "D) Law of Gravitation"],
+      correctAnswer: "C",
+      hint: "Rocket propulsion and swimming operate on this principle.",
+      explanation: "Newton's Third Law states action and reaction forces are equal in magnitude and opposite in direction."
+    }
+  ];
+}
+
+function getChemMatterFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "What is the process of a solid directly turning into gas without becoming liquid called?",
+      options: ["A) Evaporation", "B) Condensation", "C) Sublimation", "D) Fusion"],
+      correctAnswer: "C",
+      hint: "Examples include camphor and ammonium chloride.",
+      explanation: "Sublimation is the direct change of state from solid to gas upon heating."
+    },
+    {
+      id: "2",
+      question: "Why does water cooling occur in an earthen pot (Matka) during summer?",
+      options: ["A) Radiation", "B) Evaporation through tiny pores", "C) Sublimation", "D) Chemical reaction"],
+      correctAnswer: "B",
+      hint: "Evaporation causes cooling by taking latent heat from the surrounding liquid.",
+      explanation: "Water seeps through pores, evaporates, and absorbs latent heat, keeping the stored water cool."
+    }
+  ];
+}
+
+function getChemAtomsFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "Who stated the Law of Conservation of Mass?",
+      options: ["A) John Dalton", "B) Antoine Lavoisier", "C) Joseph Proust", "D) J.J. Thomson"],
+      correctAnswer: "B",
+      hint: "Mass can neither be created nor destroyed in a chemical reaction.",
+      explanation: "Antoine Lavoisier formulated the Law of Conservation of Mass in 1789."
+    },
+    {
+      id: "2",
+      question: "What is the chemical formula of Sodium Carbonate?",
+      options: ["A) NaCO₃", "B) Na₂CO₃", "C) NaHCO₃", "D) Na(CO₃)₂"],
+      correctAnswer: "B",
+      hint: "Valency of Sodium (Na) = 1, Carbonate ion (CO₃²⁻) = 2.",
+      explanation: "By criss-crossing valencies (Na¹ and CO₃²), the formula is Na₂CO₃."
+    },
+    {
+      id: "3",
+      question: "One mole of any substance contains how many particles?",
+      options: ["A) 6.022 × 10²³", "B) 3.011 × 10²³", "C) 1.66 × 10⁻²⁴", "D) 1000"],
+      correctAnswer: "A",
+      hint: "This constant is named after Amedeo Avogadro.",
+      explanation: "Avogadro's number = 6.022 × 10²³ particles/mole."
     }
   ];
 }
@@ -646,9 +1374,18 @@ function getPredefinedWorksheet(chapter: string, attempt: number = 0) {
   } else if (lowercaseChapter.includes("season") || lowercaseChapter.includes("weather") || lowercaseChapter.includes("evs_seasons")) {
     title = "EVS: Seasons & Weather - Exploration Worksheet";
     problems = getEvsSeasonsFallback(attempt);
+  } else if (lowercaseChapter.includes("computer") || lowercaseChapter.includes("evs_computer")) {
+    title = "EVS: Computer - A Smart Machine Worksheet";
+    problems = getEvsComputerFallback(attempt);
   } else if (lowercaseChapter.includes("achulu") || lowercaseChapter.includes("vowels")) {
     title = "Telugu: అచ్చులు - తెలుగు వర్క్‌షీట్";
     problems = getTeluguAchuluFallback(attempt);
+  } else if (lowercaseChapter.includes("guninthalu") || lowercaseChapter.includes("గుణింతాలు")) {
+    title = "Telugu: గుణింతాలు - విద్యా వర్క్‌షీట్";
+    problems = getTeluguGuninthaluFallback(attempt);
+  } else if (lowercaseChapter.includes("ottulu") || lowercaseChapter.includes("ఒత్తులు")) {
+    title = "Telugu: ఒత్తులు - విద్యా వర్క్‌షీట్";
+    problems = getTeluguOttuluFallback(attempt);
   } else if (lowercaseChapter.includes("పదాలు") || lowercaseChapter.includes("words") || lowercaseChapter.includes("tel_words")) {
     title = "Telugu: తెలుగు పదాలు - సరళ పదాల వర్క్‌షీట్";
     problems = getTeluguWordsFallback(attempt);
@@ -684,15 +1421,66 @@ function getPredefinedWorksheet(chapter: string, attempt: number = 0) {
   } else if (lowercaseChapter.includes("verb") || lowercaseChapter.includes("action")) {
     title = "English: Action Words - Activity Worksheet";
     problems = getEnglishVerbsFallback(attempt);
-  } else if (lowercaseChapter.includes("g9_numbersystems") || lowercaseChapter.includes("real number")) {
-    title = "Grade 9 Real Number Systems - Advanced Worksheet";
+  } else if (lowercaseChapter.includes("spelling") || lowercaseChapter.includes("vocab") || lowercaseChapter.includes("vocabulary") || lowercaseChapter.includes("injury") || lowercaseChapter.includes("careful") || lowercaseChapter.includes("danger") || lowercaseChapter.includes("safety") || lowercaseChapter.includes("g1_eng_spelling")) {
+    title = "Grade 1 English: Safety Vocabulary & Sight Words";
+    problems = getEnglishVocabularyFallback(attempt);
+  } else if (lowercaseChapter.includes("g9_numbersystems") || lowercaseChapter.includes("real number") || lowercaseChapter.includes("world of numbers")) {
+    title = "Grade 9 Real Number Systems - CBSE Practice Sheet";
     problems = getRealNumbersFallback(attempt);
-  } else if (lowercaseChapter.includes("polynomial") || lowercaseChapter.includes("g9_polynomials")) {
-    title = "Grade 9 Polynomials - Identity Worksheet";
+  } else if (lowercaseChapter.includes("polynomial") || lowercaseChapter.includes("g9_polynomials") || lowercaseChapter.includes("algebraic identities")) {
+    title = "Grade 9 Polynomials & Algebraic Identities - Practice Sheet";
     problems = getPolynomialsFallback(attempt);
   } else if (lowercaseChapter.includes("coordinate") || lowercaseChapter.includes("g9_coordinate")) {
-    title = "Grade 9 Coordinate Geometry - Cartesian Worksheet";
+    title = "Grade 9 Coordinate Geometry - Practice Sheet";
     problems = getCoordinateFallback(attempt);
+  } else if (lowercaseChapter.includes("probability") || lowercaseChapter.includes("g9_probability")) {
+    title = "Grade 9 Probability - Practice Sheet";
+    problems = getProbabilityFallback(attempt);
+  } else if (lowercaseChapter.includes("french") || lowercaseChapter.includes("g9_french_revolution") || lowercaseChapter.includes("bastille")) {
+    title = "Grade 9 Social Science: French Revolution - Practice Sheet";
+    problems = getFrenchRevolutionFallback(attempt);
+  } else if (lowercaseChapter.includes("physical") || lowercaseChapter.includes("g9_physical_features") || lowercaseChapter.includes("himalaya")) {
+    title = "Grade 9 Social Science: Physical Features of India - Practice Sheet";
+    problems = getPhysicalFeaturesFallback(attempt);
+  } else if (lowercaseChapter.includes("democracy") || lowercaseChapter.includes("g9_democracy")) {
+    title = "Grade 9 Social Science: What is Democracy? - Practice Sheet";
+    problems = getDemocracyFallback(attempt);
+  } else if (lowercaseChapter.includes("locating") || lowercaseChapter.includes("g6_soc_locating_places") || lowercaseChapter.includes("latitude") || lowercaseChapter.includes("longitude")) {
+    title = "Grade 6 Social Science: Locating Places on Earth - Practice Sheet";
+    problems = getLocatingPlacesFallback(attempt);
+  } else if (lowercaseChapter.includes("motions_earth") || lowercaseChapter.includes("g6_soc_motions_earth") || lowercaseChapter.includes("solstice") || lowercaseChapter.includes("equinox")) {
+    title = "Grade 6 Social Science: Motions of the Earth - Practice Sheet";
+    problems = getMotionsEarthFallback(attempt);
+  } else if (lowercaseChapter.includes("timeline") || lowercaseChapter.includes("g6_soc_timeline_sources") || lowercaseChapter.includes("manuscript") || lowercaseChapter.includes("inscription")) {
+    title = "Grade 6 Social Science: Timeline and Sources of History - Practice Sheet";
+    problems = getTimelineSourcesFallback(attempt);
+  } else if (lowercaseChapter.includes("earliest_cities") || lowercaseChapter.includes("g6_soc_earliest_cities") || lowercaseChapter.includes("harappan") || lowercaseChapter.includes("mohenjo")) {
+    title = "Grade 6 Social Science: Earliest Cities & Harappan Civilization - Practice Sheet";
+    problems = getEarliestCitiesFallback(attempt);
+  } else if (lowercaseChapter.includes("value_of_work") || lowercaseChapter.includes("g6_soc_value_of_work") || lowercaseChapter.includes("dignity") || lowercaseChapter.includes("labor")) {
+    title = "Grade 6 Social Science: The Value of Work - Practice Sheet";
+    problems = getValueOfWorkFallback(attempt);
+  } else if (lowercaseChapter.includes("government") || lowercaseChapter.includes("g6_soc_government_diversity") || lowercaseChapter.includes("panchayat") || lowercaseChapter.includes("diversity")) {
+    title = "Grade 6 Social Science: Diversity & Local Government - Practice Sheet";
+    problems = getGovernmentDiversityFallback(attempt);
+  } else if (lowercaseChapter.includes("g9_physics_motion") || lowercaseChapter.includes("motion")) {
+    title = "Grade 9 Physics: Motion - Practice Sheet";
+    problems = getPhysicsMotionFallback(attempt);
+  } else if (lowercaseChapter.includes("g9_physics_force") || lowercaseChapter.includes("force")) {
+    title = "Grade 9 Physics: Force & Laws of Motion - Practice Sheet";
+    problems = getPhysicsForceFallback(attempt);
+  } else if (lowercaseChapter.includes("g9_chem_matter") || lowercaseChapter.includes("matter")) {
+    title = "Grade 9 Chemistry: Matter in Our Surroundings - Practice Sheet";
+    problems = getChemMatterFallback(attempt);
+  } else if (lowercaseChapter.includes("g9_chem_atoms") || lowercaseChapter.includes("atom")) {
+    title = "Grade 9 Chemistry: Atoms and Molecules - Practice Sheet";
+    problems = getChemAtomsFallback(attempt);
+  } else if (lowercaseChapter.includes("g6_exam_paper") || lowercaseChapter.includes("paper") || lowercaseChapter.includes("exam") || lowercaseChapter.includes("term")) {
+    title = "Grade 6 Mathematics Term Exam Question Paper (50 Marks)";
+    problems = getGrade6ExamFallback(attempt);
+  } else if (lowercaseChapter.includes("pattern") || lowercaseChapter.includes("sequence") || lowercaseChapter.includes("patterns")) {
+    title = "Grade 6 Chapter 2: Number Patterns & Sequences Worksheet";
+    problems = getPatternsFallback(attempt);
   } else if (lowercaseChapter.includes("system") || lowercaseChapter.includes("number") || lowercaseChapter.includes("knowing")) {
     title = "Number System Mastery - 20 Progressive Questions";
     problems = getNumberSystemFallback(attempt);
@@ -1650,6 +2438,460 @@ function getNumberSystemFallback(attempt: number): any[] {
       correctAnswer: "A",
       hint: "Subtract the rival's votes from the successful candidate's votes: 5,77,500 - 3,48,700.",
       explanation: "Margin of victory = 5,77,500 - 3,48,700 = 2,28,800 votes."
+    }
+  ];
+}
+
+function getGrade6ExamFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "SECTION A (Q1): Find the number of line segments in the figure with collinear points A, B, C, D.",
+      options: ["A) 5", "B) 6", "C) 8", "D) 7"],
+      correctAnswer: "B",
+      hint: "List all pairs of points: AB, AC, AD, BC, BD, CD.",
+      explanation: "The line segments are AB, AC, AD, BC, BD, CD. Total = 6 line segments (4C2 = 6)."
+    },
+    {
+      id: "2",
+      question: "SECTION A (Q2): The 10th number of the sequence 1, 3, 5, 7, 9, .... is _____",
+      options: ["A) 19", "B) 11", "C) 21", "D) 17"],
+      correctAnswer: "A",
+      hint: "Formula for the n-th odd number is 2n - 1. For n = 10, calculate 2(10) - 1.",
+      explanation: "10th term = 2(10) - 1 = 20 - 1 = 19."
+    },
+    {
+      id: "3",
+      question: "SECTION A (Q3): Which of the following is NOT found in a figure showing a ray starting at D and passing through E?",
+      options: ["A) Point", "B) Ray", "C) Line", "D) Line segment"],
+      correctAnswer: "C",
+      hint: "A line extends indefinitely in BOTH directions, whereas a ray extends in only one direction.",
+      explanation: "Points D & E, Ray DE, and Line Segment DE exist in the figure, but an infinite Line extending in both directions is NOT present."
+    },
+    {
+      id: "4",
+      question: "SECTION A (Q4): The sum of the first four consecutive odd numbers (1 + 3 + 5 + 7 = 16) is _____",
+      options: [
+        "A) 4th number in cubed sequence",
+        "B) 4th number in squared sequence",
+        "C) 3rd number in triangular sequence",
+        "D) 8th number in squared sequence"
+      ],
+      correctAnswer: "B",
+      hint: "Sum = 16. The squared sequence is 1, 4, 9, 16...",
+      explanation: "1 + 3 + 5 + 7 = 16 = 4² (the 4th number in the squared sequence)."
+    },
+    {
+      id: "5",
+      question: "SECTION A (Q5): Assertion (A): A line contains a countless number of points. Reason (R): Line extends indefinitely in both directions.",
+      options: [
+        "A) Both Assertion and Reason are true and Reason is the correct explanation of Assertion.",
+        "B) Both Assertion and Reason are true but Reason is not the correct explanation of Assertion.",
+        "C) Assertion is True and Reason is False.",
+        "D) Assertion is False and Reason is True."
+      ],
+      correctAnswer: "A",
+      hint: "Since a line extends infinitely in both directions, it naturally contains infinitely many points.",
+      explanation: "Both Assertion and Reason are true, and Reason correctly explains why a line has countless points."
+    },
+    {
+      id: "6",
+      question: "SECTION B (Q6): Two lines that intersect at 90° are called _______ lines.",
+      options: ["A) Parallel", "B) Perpendicular", "C) Intersecting", "D) Concurrent"],
+      correctAnswer: "B",
+      hint: "Lines meeting at 90° angles form right angles.",
+      explanation: "Lines intersecting at a 90° angle are called perpendicular lines."
+    },
+    {
+      id: "7",
+      question: "SECTION B (Q7): There are _______ small triangles in the 6th stacked triangle sequence.",
+      options: ["A) 12", "B) 25", "C) 36", "D) 49"],
+      correctAnswer: "C",
+      hint: "The formula for the number of small triangles in the n-th row stacked triangle is n².",
+      explanation: "For the 6th sequence: 6² = 36 small triangles."
+    },
+    {
+      id: "8",
+      question: "SECTION B (Q8): A straight angle (180°) contains _______ right angles (90°).",
+      options: ["A) 1", "B) 2", "C) 3", "D) 4"],
+      correctAnswer: "B",
+      hint: "180° ÷ 90° = ?",
+      explanation: "A straight angle is 180°, which equals 2 × 90° (2 right angles)."
+    },
+    {
+      id: "9",
+      question: "SECTION B (Q9): The number of line(s) passing through two given points is _______.",
+      options: ["A) Exactly 1", "B) 2", "C) Infinite", "D) 0"],
+      correctAnswer: "A",
+      hint: "Place two dots on a paper and try drawing straight lines through both.",
+      explanation: "Exactly one unique straight line can pass through two distinct points."
+    },
+    {
+      id: "10",
+      question: "SECTION B (Q10): Find the next number in the sequence: 4, 20, 100, 500, 2500, _______.",
+      options: ["A) 5,000", "B) 10,000", "C) 12,500", "D) 15,000"],
+      correctAnswer: "C",
+      hint: "Each number is multiplied by 5.",
+      explanation: "2500 × 5 = 12,500."
+    },
+    {
+      id: "11",
+      question: "SECTION B (Q11): A _______ is the line that divides an angle into two equal parts.",
+      options: ["A) Perpendicular", "B) Angle bisector", "C) Diagonal", "D) Transversal"],
+      correctAnswer: "B",
+      hint: "'Bisect' means to cut into two equal halves.",
+      explanation: "An angle bisector divides an angle into two equal parts."
+    },
+    {
+      id: "12",
+      question: "SECTION B (Q12): The initial point of ray PR (→PR) is _______.",
+      options: ["A) Point P", "B) Point R", "C) Point PR", "D) Origin O"],
+      correctAnswer: "A",
+      hint: "Ray PR starts at the first letter and extends through the second letter.",
+      explanation: "Ray PR starts at P (initial point) and goes through R indefinitely."
+    },
+    {
+      id: "13",
+      question: "SECTION B (Q13): How many boundary line segments does a 7-sided polygon (heptagon) have?",
+      options: ["A) 5", "B) 6", "C) 7", "D) 8"],
+      correctAnswer: "C",
+      hint: "An n-sided polygon has n boundary line segments.",
+      explanation: "A heptagon has 7 sides and 7 line segments."
+    },
+    {
+      id: "14",
+      question: "SECTION C (Q14): A library shelf pattern starts with 10 books on shelf 1 and adds 5 books per shelf. How many books are on the 7th and 9th shelves?",
+      options: ["A) 40 and 50", "B) 35 and 45", "C) 40 and 45", "D) 45 and 55"],
+      correctAnswer: "A",
+      hint: "Shelf n = 10 + (n - 1) × 5.",
+      explanation: "7th shelf = 10 + (6 × 5) = 40 books. 9th shelf = 10 + (8 × 5) = 50 books."
+    },
+    {
+      id: "15",
+      question: "SECTION C (Q15): What sequence is formed by 1, 2, 3, 5, 8, 13...?",
+      options: ["A) Square numbers", "B) Fibonacci sequence", "C) Triangular numbers", "D) Prime numbers"],
+      correctAnswer: "B",
+      hint: "Each term is the sum of the previous two terms: 1+2=3, 2+3=5, 3+5=8...",
+      explanation: "1, 2, 3, 5, 8, 13... is the famous Fibonacci sequence!"
+    },
+    {
+      id: "16",
+      question: "SECTION C (Q17): What sequence is formed by adding counting numbers (1, 1+2=3, 3+3=6, 6+4=10, 10+5=15, 15+6=21)? What is the 6th term?",
+      options: ["A) Square numbers, 36", "B) Triangular numbers, 21", "C) Cubic numbers, 216", "D) Hexagonal numbers, 28"],
+      correctAnswer: "B",
+      hint: "Sums of counting numbers form triangles. The 6th term is 1+2+3+4+5+6.",
+      explanation: "Sum of counting numbers forms the Triangular Numbers Sequence. 6th term = 21."
+    },
+    {
+      id: "17",
+      question: "SECTION C (Q19): Find the product of the 2nd (6) and 4th (28) hexagonal numbers.",
+      options: ["A) 120", "B) 168", "C) 196", "D) 210"],
+      correctAnswer: "B",
+      hint: "Formula H_n = n(2n-1). H_2 = 6, H_4 = 28. Multiply 6 × 28.",
+      explanation: "H_2 = 6, H_4 = 28. Product = 6 × 28 = 168."
+    },
+    {
+      id: "18",
+      question: "SECTION C (Q20): In A=1, B=2, C=3, D=4..., what are the next two letters in the pattern A, C, F, J, __, __?",
+      options: ["A) K, L", "B) O, U", "C) M, P", "D) N, T"],
+      correctAnswer: "B",
+      hint: "Alphabet positions: 1, 3, 6, 10... (adds +2, +3, +4, +5, +6).",
+      explanation: "Positions are 1, 3, 6, 10, 15 (O), 21 (U). Next letters are O and U!"
+    },
+    {
+      id: "19",
+      question: "SECTION D (Q21): Without adding, what is the sum of 1 + 3 + 5 + 7 + 9 + 11? (6 odd numbers)",
+      options: ["A) 30", "B) 36", "C) 42", "D) 49"],
+      correctAnswer: "B",
+      hint: "Sum of first n odd numbers = n². Here n = 6.",
+      explanation: "6 odd numbers = 6² = 36 (Square numbers sequence)."
+    },
+    {
+      id: "20",
+      question: "SECTION E (Q24): A gardener plants flowers in rows following powers of 3 (Row 1 = 1, Row 2 = 3, Row 3 = 9...). How many total flowers by 6th row, and how many in 7th row?",
+      options: [
+        "A) 364 total by 6th row, 729 in 7th row",
+        "B) 243 total by 6th row, 500 in 7th row",
+        "C) 100 total by 6th row, 300 in 7th row",
+        "D) 729 total by 6th row, 2187 in 7th row"
+      ],
+      correctAnswer: "A",
+      hint: "Rows: 1, 3, 9, 27, 81, 243. Sum = 364. 7th row = 3^6 = 729.",
+      explanation: "Row 1 to 6 sum = 1 + 3 + 9 + 27 + 81 + 243 = 364 flowers. 7th row = 3^6 = 729 flowers."
+    }
+  ];
+}
+
+function getPatternsFallback(attempt: number): any[] {
+  return getGrade6ExamFallback(attempt);
+}
+
+function getLocatingPlacesFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "Which imaginary line divides the Earth into the Northern and Southern Hemispheres?",
+      options: ["A) Prime Meridian", "B) Equator (0° Latitude)", "C) Tropic of Cancer", "D) International Date Line"],
+      correctAnswer: "B",
+      hint: "It is the 0° parallel latitude running horizontally around Earth's middle.",
+      explanation: "The Equator at 0° Latitude divides Earth into the Northern and Southern Hemispheres."
+    },
+    {
+      id: "2",
+      question: "What is the Prime Meridian's longitude value?",
+      options: ["A) 90° E", "B) 180° W", "C) 0° Longitude", "D) 23.5° N"],
+      correctAnswer: "C",
+      hint: "It passes through Greenwich near London and serves as the starting line for longitudes.",
+      explanation: "The Prime Meridian is located at 0° Longitude."
+    },
+    {
+      id: "3",
+      question: "Earth rotates 360° on its axis in 24 hours. How many degrees does Earth rotate per hour?",
+      options: ["A) 10° per hour", "B) 15° per hour", "C) 30° per hour", "D) 45° per hour"],
+      correctAnswer: "B",
+      hint: "360 degrees divided by 24 hours.",
+      explanation: "360° / 24 hrs = 15° longitude per hour (or 1° every 4 minutes)."
+    },
+    {
+      id: "4",
+      question: "What is India's Standard Meridian used to calculate Indian Standard Time (IST)?",
+      options: ["A) 82.5° E (82°30' E)", "B) 75° E", "C) 90° E", "D) 0° Meridian"],
+      correctAnswer: "A",
+      hint: "It passes through Mirzapur near Prayagraj in Uttar Pradesh.",
+      explanation: "India's Standard Meridian is 82.5° E, making IST 5 hours and 30 minutes ahead of GMT/UTC."
+    },
+    {
+      id: "5",
+      question: "Which parallel of latitude is located at 23.5° N (23°30' N)?",
+      options: ["A) Tropic of Capricorn", "B) Tropic of Cancer", "C) Arctic Circle", "D) Antarctic Circle"],
+      correctAnswer: "B",
+      hint: "It passes through central India including Gujarat, MP, and WB.",
+      explanation: "The Tropic of Cancer is located at 23.5° N Latitude."
+    }
+  ];
+}
+
+function getTimelineSourcesFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "What does 'BCE' stand for in historical chronology?",
+      options: ["A) Before Common Era", "B) Before Century Era", "C) Basic Common Era", "D) Beyond Cultural Era"],
+      correctAnswer: "A",
+      hint: "It replaces BC in modern scientific history.",
+      explanation: "BCE stands for 'Before Common Era' and counts backwards down to 1 BCE."
+    },
+    {
+      id: "2",
+      question: "On what organic materials were ancient Indian hand-written manuscripts recorded?",
+      options: ["A) Synthetic plastic sheets", "B) Dried Palm Leaves (Taalapatra) & Birch Bark (Bhurjapatra)", "C) Aluminum foil", "D) Glass slabs"],
+      correctAnswer: "B",
+      hint: "They were natural leaves cured and etched with iron styluses.",
+      explanation: "Ancient manuscripts were hand-written on palm leaves (Taalapatra) and birch bark (Bhurjapatra)."
+    },
+    {
+      id: "3",
+      question: "Writings carved on hard surfaces like stone pillars, rocks, metal plates, or temple walls are called:",
+      options: ["A) Inscriptions", "B) Novels", "C) Editorials", "D) Podcasts"],
+      correctAnswer: "A",
+      hint: "Emperor Ashoka famously carved his Dhamma teachings using these.",
+      explanation: "Inscriptions are texts engraved or carved into durable stone, metal, or clay surfaces."
+    },
+    {
+      id: "4",
+      question: "What scientific method do archaeologists use to calculate the precise age of ancient organic remains like bones and seeds?",
+      options: ["A) Ultrasonic scanning", "B) Radiocarbon (Carbon-14) Dating", "C) Barcode reading", "D) Magnetic resonance"],
+      correctAnswer: "B",
+      hint: "It measures the radioactive decay of Carbon-14 isotopes.",
+      explanation: "Carbon-14 dating measures organic decay to pinpoint the age of historical artifacts."
+    },
+    {
+      id: "5",
+      question: "Which ancient civilization in India produced terracotta seals, planned brick cities, and bronze statues around 2500 BCE?",
+      options: ["A) Indus Valley (Harappan) Civilization", "B) British Empire", "C) Chola Dynasty", "D) Gupta Golden Age"],
+      correctAnswer: "A",
+      hint: "Famous cities included Harappa and Mohenjo-daro.",
+      explanation: "The Indus Valley Civilization flourished around 2500-1500 BCE in northwestern India/Pakistan."
+    }
+  ];
+}
+
+function getValueOfWorkFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "Farming, fishing, and mining belong to which economic sector?",
+      options: ["A) Tertiary Sector", "B) Primary Sector", "C) Secondary Sector", "D) Digital Sector"],
+      correctAnswer: "B",
+      hint: "This sector directly uses or extracts raw natural resources from the Earth.",
+      explanation: "The Primary sector involves direct harvesting and extraction of natural resources."
+    },
+    {
+      id: "2",
+      question: "Manufacturing raw cotton into cloth or making clay into pottery belongs to which sector?",
+      options: ["A) Primary Sector", "B) Secondary Sector", "C) Tertiary Sector", "D) Financial Sector"],
+      correctAnswer: "B",
+      hint: "It processes and manufactures raw materials into finished goods.",
+      explanation: "The Secondary sector turns raw material inputs into manufactured products."
+    },
+    {
+      id: "3",
+      question: "Teaching, healthcare, transportation, and sanitation belong to which economic sector?",
+      options: ["A) Tertiary (Service) Sector", "B) Primary Sector", "C) Secondary Sector", "D) Agricultural Sector"],
+      correctAnswer: "A",
+      hint: "This sector provides essential services rather than physical raw goods.",
+      explanation: "The Tertiary sector provides services like education, medical care, transport, and cleaning."
+    },
+    {
+      id: "4",
+      question: "What key principle emphasizes that all honest work is respectable and no occupation is inferior?",
+      options: ["A) Profit Maximization", "B) Dignity of Labor (Shramdaan)", "C) Industrialization", "D) Urbanization"],
+      correctAnswer: "B",
+      hint: "Mahatma Gandhi championed this principle by performing manual spinning and cleaning.",
+      explanation: "Dignity of Labor holds that all honest work deserves equal social respect and human gratitude."
+    },
+    {
+      id: "5",
+      question: "Why do different workers in a community depend on each other (economic interdependence)?",
+      options: ["A) Because one single person cannot produce all the food, clothes, health care, and services needed for life", "B) Because law forbids working alone", "C) Because everyone has the exact same skill", "D) Because tools do not exist"],
+      correctAnswer: "A",
+      hint: "A doctor relies on farmers for food, while farmers rely on doctors when sick.",
+      explanation: "Interdependence arises because individuals specialize in different tasks to serve the whole community."
+    }
+  ];
+}
+
+function getMotionsEarthFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "What movement of the Earth causes the cycle of day and night?",
+      options: ["A) Revolution around the Sun", "B) Rotation on its tilted axis", "C) Precession", "D) Lunar eclipse"],
+      correctAnswer: "B",
+      hint: "Earth spins 360° on its axis once every 24 hours.",
+      explanation: "Rotation on its axis every 24 hours causes alternate daylight and nighttime."
+    },
+    {
+      id: "2",
+      question: "How long does Earth take to complete one full revolution around the Sun?",
+      options: ["A) 24 hours", "B) 30 days", "C) 365¼ days (365 days 6 hours)", "D) 100 days"],
+      correctAnswer: "C",
+      hint: "The extra ¼ day (6 hours) creates a Leap Year (366 days) every 4 years.",
+      explanation: "Earth takes 365 days and 6 hours to orbit the Sun."
+    },
+    {
+      id: "3",
+      question: "On which date does the Summer Solstice occur in the Northern Hemisphere with the longest day of the year?",
+      options: ["A) March 21", "B) June 21", "C) September 23", "D) December 22"],
+      correctAnswer: "B",
+      hint: "Sun's direct rays fall on the Tropic of Cancer (23.5° N).",
+      explanation: "On June 21, the Northern Hemisphere tilts toward the Sun, resulting in the Summer Solstice."
+    },
+    {
+      id: "4",
+      question: "What happens during an Equinox (March 21 and September 23)?",
+      options: ["A) Direct solar rays fall on the Equator, making day and night equal worldwide", "B) The North Pole experiences 24 hours of darkness", "C) Earth stops rotating", "D) Februrary has 30 days"],
+      correctAnswer: "A",
+      hint: "Neither pole tilts toward or away from the Sun.",
+      explanation: "On Equinoxes, direct sunlight hits the Equator, making day and night equal everywhere."
+    },
+    {
+      id: "5",
+      question: "What is the imaginary line on Earth that separates the illuminated day half from the dark night half called?",
+      options: ["A) Prime Meridian", "B) Circle of Illumination", "C) Orbit", "D) Tropic of Capricorn"],
+      correctAnswer: "B",
+      hint: "It divides the Earth sphere into light and shadow.",
+      explanation: "The Circle of Illumination separates daylight from night on Earth."
+    }
+  ];
+}
+
+function getEarliestCitiesFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "Around what time did the Indus Valley (Harappan) Civilization flourish?",
+      options: ["A) 1947 CE", "B) 2500 BCE (approx 4,700 years ago)", "C) 500 CE", "D) 10,000 BCE"],
+      correctAnswer: "B",
+      hint: "It is India's earliest urban bronze-age civilization.",
+      explanation: "Harappan cities flourished from ~2500 BCE to 1500 BCE."
+    },
+    {
+      id: "2",
+      question: "Which high, western elevated area in Harappan cities contained public structures like the Great Bath?",
+      options: ["A) Citadel", "B) Lower Town", "C) Suburb", "D) Port"],
+      correctAnswer: "A",
+      hint: "It was built on raised mud-brick platforms to resist floods.",
+      explanation: "The Citadel was the raised western fortress housing public monuments."
+    },
+    {
+      id: "3",
+      question: "What natural water-sealing material was used to coat the Great Bath in Mohenjo-daro?",
+      options: ["A) Bitumen (Natural Tar)", "B) Synthetic cement", "C) Rubber", "D) Plastic coating"],
+      correctAnswer: "A",
+      hint: "It was a dark natural petroleum resin applied over plaster.",
+      explanation: "Bitumen (natural tar) lined the brick walls of the Great Bath to prevent water leakage."
+    },
+    {
+      id: "4",
+      question: "Which Harappan coastal city in Gujarat possessed a famous tidal dockyard for maritime trade?",
+      options: ["A) Lothal", "B) Harappa", "C) Kalibangan", "D) Banawali"],
+      correctAnswer: "A",
+      hint: "Ships from Mesopotamia docked here via Gulf of Khambhat.",
+      explanation: "Lothal had a massive brick basin dockyard connecting Harappan trade overseas."
+    },
+    {
+      id: "5",
+      question: "On what material were Harappan seals mostly carved?",
+      options: ["A) Steatite (Soft Soapstone)", "B) Stainless steel", "C) Glass", "D) Aluminum"],
+      correctAnswer: "A",
+      hint: "A smooth soft stone that hardened upon firing.",
+      explanation: "Most Harappan seals were carved on soft steatite stone featuring animal motifs."
+    }
+  ];
+}
+
+function getGovernmentDiversityFallback(attempt: number): any[] {
+  return [
+    {
+      id: "1",
+      question: "Who coined the phrase 'Unity in Diversity' to describe India's harmonious multi-cultural society?",
+      options: ["A) Jawaharlal Nehru", "B) Dr. B.R. Ambedkar", "C) Mahatma Gandhi", "D) Sardar Patel"],
+      correctAnswer: "A",
+      hint: "He wrote about it in his book 'Discovery of India'.",
+      explanation: "Jawaharlal Nehru described India's cultural harmony as 'Unity in Diversity'."
+    },
+    {
+      id: "2",
+      question: "What is the 3-tier local self-government system in rural India called?",
+      options: ["A) Panchayati Raj", "B) Supreme Court", "C) Parliament", "D) Rajya Sabha"],
+      correctAnswer: "A",
+      hint: "Consists of Gram Panchayat, Panchayat Samiti, and Zilla Parishad.",
+      explanation: "Panchayati Raj enables village communities to govern local development."
+    },
+    {
+      id: "3",
+      question: "Who is eligible to be a member of the Gram Sabha in a village?",
+      options: ["A) All adults living in the village aged 18 or above who have the right to vote", "B) Only land owners", "C) Only village elders", "D) Government officers only"],
+      correctAnswer: "A",
+      hint: "Gram Sabha is a direct democratic assembly of all registered adult voters.",
+      explanation: "Every adult citizen (18+ years) registered as a voter in the village belongs to Gram Sabha."
+    },
+    {
+      id: "4",
+      question: "What is the head of a Gram Panchayat called?",
+      options: ["A) Sarpanch (President)", "B) Mayor", "C) Governor", "D) Prime Minister"],
+      correctAnswer: "A",
+      hint: "Elected directly by Gram Sabha voters along with Ward Panchs.",
+      explanation: "The Sarpanch leads the Gram Panchayat village administration."
+    },
+    {
+      id: "5",
+      question: "Which urban local body manages public services like street lights, garbage disposal, and water supply in large cities?",
+      options: ["A) Municipal Corporation (Nagara Nigama)", "B) Gram Sabha", "C) Forest Department", "D) Zilla Samiti"],
+      correctAnswer: "A",
+      hint: "Headed by an elected Mayor and Ward Councillors.",
+      explanation: "Municipal Corporations administer large urban cities."
     }
   ];
 }

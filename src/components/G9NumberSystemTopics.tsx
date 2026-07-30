@@ -743,3 +743,646 @@ export function ExponentLawsTopic() {
     </div>
   );
 }
+
+export function ProbabilityTopic() {
+  const [experimentType, setExperimentType] = React.useState<"coin" | "dice" | "cards">("coin");
+  const [headsCount, setHeadsCount] = React.useState<number>(0);
+  const [tailsCount, setTailsCount] = React.useState<number>(0);
+  const [diceCounts, setDiceCounts] = React.useState<number[]>([0, 0, 0, 0, 0, 0]);
+  const [cardSuitCounts, setCardSuitCounts] = React.useState<{ [key: string]: number }>({ "♠️": 0, "♥️": 0, "♦️": 0, "♣️": 0 });
+  const [totalSimulated, setTotalSimulated] = React.useState<number>(0);
+  const [lastResult, setLastResult] = React.useState<string | null>(null);
+
+  const runSimulations = (count: number) => {
+    if (experimentType === "coin") {
+      let h = 0;
+      let t = 0;
+      let last = "";
+      for (let i = 0; i < count; i++) {
+        if (Math.random() < 0.5) {
+          h++;
+          last = "🪙 Heads";
+        } else {
+          t++;
+          last = "🪙 Tails";
+        }
+      }
+      setHeadsCount((prev) => prev + h);
+      setTailsCount((prev) => prev + t);
+      setTotalSimulated((prev) => prev + count);
+      setLastResult(last);
+    } else if (experimentType === "dice") {
+      const counts = [...diceCounts];
+      let last = "";
+      for (let i = 0; i < count; i++) {
+        const roll = Math.floor(Math.random() * 6) + 1;
+        counts[roll - 1]++;
+        last = `🎲 Rolled a ${roll}`;
+      }
+      setDiceCounts(counts);
+      setTotalSimulated((prev) => prev + count);
+      setLastResult(last);
+    } else {
+      const suits = ["♠️", "♥️", "♦️", "♣️"];
+      const updated = { ...cardSuitCounts };
+      let last = "";
+      for (let i = 0; i < count; i++) {
+        const suit = suits[Math.floor(Math.random() * 4)];
+        updated[suit] = (updated[suit] || 0) + 1;
+        last = `🃏 Drawn ${suit} Card`;
+      }
+      setCardSuitCounts(updated);
+      setTotalSimulated((prev) => prev + count);
+      setLastResult(last);
+    }
+  };
+
+  const resetSim = () => {
+    setHeadsCount(0);
+    setTailsCount(0);
+    setDiceCounts([0, 0, 0, 0, 0, 0]);
+    setCardSuitCounts({ "♠️": 0, "♥️": 0, "♦️": 0, "♣️": 0 });
+    setTotalSimulated(0);
+    setLastResult(null);
+  };
+
+  return (
+    <div className="space-y-4 animate-fade-in" id="g9_probability_topic">
+      {/* Overview Cards: Theoretical vs Experimental */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Theoretical Probability Card */}
+        <div className="bg-indigo-50/80 border-2 border-indigo-200 p-4 rounded-xl space-y-2">
+          <div className="flex items-center gap-1.5 text-xs font-black text-indigo-900 uppercase tracking-wider">
+            <span className="w-2 h-2 bg-indigo-600 rounded-full" />
+            1. Theoretical Probability (సైద్ధాంతిక)
+          </div>
+          <p className="text-[11px] text-indigo-800 leading-relaxed font-medium">
+            Calculated <strong>mathematically</strong> before conducting any experiment, assuming all outcomes in the sample space are equally likely:
+          </p>
+          <div className="bg-white border border-indigo-200 px-3 py-2 rounded-lg font-mono text-[11px] text-indigo-950 font-bold text-center shadow-2xs">
+            P_theory(E) = n(Favorable Outcomes) / n(Total Sample Space)
+          </div>
+          <div className="text-[10px] text-indigo-700 bg-indigo-100/60 p-2 rounded-lg font-mono space-y-0.5">
+            <div>• Fair Coin P(Heads) = 1 / 2 = 0.500 (50.0%)</div>
+            <div>• Single Die P(Face 6) = 1 / 6 ≈ 0.167 (16.7%)</div>
+            <div>• Playing Card P(Suit ♠️) = 13 / 52 = 1 / 4 = 0.250 (25.0%)</div>
+          </div>
+        </div>
+
+        {/* Experimental Probability Card */}
+        <div className="bg-amber-50/80 border-2 border-amber-200 p-4 rounded-xl space-y-2">
+          <div className="flex items-center gap-1.5 text-xs font-black text-amber-900 uppercase tracking-wider">
+            <span className="w-2 h-2 bg-amber-600 rounded-full" />
+            2. Experimental / Empirical Probability (ప్రాయోగిక)
+          </div>
+          <p className="text-[11px] text-amber-800 leading-relaxed font-medium">
+            Calculated from <strong>actual recorded observations & trials</strong> conducted in real time:
+          </p>
+          <div className="bg-white border border-amber-200 px-3 py-2 rounded-lg font-mono text-[11px] text-amber-950 font-bold text-center shadow-2xs">
+            P_exp(E) = (Number of trials where E occurred) / (Total trials n)
+          </div>
+          <div className="text-[10px] text-amber-700 bg-amber-100/60 p-2 rounded-lg font-mono space-y-0.5">
+            <div>• Law of Large Numbers: As total trials n → ∞</div>
+            <div>• Experimental Probability → Theoretical Probability</div>
+            <div>• P(E) + P(not E) = 1 (Complementary Events)</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Interactive Simulator Workspace */}
+      <div className="bg-white border-2 border-amber-200 rounded-2xl p-4 space-y-4 shadow-xs">
+        <div className="flex justify-between items-center border-b border-amber-100 pb-2">
+          <h4 className="text-xs font-black text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+            <span>🎲</span> Interactive Probability Laboratory
+          </h4>
+          <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+            Compare Theoretical vs Empirical
+          </span>
+        </div>
+
+        {/* Experiment selector */}
+        <div className="flex flex-wrap gap-2 justify-center">
+          <button
+            onClick={() => {
+              setExperimentType("coin");
+              resetSim();
+            }}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+              experimentType === "coin"
+                ? "bg-amber-600 text-white shadow-sm scale-102"
+                : "bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100"
+            }`}
+          >
+            🪙 Coin Toss (2 Outcomes)
+          </button>
+          <button
+            onClick={() => {
+              setExperimentType("dice");
+              resetSim();
+            }}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+              experimentType === "dice"
+                ? "bg-amber-600 text-white shadow-sm scale-102"
+                : "bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100"
+            }`}
+          >
+            🎲 Die Roll (6 Outcomes)
+          </button>
+          <button
+            onClick={() => {
+              setExperimentType("cards");
+              resetSim();
+            }}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+              experimentType === "cards"
+                ? "bg-amber-600 text-white shadow-sm scale-102"
+                : "bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100"
+            }`}
+          >
+            🃏 Card Suit Draw (4 Outcomes)
+          </button>
+        </div>
+
+        {/* Action Controls */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-amber-100">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Run Trials:</span>
+            {[1, 10, 50, 100, 500].map((cnt) => (
+              <button
+                key={cnt}
+                onClick={() => runSimulations(cnt)}
+                className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg text-xs font-bold text-amber-900 transition active:scale-95 cursor-pointer"
+              >
+                +{cnt} {cnt === 1 ? "Trial" : "Trials"}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={resetSim}
+            className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg text-xs font-bold text-rose-700 transition cursor-pointer"
+          >
+            Reset All
+          </button>
+        </div>
+
+        {lastResult && (
+          <div className="text-center font-black text-xs text-amber-900 bg-amber-50/90 py-1.5 rounded-xl border border-amber-200 animate-bounce">
+            Last Trial Result: {lastResult}
+          </div>
+        )}
+
+        {/* Results view */}
+        {totalSimulated > 0 ? (
+          <div className="space-y-4 pt-2 border-t border-amber-100">
+            <div className="flex flex-wrap justify-between items-center text-xs font-black text-slate-800 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+              <span className="text-amber-900 font-extrabold">Total Conducted Trials (n): {totalSimulated}</span>
+              <span className="text-[10.5px] text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                ✨ Law of Large Numbers Active: Notice convergence as n grows!
+              </span>
+            </div>
+
+            {/* Coin Toss comparison */}
+            {experimentType === "coin" && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { key: "Heads", emoji: "🪙", count: headsCount, theoryProb: 0.5 },
+                  { key: "Tails", emoji: "🪙", count: tailsCount, theoryProb: 0.5 }
+                ].map((item) => {
+                  const expProb = item.count / totalSimulated;
+                  const expPct = (expProb * 100).toFixed(1);
+                  const theoryPct = (item.theoryProb * 100).toFixed(1);
+                  const diffPct = (expProb * 100 - item.theoryProb * 100).toFixed(1);
+
+                  return (
+                    <div key={item.key} className="bg-slate-50/80 border border-slate-200 p-3 rounded-xl space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-black text-slate-900">{item.emoji} {item.key}</span>
+                        <span className="text-xs font-black text-amber-700">{item.count} times</span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                        <div className="bg-indigo-50 border border-indigo-150 p-1.5 rounded-lg text-center">
+                          <div className="text-[9px] font-extrabold text-indigo-700 uppercase">Theoretical</div>
+                          <div className="font-bold text-indigo-900">{item.theoryProb.toFixed(3)} ({theoryPct}%)</div>
+                        </div>
+                        <div className="bg-amber-50 border border-amber-200 p-1.5 rounded-lg text-center">
+                          <div className="text-[9px] font-extrabold text-amber-800 uppercase">Experimental</div>
+                          <div className="font-bold text-emerald-700">{expProb.toFixed(3)} ({expPct}%)</div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                          <span>Empirical Bar vs 50% Line</span>
+                          <span className={Number(diffPct) >= 0 ? "text-emerald-600" : "text-rose-600"}>
+                            {Number(diffPct) >= 0 ? `+${diffPct}%` : `${diffPct}%`} from Theory
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden relative">
+                          <div
+                            className="bg-amber-500 h-full transition-all duration-300"
+                            style={{ width: `${expPct}%` }}
+                          />
+                          <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-indigo-600 z-10" title="Theoretical 50% line" />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Die Roll comparison */}
+            {experimentType === "dice" && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {[1, 2, 3, 4, 5, 6].map((num) => {
+                  const cnt = diceCounts[num - 1];
+                  const expProb = cnt / totalSimulated;
+                  const expPct = (expProb * 100).toFixed(1);
+                  const theoryProb = 1 / 6;
+                  const theoryPct = (theoryProb * 100).toFixed(1);
+
+                  return (
+                    <div key={num} className="bg-slate-50/80 border border-slate-200 p-2.5 rounded-xl space-y-1.5">
+                      <div className="flex justify-between items-center text-xs font-black text-slate-900">
+                        <span>Face {num} 🎲</span>
+                        <span className="text-amber-700">{cnt}x</span>
+                      </div>
+
+                      <div className="text-[10px] font-mono space-y-0.5">
+                        <div className="text-indigo-800 font-bold">Theory: {theoryProb.toFixed(3)} ({theoryPct}%)</div>
+                        <div className="text-emerald-700 font-black">Exp: {expProb.toFixed(3)} ({expPct}%)</div>
+                      </div>
+
+                      <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden relative">
+                        <div
+                          className="bg-amber-500 h-full transition-all duration-300"
+                          style={{ width: `${Math.min(100, Number(expPct) * 3)}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Cards Suit Draw comparison */}
+            {experimentType === "cards" && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                {["♠️ Spades", "♥️ Hearts", "♦️ Diamonds", "♣️ Clubs"].map((label) => {
+                  const suitSymbol = label.split(" ")[0];
+                  const cnt = cardSuitCounts[suitSymbol] || 0;
+                  const expProb = cnt / totalSimulated;
+                  const expPct = (expProb * 100).toFixed(1);
+                  const theoryProb = 0.25;
+
+                  return (
+                    <div key={label} className="bg-slate-50/80 border border-slate-200 p-2.5 rounded-xl space-y-1.5 text-center">
+                      <div className="text-xs font-black text-slate-900">{label}</div>
+                      <div className="text-xs font-bold text-amber-700">{cnt} drawn</div>
+
+                      <div className="text-[10px] font-mono space-y-0.5">
+                        <div className="text-indigo-800 font-bold">Theory: 0.250 (25.0%)</div>
+                        <div className="text-emerald-700 font-black">Exp: {expProb.toFixed(3)} ({expPct}%)</div>
+                      </div>
+
+                      <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className="bg-amber-500 h-full transition-all duration-300"
+                          style={{ width: `${expPct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-6 bg-amber-50/40 rounded-xl border border-dashed border-amber-200 text-amber-800 text-xs italic">
+            👆 Click "+1 Trial", "+10 Trials", or "+100 Trials" above to start live probability experiments!
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------
+// TOPIC 8: ALGEBRAIC IDENTITIES INTERACTIVE VISUALIZER
+// ----------------------------------------------------
+export function AlgebraicIdentitiesTopic() {
+  const [selectedIdentity, setSelectedIdentity] = React.useState<"sq_plus" | "sq_minus" | "diff_sq" | "trinomial" | "cube_plus">("sq_plus");
+  const [valA, setValA] = React.useState<number>(4);
+  const [valB, setValB] = React.useState<number>(3);
+  const [valC, setValC] = React.useState<number>(2);
+
+  const lhs = React.useMemo(() => {
+    if (selectedIdentity === "sq_plus") return Math.pow(valA + valB, 2);
+    if (selectedIdentity === "sq_minus") return Math.pow(valA - valB, 2);
+    if (selectedIdentity === "diff_sq") return (valA + valB) * (valA - valB);
+    if (selectedIdentity === "trinomial") return Math.pow(valA + valB + valC, 2);
+    if (selectedIdentity === "cube_plus") return Math.pow(valA + valB, 3);
+    return 0;
+  }, [selectedIdentity, valA, valB, valC]);
+
+  const rhs = React.useMemo(() => {
+    if (selectedIdentity === "sq_plus") return Math.pow(valA, 2) + 2 * valA * valB + Math.pow(valB, 2);
+    if (selectedIdentity === "sq_minus") return Math.pow(valA, 2) - 2 * valA * valB + Math.pow(valB, 2);
+    if (selectedIdentity === "diff_sq") return Math.pow(valA, 2) - Math.pow(valB, 2);
+    if (selectedIdentity === "trinomial")
+      return Math.pow(valA, 2) + Math.pow(valB, 2) + Math.pow(valC, 2) + 2 * valA * valB + 2 * valB * valC + 2 * valC * valA;
+    if (selectedIdentity === "cube_plus")
+      return Math.pow(valA, 3) + Math.pow(valB, 3) + 3 * valA * valB * (valA + valB);
+    return 0;
+  }, [selectedIdentity, valA, valB, valC]);
+
+  const totalLen = valA + valB;
+  const scale = 180 / Math.max(1, totalLen);
+  const sizeA = valA * scale;
+  const sizeB = valB * scale;
+
+  return (
+    <div className="space-y-4 animate-fade-in" id="g9_algebraic_identities_topic">
+      <div className="bg-indigo-50 border border-indigo-200 p-4 rounded-xl space-y-2">
+        <h3 className="text-xs font-extrabold text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
+          <span className="w-1 h-3.5 bg-indigo-600 rounded-full" />
+          Geometric & Algebraic Identity Explorer (బీజగణిత సూత్రాలు)
+        </h3>
+        <p className="text-xs text-indigo-800 leading-relaxed">
+          Algebraic identities are equations that hold true for ALL values of variables. Below, explore the geometric area decomposition proof for <span className="font-mono font-bold">(a + b)² = a² + 2ab + b²</span>!
+        </p>
+      </div>
+
+      <div className="bg-white border-2 border-indigo-200 rounded-xl p-4 space-y-4 shadow-sm">
+        {/* Identity Selector */}
+        <div className="flex flex-wrap gap-1.5 justify-center">
+          {[
+            { id: "sq_plus", label: "(a + b)² = a² + 2ab + b²" },
+            { id: "sq_minus", label: "(a - b)² = a² - 2ab + b²" },
+            { id: "diff_sq", label: "a² - b² = (a + b)(a - b)" },
+            { id: "trinomial", label: "(a + b + c)²" },
+            { id: "cube_plus", label: "(a + b)³" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setSelectedIdentity(item.id as any)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition ${
+                selectedIdentity === item.id
+                  ? "bg-indigo-600 text-white shadow-md"
+                  : "bg-indigo-50 text-indigo-800 hover:bg-indigo-100 border border-indigo-200"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Value Sliders */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs font-bold text-indigo-900">
+              <span>Variable a:</span>
+              <span className="font-mono text-indigo-700 font-extrabold">{valA}</span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="8"
+              value={valA}
+              onChange={(e) => setValA(Number(e.target.value))}
+              className="w-full accent-indigo-600 cursor-pointer"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs font-bold text-indigo-900">
+              <span>Variable b:</span>
+              <span className="font-mono text-indigo-700 font-extrabold">{valB}</span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="8"
+              value={valB}
+              onChange={(e) => setValB(Number(e.target.value))}
+              className="w-full accent-indigo-600 cursor-pointer"
+            />
+          </div>
+
+          {selectedIdentity === "trinomial" && (
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs font-bold text-indigo-900">
+                <span>Variable c:</span>
+                <span className="font-mono text-indigo-700 font-extrabold">{valC}</span>
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="6"
+                value={valC}
+                onChange={(e) => setValC(Number(e.target.value))}
+                className="w-full accent-indigo-600 cursor-pointer"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Proof Verification Bar */}
+        <div className="bg-emerald-50 border border-emerald-300 p-3 rounded-xl text-center space-y-1">
+          <div className="text-xs font-extrabold text-emerald-900 uppercase">Numerical Real-Time Verification</div>
+          <div className="flex flex-wrap justify-center items-center gap-2 text-xs font-mono font-bold text-emerald-900">
+            <span className="bg-white px-2 py-1 rounded border border-emerald-300">LHS = {lhs}</span>
+            <span className="text-emerald-600 font-extrabold text-sm">=</span>
+            <span className="bg-white px-2 py-1 rounded border border-emerald-300">RHS = {rhs}</span>
+            <span className="bg-emerald-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">✓ Identity Verified!</span>
+          </div>
+        </div>
+
+        {/* Geometric Area Decomposition Diagram for (a+b)^2 */}
+        {selectedIdentity === "sq_plus" && (
+          <div className="flex flex-col items-center space-y-3 pt-2">
+            <div className="text-xs font-bold text-indigo-900">Geometric Area Decomposition of Square of Side (a + b)</div>
+            <svg width="220" height="220" className="border-2 border-indigo-300 rounded-xl bg-white shadow-inner">
+              {/* Region 1: Square a*a */}
+              <rect x="10" y="10" width={sizeA} height={sizeA} fill="#818cf8" opacity="0.8" stroke="#3730a3" strokeWidth="1.5" />
+              <text x={10 + sizeA / 2} y={10 + sizeA / 2} textAnchor="middle" dominantBaseline="middle" fill="#ffffff" fontSize="11" fontWeight="bold">
+                a² ({valA * valA})
+              </text>
+
+              {/* Region 2: Rectangle a*b (Top Right) */}
+              <rect x={10 + sizeA} y="10" width={sizeB} height={sizeA} fill="#fb923c" opacity="0.8" stroke="#c2410c" strokeWidth="1.5" />
+              <text x={10 + sizeA + sizeB / 2} y={10 + sizeA / 2} textAnchor="middle" dominantBaseline="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
+                ab ({valA * valB})
+              </text>
+
+              {/* Region 3: Rectangle b*a (Bottom Left) */}
+              <rect x="10" y={10 + sizeA} width={sizeA} height={sizeB} fill="#fb923c" opacity="0.8" stroke="#c2410c" strokeWidth="1.5" />
+              <text x={10 + sizeA / 2} y={10 + sizeA + sizeB / 2} textAnchor="middle" dominantBaseline="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
+                ba ({valA * valB})
+              </text>
+
+              {/* Region 4: Square b*b (Bottom Right) */}
+              <rect x={10 + sizeA} y={10 + sizeA} width={sizeB} height={sizeB} fill="#34d399" opacity="0.85" stroke="#065f46" strokeWidth="1.5" />
+              <text x={10 + sizeA + sizeB / 2} y={10 + sizeA + sizeB / 2} textAnchor="middle" dominantBaseline="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
+                b² ({valB * valB})
+              </text>
+            </svg>
+
+            <div className="flex flex-wrap justify-center gap-3 text-[11px] font-bold text-slate-700">
+              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-indigo-500 rounded" /> Square a² = {valA * valA}</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-orange-400 rounded" /> 2 Rectangles ab = {2 * valA * valB}</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-emerald-500 rounded" /> Square b² = {valB * valB}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------
+// TOPIC 9: COORDINATE GEOMETRY INTERACTIVE CANVAS
+// ----------------------------------------------------
+export function CoordinateGeometryTopic() {
+  const [pointX, setPointX] = React.useState<number>(3);
+  const [pointY, setPointY] = React.useState<number>(4);
+
+  const getQuadrant = (x: number, y: number) => {
+    if (x === 0 && y === 0) return "Origin (0,0)";
+    if (x === 0) return "On Y-Axis";
+    if (y === 0) return "On X-Axis";
+    if (x > 0 && y > 0) return "Quadrant I (+, +)";
+    if (x < 0 && y > 0) return "Quadrant II (-, +)";
+    if (x < 0 && y < 0) return "Quadrant III (-, -)";
+    return "Quadrant IV (+, -)";
+  };
+
+  const canvasWidth = 240;
+  const canvasHeight = 240;
+  const originX = canvasWidth / 2;
+  const originY = canvasHeight / 2;
+  const stepSize = 20; // 20px per unit
+
+  const posX = originX + pointX * stepSize;
+  const posY = originY - pointY * stepSize;
+
+  return (
+    <div className="space-y-4 animate-fade-in" id="g9_coordinate_geometry_topic">
+      <div className="bg-rose-50 border border-rose-200 p-4 rounded-xl space-y-2">
+        <h3 className="text-xs font-extrabold text-rose-900 uppercase tracking-wider flex items-center gap-1.5">
+          <span className="w-1 h-3.5 bg-rose-600 rounded-full" />
+          Cartesian Plane & Quadrant Plotter (రూపరేఖా రేఖాగణితం)
+        </h3>
+        <p className="text-xs text-rose-800 leading-relaxed">
+          Move the sliders or click on the grid to plot point <span className="font-mono font-bold">P(x, y)</span> on the Cartesian plane!
+        </p>
+      </div>
+
+      <div className="bg-white border-2 border-rose-200 rounded-xl p-4 space-y-4 shadow-sm">
+        {/* Sliders for X and Y */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-rose-50/50 p-3 rounded-xl border border-rose-100">
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs font-bold text-rose-900">
+              <span>X-Coordinate (Abscissa):</span>
+              <span className="font-mono text-rose-700 font-extrabold">{pointX}</span>
+            </div>
+            <input
+              type="range"
+              min="-5"
+              max="5"
+              value={pointX}
+              onChange={(e) => setPointX(Number(e.target.value))}
+              className="w-full accent-rose-600 cursor-pointer"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs font-bold text-rose-900">
+              <span>Y-Coordinate (Ordinate):</span>
+              <span className="font-mono text-rose-700 font-extrabold">{pointY}</span>
+            </div>
+            <input
+              type="range"
+              min="-5"
+              max="5"
+              value={pointY}
+              onChange={(e) => setPointY(Number(e.target.value))}
+              className="w-full accent-rose-600 cursor-pointer"
+            />
+          </div>
+        </div>
+
+        {/* Live Location Specs */}
+        <div className="bg-slate-900 text-white p-3 rounded-xl flex flex-wrap justify-between items-center text-xs gap-2 font-mono">
+          <div>
+            Point P = <span className="text-amber-300 font-bold font-mono">({pointX}, {pointY})</span>
+          </div>
+          <div>
+            Location: <span className="text-emerald-400 font-bold">{getQuadrant(pointX, pointY)}</span>
+          </div>
+          <div>
+            Dist from Y-axis = <span className="text-sky-300 font-bold">{Math.abs(pointX)}</span>
+          </div>
+          <div>
+            Dist from X-axis = <span className="text-rose-300 font-bold">{Math.abs(pointY)}</span>
+          </div>
+        </div>
+
+        {/* Interactive SVG Grid Canvas */}
+        <div className="flex justify-center pt-2">
+          <svg width={canvasWidth} height={canvasHeight} className="border-2 border-slate-300 rounded-xl bg-slate-50 shadow-inner">
+            {/* Grid lines */}
+            {[-5, -4, -3, -2, -1, 1, 2, 3, 4, 5].map((num) => (
+              <React.Fragment key={num}>
+                <line
+                  x1={originX + num * stepSize}
+                  y1="0"
+                  x2={originX + num * stepSize}
+                  y2={canvasHeight}
+                  stroke="#cbd5e1"
+                  strokeWidth="1"
+                  strokeDasharray="2,2"
+                />
+                <line
+                  x1="0"
+                  y1={originY - num * stepSize}
+                  x2={canvasWidth}
+                  y2={originY - num * stepSize}
+                  stroke="#cbd5e1"
+                  strokeWidth="1"
+                  strokeDasharray="2,2"
+                />
+              </React.Fragment>
+            ))}
+
+            {/* Quadrant Labels */}
+            <text x="200" y="30" fill="#94a3b8" fontSize="10" fontWeight="bold" textAnchor="middle">Q I (+,+)</text>
+            <text x="40" y="30" fill="#94a3b8" fontSize="10" fontWeight="bold" textAnchor="middle">Q II (-,+)</text>
+            <text x="40" y="210" fill="#94a3b8" fontSize="10" fontWeight="bold" textAnchor="middle">Q III (-,-)</text>
+            <text x="200" y="210" fill="#94a3b8" fontSize="10" fontWeight="bold" textAnchor="middle">Q IV (+,-)</text>
+
+            {/* X-Axis */}
+            <line x1="0" y1={originY} x2={canvasWidth} y2={originY} stroke="#1e293b" strokeWidth="2" />
+            {/* Y-Axis */}
+            <line x1={originX} y1="0" x2={originX} y2={canvasHeight} stroke="#1e293b" strokeWidth="2" />
+
+            {/* Dotted lines from point to axes */}
+            <line x1={posX} y1={originY} x2={posX} y2={posY} stroke="#e11d48" strokeWidth="1.5" strokeDasharray="3,3" />
+            <line x1={originX} y1={posY} x2={posX} y2={posY} stroke="#e11d48" strokeWidth="1.5" strokeDasharray="3,3" />
+
+            {/* Plotted Point P */}
+            <circle cx={posX} cy={posY} r="6" fill="#e11d48" stroke="#ffffff" strokeWidth="2" className="animate-pulse" />
+            <text x={posX + 8} y={posY - 8} fill="#9f1239" fontSize="11" fontWeight="bold">
+              P({pointX}, {pointY})
+            </text>
+
+            {/* Origin Dot */}
+            <circle cx={originX} cy={originY} r="3" fill="#1e293b" />
+            <text x={originX + 4} y={originY + 12} fill="#64748b" fontSize="9" fontWeight="bold">O(0,0)</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+}

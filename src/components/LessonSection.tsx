@@ -1,5 +1,6 @@
 import React from "react";
 import { BookOpen, Sparkles, HelpCircle, ArrowRight, Play, FileText, ArrowLeft } from "lucide-react";
+import { playSpeechWithLang, playTeluguSpeech } from "../utils/teluguAudio";
 import { LESSONS_DATA } from "../data/lessons";
 import { Chapter } from "../types";
 import Grade1InteractiveGame from "./Grade1Games";
@@ -22,8 +23,16 @@ import {
   DecimalExpansionsTopic,
   OperationsRealTopic,
   RationalizingTopic,
-  ExponentLawsTopic
+  ExponentLawsTopic,
+  ProbabilityTopic,
+  AlgebraicIdentitiesTopic,
+  CoordinateGeometryTopic
 } from "./G9NumberSystemTopics";
+import GeometryExplorer from "./GeometryExplorer";
+import FractionOperationsExplorer from "./FractionOperationsExplorer";
+import Grade6MathsPaper from "./Grade6MathsPaper";
+import Grade6TopicExplorer from "./Grade6TopicExplorer";
+import VisualTools from "./VisualTools";
 
 // Textbook-style visual renderer for mathematical formulas
 function TextbookFormula({ formula }: { formula: string }) {
@@ -1239,9 +1248,9 @@ export default function LessonSection({
     const cfg = pageConfigs[selectedG9Topic];
 
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-natural-beige-dark overflow-hidden animate-fade-in" id="lesson_viewport">
+      <div className="w-full animate-fade-in" id="lesson_viewport">
         {/* Subpage Header */}
-        <div className={`p-5 text-white flex items-center gap-3 ${cfg.headerBg}`}>
+        <div className={`p-5 text-white flex items-center gap-3 rounded-t-2xl ${cfg.headerBg}`}>
           <button
             onClick={() => {
               setSelectedG9Topic(null);
@@ -1265,392 +1274,47 @@ export default function LessonSection({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-natural-beige-dark overflow-hidden" id="lesson_viewport">
-      {/* Chapter header banner */}
-      <div className="bg-gradient-to-r from-natural-dark to-[#494933] p-6 text-white relative overflow-hidden">
-        <div className="absolute right-0 top-0 translate-x-6 -translate-y-6 w-32 h-32 bg-white/5 rounded-full blur-xl pointer-events-none" />
-        <h2 className="text-[20px] font-black tracking-tight mt-1" id="chapter_title">
-          {lesson.title}
-        </h2>
-        {selectedChapter.id.startsWith("g1_") ? (
-          <div className="mt-3 flex items-start gap-3 bg-white/10 backdrop-blur-xs p-3 rounded-xl border border-white/10 max-w-xl">
-            <span className="text-2xl animate-bounce">🦜</span>
-            <div className="space-y-1">
-              <span className="text-[8px] font-black uppercase tracking-wider text-amber-300 block">Chintu's Bubble:</span>
-              <p className="text-xs font-bold leading-normal text-natural-cream">
-                "Hi! I'm Chintu! 🌟 Let's play a fun game to learn all about this!"
-              </p>
-              <button 
-                onClick={() => {
-                  if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                    const cleanText = lesson.title.replace(/[^\w\s\u0c00-\u0c7f\u0900-\u097f]/g, '') + ". Hi! I am Chintu! Let's play a fun game to learn all about this!";
-                    const utterance = new SpeechSynthesisUtterance(cleanText);
-                    window.speechSynthesis.speak(utterance);
-                  }
-                }}
-                className="mt-1 flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white font-black px-2 py-0.5 rounded-full text-[8px] uppercase tracking-wide cursor-pointer transition active:scale-95"
-              >
-                <span>🔊 Read Aloud</span>
-              </button>
-            </div>
-          </div>
-        ) : (
-          <p className="text-xs text-natural-beige-light mt-2 max-w-xl leading-relaxed">
-            {lesson.introduction}
-          </p>
-        )}
-
-        {/* Types of fractions button explorer */}
-        {selectedChapter.id === "fractions" && (
-          <div className="mt-4 pt-4 border-t border-white/10" id="types_of_fractions_bar">
-            <span className="text-[11px] uppercase font-bold text-natural-cream tracking-wider block mb-2 flex items-center gap-1.5">
-              <Sparkles size={12} className="text-natural-gold-accent" /> Types of Fractions Explorer:
-            </span>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                onClick={() => {
-                  setSelectedFractionPage("proper");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-natural-cream to-[#eeddbb] hover:from-[#eeddbb] border border-natural-terracotta/30 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-xs min-h-[58px]"
-                id="btn_proper_fractions"
-                title="Proper Fractions: Numerator < Denominator"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-natural-terracotta">Proper</h4>
-                  <span className="text-xs leading-none shrink-0">🍕</span>
-                </div>
-                <p className="text-[8px] text-natural-sage mt-1 font-bold leading-tight">Numerator &lt; Denom</p>
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedFractionPage("improper");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-natural-cream to-[#eeddbb] hover:from-[#eeddbb] border border-natural-terracotta/30 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-xs min-h-[58px]"
-                id="btn_improper_fractions"
-                title="Improper Fractions: Numerator ≥ Denominator"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-natural-terracotta">Improper</h4>
-                  <span className="text-xs leading-none shrink-0">🥞</span>
-                </div>
-                <p className="text-[8px] text-natural-sage mt-1 font-bold leading-tight">Numerator &ge; Denom</p>
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedFractionPage("mixed");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-natural-cream to-[#eeddbb] hover:from-[#eeddbb] border border-natural-terracotta/30 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-xs min-h-[58px]"
-                id="btn_mixed_fractions"
-                title="Mixed Fractions: Whole + Proper"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-natural-terracotta">Mixed</h4>
-                  <span className="text-xs leading-none shrink-0">🍰</span>
-                </div>
-                <p className="text-[8px] text-natural-sage mt-1 font-bold leading-tight">Whole + Proper</p>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Types of numbers button explorer */}
-        {selectedChapter.id === "numbersystem" && (
-          <div className="mt-4 pt-4 border-t border-white/10" id="types_of_numbers_bar">
-            <span className="text-[11px] uppercase font-bold text-natural-cream tracking-wider block mb-2 flex items-center gap-1.5">
-              <Sparkles size={12} className="text-natural-gold-accent" /> Types of Numbers Explorer:
-            </span>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              <button
-                onClick={() => {
-                  setSelectedNumberPage("whole");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-orange-50 to-orange-100/50 hover:from-orange-100 border border-orange-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_whole_numbers"
-                title="Whole Numbers: Counting numbers starting from 0"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-orange-800">Whole Num</h4>
-                  <span className="text-xs leading-none shrink-0">🎛️</span>
-                </div>
-                <p className="text-[8px] text-orange-700 mt-1 font-bold leading-tight">Zero and Positives</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedNumberPage("integers");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-indigo-50 to-indigo-100/50 hover:from-indigo-100 border border-indigo-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_integer_numbers"
-                title="Integers: Positive, negative whole numbers, and zero"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-indigo-800">Integers</h4>
-                  <span className="text-xs leading-none shrink-0">🌡️</span>
-                </div>
-                <p className="text-[8px] text-indigo-700 mt-1 font-bold leading-tight">Positives, Negatives & 0</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedNumberPage("even");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-emerald-50 to-emerald-100/50 hover:from-emerald-100 border border-emerald-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_even_numbers"
-                title="Even Numbers: Divisible by 2"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-emerald-800">Even</h4>
-                  <span className="text-xs leading-none shrink-0">🔢</span>
-                </div>
-                <p className="text-[8px] text-emerald-700 mt-1 font-bold leading-tight">Divisible by 2</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedNumberPage("odd");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-teal-50 to-teal-100/50 hover:from-teal-100 border border-teal-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_odd_numbers"
-                title="Odd Numbers: Not divisible by 2"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-teal-800">Odd</h4>
-                  <span className="text-xs leading-none shrink-0">🔢</span>
-                </div>
-                <p className="text-[8px] text-teal-700 mt-1 font-bold leading-tight">Not divisible by 2</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedNumberPage("prime");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-amber-50 to-amber-100/50 hover:from-amber-100 border border-amber-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_prime_numbers"
-                title="Prime Numbers: Exactly 2 factors"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-amber-800">Prime</h4>
-                  <span className="text-xs leading-none shrink-0">⭐</span>
-                </div>
-                <p className="text-[8px] text-amber-700 mt-1 font-bold leading-tight">Exactly 2 factors</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedNumberPage("composite");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-blue-50 to-blue-100/50 hover:from-blue-100 border border-blue-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_composite_numbers"
-                title="Composite Numbers: More than 2 factors"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-blue-800">Composite</h4>
-                  <span className="text-xs leading-none shrink-0">🧱</span>
-                </div>
-                <p className="text-[8px] text-blue-700 mt-1 font-bold leading-tight">3+ factors</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedNumberPage("multiples");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-rose-50 to-rose-100/50 hover:from-rose-100 border border-rose-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_multiple_numbers"
-                title="Multiples: Numbers in a table"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-rose-800">Multiples</h4>
-                  <span className="text-xs leading-none shrink-0">❌</span>
-                </div>
-                <p className="text-[8px] text-rose-700 mt-1 font-bold leading-tight">Multiples table</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedNumberPage("divisibility");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-sky-50 to-sky-100/50 hover:from-sky-100 border border-sky-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_divisibility_rules"
-                title="Divisibility Rules: Quick division tests"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-sky-800">Divisibility</h4>
-                  <span className="text-xs leading-none shrink-0">➗</span>
-                </div>
-                <p className="text-[8px] text-sky-700 mt-1 font-bold leading-tight">Division rules tests</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedNumberPage("square");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-violet-50 to-violet-100/50 hover:from-violet-100 border border-violet-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_square_numbers"
-                title="Square Numbers: Perfect squares"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-violet-800">Square</h4>
-                  <span className="text-xs leading-none shrink-0">⏹️</span>
-                </div>
-                <p className="text-[8px] text-violet-700 mt-1 font-bold leading-tight">Perfect squares</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedNumberPage("real");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-indigo-50 to-indigo-100/50 hover:from-indigo-100 border border-indigo-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_real_numbers"
-                title="Real Numbers: Rational, irrational, integers"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-indigo-800">Real Num</h4>
-                  <span className="text-xs leading-none shrink-0">🌍</span>
-                </div>
-                <p className="text-[8px] text-indigo-700 mt-1 font-bold leading-tight">Rationals & Irrationals</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedNumberPage("imaginary");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-fuchsia-50 to-fuchsia-100/50 hover:from-fuchsia-100 border border-fuchsia-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_imaginary_numbers"
-                title="Imaginary Numbers: Numbers with i"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-fuchsia-800">Imaginary</h4>
-                  <span className="text-xs leading-none shrink-0">🔮</span>
-                </div>
-                <p className="text-[8px] text-fuchsia-700 mt-1 font-bold leading-tight">Complex & i = √-1</p>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Grade 9 Real Number System Topics Explorer */}
-        {selectedChapter.id === "g9_numbersystems" && (
-          <div className="mt-4 pt-4 border-t border-white/10" id="g9_topics_bar">
-            <span className="text-[11px] uppercase font-bold text-natural-cream tracking-wider block mb-2 flex items-center gap-1.5">
-              <Sparkles size={12} className="text-natural-gold-accent" /> Chapter Topics Explorer:
-            </span>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              <button
-                onClick={() => {
-                  setSelectedG9Topic("rational_intro");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-teal-50 to-teal-100/50 hover:from-teal-100 border border-teal-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_g9_rational"
-                title="Rational Numbers: Representation & Insertion"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-teal-800 font-sans">Rational Numbers</h4>
-                  <span className="text-xs leading-none shrink-0">🔢</span>
-                </div>
-                <p className="text-[8px] text-teal-700 mt-1 font-bold leading-tight">Find numbers between A & B</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedG9Topic("irrational_numbers");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-indigo-50 to-indigo-100/50 hover:from-indigo-100 border border-indigo-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_g9_irrational"
-                title="Irrational Numbers: Root 2 Plotting"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-indigo-800 font-sans">Irrational Num</h4>
-                  <span className="text-xs leading-none shrink-0">📐</span>
-                </div>
-                <p className="text-[8px] text-indigo-700 mt-1 font-bold leading-tight">Plotting & Root spiral</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedG9Topic("decimal_expansions");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-emerald-50 to-emerald-100/50 hover:from-emerald-100 border border-emerald-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_g9_decimal"
-                title="Decimal Expansions: Recurring to p/q"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-emerald-800 font-sans">Decimal Exp</h4>
-                  <span className="text-xs leading-none shrink-0">♾️</span>
-                </div>
-                <p className="text-[8px] text-emerald-700 mt-1 font-bold leading-tight">Express as p/q</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedG9Topic("real_operations");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-violet-50 to-violet-100/50 hover:from-violet-100 border border-violet-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_g9_operations"
-                title="Radical Operations: Simplifications"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-violet-800 font-sans">Operations</h4>
-                  <span className="text-xs leading-none shrink-0">📊</span>
-                </div>
-                <p className="text-[8px] text-violet-700 mt-1 font-bold leading-tight">Simplify square roots</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedG9Topic("rationalizing");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-orange-50 to-orange-100/50 hover:from-orange-100 border border-orange-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_g9_rationalize"
-                title="Rationalize Denominator"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-orange-800 font-sans">Rationalizing</h4>
-                  <span className="text-xs leading-none shrink-0">🪄</span>
-                </div>
-                <p className="text-[8px] text-orange-700 mt-1 font-bold leading-tight">Conjugate multiplier</p>
-              </button>
-
-              <button
-                onClick={() => {
-                  setSelectedG9Topic("exponent_laws");
-                  if (onActionComplete) onActionComplete(5);
-                }}
-                className="flex flex-col justify-between p-2.5 bg-gradient-to-r from-rose-50 to-rose-100/50 hover:from-rose-100 border border-rose-400 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-md min-h-[58px] hover:scale-[1.02] duration-200"
-                id="btn_g9_exponents"
-                title="Laws of Exponents"
-              >
-                <div className="flex justify-between items-center w-full">
-                  <h4 className="text-[10px] font-black uppercase tracking-wider text-rose-800 font-sans">Exponent Laws</h4>
-                  <span className="text-xs leading-none shrink-0">⚡</span>
-                </div>
-                <p className="text-[8px] text-rose-700 mt-1 font-bold leading-tight">Exponents & base rules</p>
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+    <div className="w-full" id="lesson_viewport">
 
       <div className="p-6 space-y-6">
+        {/* Render Geometry Interactive Studio directly for Grade 6 Geometry */}
+        {selectedChapter.id === "geometry" && (
+          <div className="space-y-6">
+            <Grade6TopicExplorer defaultTab="geometry" hideTabSwitcher={true} />
+            <GeometryExplorer />
+          </div>
+        )}
+
+        {/* Render Fraction Operations Studio for Grade 6 Chapter 7 Fractions */}
+        {selectedChapter.id === "fractions" && (
+          <FractionOperationsExplorer />
+        )}
+
+        {/* Render Number Patterns & Sequences Topic Hub */}
+        {selectedChapter.id === "patterns" && (
+          <Grade6TopicExplorer defaultTab="patterns" hideTabSwitcher={true} />
+        )}
+
+        {/* Render Official Grade 6 Mathematics Term Exam Question Paper */}
+        {selectedChapter.id === "g6_exam_paper" && (
+          <Grade6MathsPaper />
+        )}
+
+        {/* Render Interactive Probability Simulator for Grade 9 Probability */}
+        {selectedChapter.id === "g9_probability" && (
+          <ProbabilityTopic />
+        )}
+
+        {/* Render Interactive Algebraic Identities Explorer for Grade 9 Polynomials */}
+        {selectedChapter.id === "g9_polynomials" && (
+          <AlgebraicIdentitiesTopic />
+        )}
+
+        {/* Render Interactive Cartesian Plane Canvas for Grade 9 Coordinate Geometry */}
+        {selectedChapter.id === "g9_coordinate" && (
+          <CoordinateGeometryTopic />
+        )}
+
         {/* Render Grade 1 custom interactive game directly */}
         {selectedChapter.id.startsWith("g1_") && (
           <div className="space-y-6" id="g1_content_wrapper">
@@ -1661,31 +1325,19 @@ export default function LessonSection({
           </div>
         )}
 
-        {/* Play and Practice Shortcuts banner */}
-        <div className={`grid grid-cols-1 ${selectedChapter.id.startsWith("g1_") ? "" : "sm:grid-cols-2"} gap-3`}>
-          <button
-            onClick={() => handleToolNavigation(lesson.visualContext)}
-            className="flex items-center justify-between p-3.5 bg-gradient-to-r from-natural-cream to-[#eeddbb] hover:from-[#eeddbb] border border-natural-terracotta/30 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-xs hover:scale-[1.01]"
-            id="btn_launch_visual_tool"
-          >
-            <div>
-              <h4 className="text-xs font-black uppercase tracking-wider text-natural-terracotta">
-                {selectedChapter.id === "g9_numbersystems"
-                  ? "Real Number Line Sandbox"
-                  : "Launch Visual Tool"}
-              </h4>
-              <p className="text-[10px] text-natural-sage mt-0.5">
-                {selectedChapter.id === "g9_numbersystems"
-                  ? "Plot rational finding and root spiral constructions on a real line"
-                  : "Interact with the math formulas visually"}
-              </p>
-            </div>
-            <div className="p-2 bg-natural-terracotta text-white rounded-lg">
-              <Play size={14} className="fill-current" />
-            </div>
-          </button>
+        {/* Render Chapter-Specific Visual Studio for all other chapters */}
+        {!["geometry", "fractions", "patterns", "g6_exam_paper", "g9_probability", "g9_polynomials", "g9_coordinate"].includes(selectedChapter.id) && !selectedChapter.id.startsWith("g1_") && (
+          <div className="space-y-4" id="chapter_visual_studio_wrapper">
+            <VisualTools
+              chapterId={selectedChapter.id}
+              onActionComplete={onActionComplete}
+            />
+          </div>
+        )}
 
-          {!selectedChapter.id.startsWith("g1_") && (
+        {/* Play and Practice Shortcuts banner */}
+        {!selectedChapter.id.startsWith("g1_") && (
+          <div className="grid grid-cols-1 gap-3">
             <button
               onClick={() => {
                 onOpenWorksheet();
@@ -1696,79 +1348,45 @@ export default function LessonSection({
             >
               <div>
                 <h4 className="text-xs font-black uppercase tracking-wider text-natural-primary">
-                  {selectedChapter.id === "g9_numbersystems"
-                    ? "Grade 9 Chapter 1 Quiz"
-                    : "Test"}
+                  {selectedChapter.title} — Practice Tab & Worksheet
                 </h4>
                 <p className="text-[10px] text-natural-sage mt-0.5">
-                  {selectedChapter.id === "g9_numbersystems"
-                    ? "Practice rationalizing, locating irrationals, and applying exponent laws"
-                    : "Solve questions & earn 1000 points"}
+                  Solve CBSE practice questions with step-by-step AI hints and earn 1000 points!
                 </p>
               </div>
               <div className="p-2 bg-natural-primary text-white rounded-lg">
                 <FileText size={14} />
               </div>
             </button>
-          )}
-        </div>
-
-        {/* Indian History / Trivia Section */}
-        {selectedChapter.id.startsWith("g1_") ? (
-          <div 
-            onClick={() => {
-              setG1SecretOpen(!g1SecretOpen);
-              if ('speechSynthesis' in window && !g1SecretOpen) {
-                window.speechSynthesis.cancel();
-                const cleanTrivia = "Magic Secret! " + lesson.didYouKnow;
-                const utterance = new SpeechSynthesisUtterance(cleanTrivia);
-                window.speechSynthesis.speak(utterance);
-              } else if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-              }
-            }}
-            className={`border-2 border-dashed p-5 rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden text-center select-none ${
-              g1SecretOpen 
-                ? "bg-amber-50 border-amber-400 scale-[1.01] shadow-md" 
-                : "bg-gradient-to-r from-violet-50 to-indigo-50 hover:from-violet-100 hover:to-indigo-100 border-indigo-200 hover:scale-[1.01]"
-            }`}
-            id="g1_interactive_secret"
-          >
-            <div className="absolute -right-2 -bottom-2 text-5xl opacity-15 select-none">🎁</div>
-            <h4 className="text-xs font-black text-indigo-700 uppercase tracking-wider flex items-center justify-center gap-1.5 mb-1.5">
-              <Sparkles size={14} className="text-indigo-600 animate-pulse" /> 
-              {g1SecretOpen ? "Chintu's Magic Secret! 🤫✨" : "Tap to open Chintu's Magic Secret! 🤫✨"}
-            </h4>
-            
-            {g1SecretOpen ? (
-              <div className="space-y-2">
-                <p className="text-xs font-bold text-slate-800 leading-relaxed">
-                  {lesson.didYouKnow}
-                </p>
-                <span className="text-[9px] font-black uppercase text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full inline-block">
-                  🔊 Speaking... Tap to Close ❌
-                </span>
-              </div>
-            ) : (
-              <div className="py-2 flex flex-col items-center gap-1.5">
-                <span className="text-3xl animate-bounce">🎁</span>
-                <span className="text-[9px] font-black uppercase text-indigo-500">
-                  Click to Unbox Fun Trivia & Speak!
-                </span>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="bg-natural-cream border border-natural-beige-dark/60 rounded-2xl p-5 relative overflow-hidden" id="did_you_know_box">
-            <div className="absolute -right-2 -bottom-2 text-6xl opacity-10 select-none">🇮🇳</div>
-            <h4 className="text-xs font-black text-natural-terracotta uppercase tracking-wider flex items-center gap-1.5 mb-2">
-              <Sparkles size={14} className="text-natural-terracotta animate-pulse" /> Did You Know? (Ganit Itihas)
-            </h4>
-            <p className="text-xs text-natural-dark leading-relaxed">
-              {lesson.didYouKnow}
-            </p>
           </div>
         )}
+
+        {/* Indian History / Trivia Section */}
+        <div className="bg-natural-cream border border-natural-beige-dark/60 rounded-2xl p-5 relative overflow-hidden" id="did_you_know_box">
+          <div className="absolute -right-2 -bottom-2 text-6xl opacity-10 select-none">🇮🇳</div>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <h4 className="text-xs font-black text-natural-terracotta uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles size={14} className="text-natural-terracotta animate-pulse" /> Did You Know?
+            </h4>
+            {(selectedChapter.id.startsWith("g1_") || selectedChapter.id.startsWith("g6_tel_")) && (
+              <button 
+                onClick={() => {
+                  if (selectedChapter.id.includes("tel")) {
+                    playTeluguSpeech(lesson.didYouKnow);
+                  } else {
+                    playSpeechWithLang(lesson.didYouKnow, "en-US");
+                  }
+                }}
+                className="flex items-center gap-1 bg-natural-terracotta/10 hover:bg-natural-terracotta/20 text-natural-terracotta font-bold px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wide cursor-pointer transition active:scale-95 border border-natural-terracotta/20"
+              >
+                <span>🔊 Read Aloud</span>
+              </button>
+            )}
+          </div>
+          <p className="text-xs text-natural-dark leading-relaxed">
+            {lesson.didYouKnow}
+          </p>
+        </div>
       </div>
     </div>
   );

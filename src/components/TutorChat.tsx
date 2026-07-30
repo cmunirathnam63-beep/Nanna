@@ -5,18 +5,31 @@ import { ChatMessage } from "../types";
 interface TutorChatProps {
   currentChapterId?: string;
   activeToolId?: string;
+  studentName?: string;
+  selectedGrade?: 1 | 6 | 9;
   onTutorAction?: (points: number) => void;
 }
 
-export default function TutorChat({ currentChapterId, activeToolId, onTutorAction }: TutorChatProps) {
+export default function TutorChat({ currentChapterId, activeToolId, studentName = "Student", selectedGrade = 6, onTutorAction }: TutorChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
       role: "assistant",
-      text: "Namaste! 🌟 I am **Ganit Mitra**, your Grade 6 math study buddy! Ask me any mathematics question. For example, try typing 'fraction helper' or 'algebra variable puzzle'!",
+      text: `Namaste ${studentName}! 🌟 I am **Ganit Mitra**, your Grade ${selectedGrade} study buddy! Ask me any question. For example, try typing 'fraction helper' or 'math puzzle'!`,
       timestamp: new Date()
     }
   ]);
+
+  useEffect(() => {
+    setMessages([
+      {
+        id: "welcome",
+        role: "assistant",
+        text: `Namaste **${studentName}**! 🌟 I am **Ganit Mitra**, your Grade ${selectedGrade} study buddy! Ask me any question. For example, try typing 'fraction helper' or 'math puzzle'!`,
+        timestamp: new Date()
+      }
+    ]);
+  }, [studentName, selectedGrade]);
   const [inputValue, setInputValue] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);

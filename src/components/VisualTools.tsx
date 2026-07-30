@@ -1,25 +1,90 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Minus, RotateCcw, AlertCircle, HelpCircle, Clock, Sparkles, Award, Check, ThumbsUp, ArrowRight, Star } from "lucide-react";
+import { RationalIntroTopic, ProbabilityTopic, AlgebraicIdentitiesTopic, CoordinateGeometryTopic } from "./G9NumberSystemTopics";
+import GeometryExplorer from "./GeometryExplorer";
+import FractionOperationsExplorer from "./FractionOperationsExplorer";
+import Grade1InteractiveGame from "./Grade1Games";
+import Grade6TopicExplorer from "./Grade6TopicExplorer";
+import Grade6MathsPaper from "./Grade6MathsPaper";
 
 interface VisualToolsProps {
   chapterId?: string;
+  subject?: string;
+  grade?: number;
   initialTool?: "fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers" | "clock";
   initialHighlightMode?: string;
   onActionComplete?: (points: number, badgeUnlocked?: string) => void;
 }
 
 const CHAPTER_TABS_MAP: Record<string, ("fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers" | "clock")[]> = {
-  numbersystem: ["typesofnumbers", "placevalue"],
+  numbersystem: ["typesofnumbers", "placevalue", "numberline"],
   fractions: ["fraction", "numberline"],
-  decimals: ["placevalue"],
-  algebra: ["perimeter"],
+  decimals: ["placevalue", "numberline"],
+  algebra: ["perimeter", "typesofnumbers"],
   integers: ["numberline", "typesofnumbers"],
   geometry: ["perimeter"],
   mensuration: ["perimeter"],
-  g1_clock: ["clock"]
+  g1_clock: ["clock"],
+  g1_tables: ["placevalue"],
+  g1_counting: ["placevalue"],
+  g1_shapes: ["perimeter"],
+  g1_comparison: ["numberline"],
+  g1_compare: ["numberline"],
+  g1_sweetshop: ["numberline", "placevalue"]
 };
 
-export default function VisualTools({ chapterId, initialTool = "fraction", initialHighlightMode = "all", onActionComplete }: VisualToolsProps) {
+export default function VisualTools({ chapterId, subject = "maths", grade, initialTool = "fraction", initialHighlightMode = "all", onActionComplete }: VisualToolsProps) {
+  // Direct chapter routing for non-maths subjects or specialized math chapters
+  if (chapterId?.startsWith("g6_soc_") || chapterId?.startsWith("g1_evs_")) {
+    return <SocialScienceVisualLab chapterId={chapterId} />;
+  }
+
+  if (subject && subject !== "maths") {
+    if (subject === "physics") {
+      return <PhysicsVisualLab chapterId={chapterId} />;
+    }
+    if (subject === "chemistry") {
+      return <ChemistryVisualLab chapterId={chapterId} />;
+    }
+    if (subject === "social_science" || subject === "evs") {
+      return <SocialScienceVisualLab chapterId={chapterId} />;
+    }
+    if (subject === "telugu" || subject === "hindi" || subject === "english") {
+      return <LanguageVisualLab chapterId={chapterId} subject={subject} />;
+    }
+  }
+
+  // Grade 1 Math Chapters Interactive Games
+  if (chapterId?.startsWith("g1_")) {
+    return <Grade1InteractiveGame chapterId={chapterId} onActionComplete={onActionComplete} />;
+  }
+
+  // Specialized Math Chapter Interactives
+  if (chapterId === "g9_probability") {
+    return <ProbabilityTopic />;
+  }
+  if (chapterId === "g9_polynomials") {
+    return <AlgebraicIdentitiesTopic />;
+  }
+  if (chapterId === "g9_coordinate") {
+    return <CoordinateGeometryTopic />;
+  }
+  if (chapterId === "g9_numbersystems") {
+    return <RationalIntroTopic />;
+  }
+  if (chapterId === "geometry") {
+    return <GeometryExplorer />;
+  }
+  if (chapterId === "fractions") {
+    return <FractionOperationsExplorer />;
+  }
+  if (chapterId === "patterns") {
+    return <Grade6TopicExplorer defaultTab="patterns" hideTabSwitcher={true} />;
+  }
+  if (chapterId === "g6_exam_paper") {
+    return <Grade6MathsPaper />;
+  }
+
   const [activeTab, setActiveTab] = useState<"fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers" | "clock">(initialTool as any);
   
   // 1. Fractions State
@@ -210,9 +275,19 @@ export default function VisualTools({ chapterId, initialTool = "fraction", initi
       {/* Tab bar header */}
       <div className="flex border-b border-natural-beige-dark bg-natural-beige-light overflow-x-auto scrollbar-none scroll-smooth">
         {(() => {
-          const allowedTabs = chapterId && CHAPTER_TABS_MAP[chapterId]
+          const allowedTabs: readonly string[] = chapterId && CHAPTER_TABS_MAP[chapterId]
             ? CHAPTER_TABS_MAP[chapterId]
-            : (["fraction", "numberline", "placevalue", "perimeter", "typesofnumbers", "clock"] as const);
+            : (() => {
+                if (chapterId) {
+                  if (chapterId.includes("frac")) return ["fraction", "numberline"];
+                  if (chapterId.includes("num") || chapterId.includes("count")) return ["typesofnumbers", "placevalue"];
+                  if (chapterId.includes("dec")) return ["placevalue", "numberline"];
+                  if (chapterId.includes("int")) return ["numberline", "typesofnumbers"];
+                  if (chapterId.includes("geom") || chapterId.includes("shape") || chapterId.includes("peri") || chapterId.includes("area") || chapterId.includes("mens")) return ["perimeter"];
+                  if (chapterId.includes("clock") || chapterId.includes("time")) return ["clock"];
+                }
+                return ["typesofnumbers", "numberline"];
+              })();
 
           const tabDetails = [
             { id: "fraction", label: "🍕 Fractions Circle", idAttr: "btn_tab_fraction" },
@@ -1596,10 +1671,11 @@ export default function VisualTools({ chapterId, initialTool = "fraction", initi
                     );
                   })}
 
-                  {/* 1. Placed Hour Hand */}
+                  {/* 1. Placed Hour Hand (Short Red Needle) */}
                   {(() => {
-                    const coords = placedHour ? getCoords(placedHour, 48) : null;
-                    return coords && (
+                    const hrVal = placedHour || 12;
+                    const coords = getCoords(hrVal, 48);
+                    return (
                       <line
                         x1="110"
                         y1="110"
@@ -1608,6 +1684,7 @@ export default function VisualTools({ chapterId, initialTool = "fraction", initi
                         stroke="#ef4444"
                         strokeWidth="5"
                         strokeLinecap="round"
+                        className={placedHour ? "opacity-100" : "opacity-40 stroke-dasharray-2"}
                       />
                     );
                   })()}
@@ -1625,15 +1702,16 @@ export default function VisualTools({ chapterId, initialTool = "fraction", initi
                         strokeWidth="4"
                         strokeDasharray="4 4"
                         strokeLinecap="round"
-                        className="opacity-50"
+                        className="opacity-60"
                       />
                     );
                   })()}
 
-                  {/* 2. Placed Minute Hand */}
+                  {/* 2. Placed Minute Hand (Long Blue Needle) */}
                   {(() => {
-                    const coords = placedMinute ? getCoords(placedMinute, 72) : null;
-                    return coords && (
+                    const minVal = placedMinute || 12;
+                    const coords = getCoords(minVal, 72);
+                    return (
                       <line
                         x1="110"
                         y1="110"
@@ -1642,6 +1720,7 @@ export default function VisualTools({ chapterId, initialTool = "fraction", initi
                         stroke="#3b82f6"
                         strokeWidth="3.5"
                         strokeLinecap="round"
+                        className={placedMinute ? "opacity-100" : "opacity-40 stroke-dasharray-2"}
                       />
                     );
                   })()}
@@ -1659,7 +1738,7 @@ export default function VisualTools({ chapterId, initialTool = "fraction", initi
                         strokeWidth="3"
                         strokeDasharray="4 4"
                         strokeLinecap="round"
-                        className="opacity-50"
+                        className="opacity-60"
                       />
                     );
                   })()}
@@ -1959,4 +2038,2141 @@ function getNumberFactors(num: number): number[] {
     }
   }
   return factors.sort((a, b) => a - b);
+}
+
+// ==========================================
+// SUBJECT-SPECIFIC LABS
+// ==========================================
+
+export function PhysicsVisualLab({ chapterId }: { chapterId?: string }) {
+  const isMotionMode = chapterId === "g9_physics_motion";
+  const [mass, setMass] = useState<number>(50); // kg
+  const [force, setForce] = useState<number>(40); // N
+  const [objectType, setObjectType] = useState<"car" | "box" | "apple">("box");
+  const [position, setPosition] = useState<number>(10); // percentage along the track
+  const [isSimulating, setIsSimulating] = useState<boolean>(false);
+  const [velocity, setVelocity] = useState<number>(0);
+  const [time, setTime] = useState<number>(0);
+
+  const acceleration = Number((force / mass).toFixed(2));
+
+  useEffect(() => {
+    let animationFrame: number;
+    if (isSimulating) {
+      const startTime = Date.now();
+      const tick = () => {
+        const elapsed = (Date.now() - startTime) / 1000;
+        setTime(elapsed);
+        const currentVelocity = acceleration * elapsed;
+        const currentPosition = 10 + 0.5 * acceleration * elapsed * elapsed * 15; // amplified for visual ease
+        
+        if (currentPosition >= 85) {
+          setPosition(85);
+          setVelocity(acceleration * elapsed);
+          setIsSimulating(false);
+        } else {
+          setPosition(currentPosition);
+          setVelocity(currentVelocity);
+          animationFrame = requestAnimationFrame(tick);
+        }
+      };
+      animationFrame = requestAnimationFrame(tick);
+    }
+    return () => cancelAnimationFrame(animationFrame);
+  }, [isSimulating, acceleration]);
+
+  const handleStart = () => {
+    setPosition(10);
+    setVelocity(0);
+    setTime(0);
+    setIsSimulating(true);
+  };
+
+  const handleReset = () => {
+    setIsSimulating(false);
+    setPosition(10);
+    setVelocity(0);
+    setTime(0);
+  };
+
+  const objectLabels = {
+    car: { name: "Sports Car 🚗", mass: 1000 },
+    box: { name: "Wooden Box 📦", mass: 50 },
+    apple: { name: "Juicy Apple 🍎", mass: 1 }
+  };
+
+  const handleObjectChange = (type: "car" | "box" | "apple") => {
+    setObjectType(type);
+    setMass(objectLabels[type].mass);
+    handleReset();
+  };
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800">⚡ Physics Kinematics Lab: Force & Motion</h3>
+          <p className="text-xs text-slate-500">Explore Newton's Second Law of Motion: F = m × a (Force = Mass × Acceleration)</p>
+        </div>
+        <span className="text-[10px] font-bold text-sky-600 bg-sky-50 border border-sky-100 px-3 py-1 rounded-full uppercase font-mono">Newton's Sandbox</span>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Controls Column */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-150 space-y-5 shadow-xs">
+          <div>
+            <label className="block text-xs font-black uppercase text-slate-600 tracking-wider mb-2">1. Choose Object (Mass)</label>
+            <div className="grid grid-cols-3 gap-2">
+              {(["apple", "box", "car"] as const).map(type => (
+                <button
+                  key={type}
+                  onClick={() => handleObjectChange(type)}
+                  className={`py-2 px-1 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
+                    objectType === type 
+                      ? "bg-sky-500 text-white border-sky-600 shadow-sm" 
+                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                  }`}
+                >
+                  <span className="block text-lg">{type === "apple" ? "🍎" : type === "box" ? "📦" : "🚗"}</span>
+                  <span className="block text-[9px] truncate">{objectLabels[type].name.split(" ")[0]}</span>
+                  <span className="block text-[8px] opacity-70">{objectLabels[type].mass} kg</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-xs font-black uppercase text-slate-600 tracking-wider mb-1.5">
+              <span>2. Applied Force (F)</span>
+              <span className="text-sky-600 font-mono">{force} N</span>
+            </div>
+            <input 
+              type="range" 
+              min="1" 
+              max="500" 
+              value={force} 
+              onChange={(e) => { setForce(Number(e.target.value)); handleReset(); }}
+              className="w-full accent-sky-500 h-1.5 bg-slate-100 rounded-lg appearance-none"
+            />
+            <div className="flex justify-between text-[8px] font-bold text-slate-400 mt-1">
+              <span>1 N (Gentle)</span>
+              <span>500 N (Strong)</span>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-slate-100 flex gap-2">
+            <button
+              onClick={handleStart}
+              disabled={isSimulating}
+              className="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-extrabold rounded-xl shadow-xs hover:scale-[1.02] transition cursor-pointer"
+            >
+              🚀 Simulate
+            </button>
+            <button
+              onClick={handleReset}
+              className="py-2.5 px-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-extrabold rounded-xl border border-slate-200 transition cursor-pointer"
+            >
+              🔄 Reset
+            </button>
+          </div>
+        </div>
+
+        {/* Live Simulation Screen Column */}
+        <div className="md:col-span-2 flex flex-col gap-4">
+          {/* Animated Track */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-150 h-52 relative overflow-hidden flex flex-col justify-between shadow-xs">
+            <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest absolute top-3 left-4">Visual Simulator Track</span>
+            
+            {/* Measuring markers */}
+            <div className="flex justify-between text-[8px] font-bold text-slate-300 border-b border-dashed border-slate-100 pb-1 mt-4 px-2">
+              <span>0m</span>
+              <span>10m</span>
+              <span>20m</span>
+              <span>30m</span>
+              <span>40m</span>
+              <span>50m</span>
+            </div>
+
+            {/* Simulated Object */}
+            <div className="relative flex-1 flex items-end pb-4">
+              <div 
+                className="absolute transition-all duration-75 flex flex-col items-center"
+                style={{ left: `${position}%` }}
+              >
+                {isSimulating && (
+                  <span className="text-[8px] font-bold text-sky-500 animate-pulse bg-sky-50 px-1 py-0.5 rounded border border-sky-100 mb-1">
+                    a = {acceleration} m/s²
+                  </span>
+                )}
+                <span className="text-4xl filter drop-shadow-md select-none transform hover:scale-110 transition">
+                  {objectType === "apple" ? "🍎" : objectType === "box" ? "📦" : "🚗"}
+                </span>
+              </div>
+            </div>
+
+            {/* Ground / Track strip */}
+            <div className="h-4 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded-lg flex items-center justify-around border border-slate-300">
+              <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
+              <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
+              <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
+              <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
+            </div>
+          </div>
+
+          {/* Real-time Math Output Card */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="bg-white border border-slate-150 p-3.5 rounded-xl text-center shadow-xs">
+              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Applied Force</span>
+              <span className="text-lg font-black text-slate-800 font-mono">{force}</span>
+              <span className="text-[9px] text-slate-400 font-bold block">Newtons (N)</span>
+            </div>
+
+            <div className="bg-white border border-slate-150 p-3.5 rounded-xl text-center shadow-xs">
+              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Object Mass</span>
+              <span className="text-lg font-black text-slate-800 font-mono">{mass}</span>
+              <span className="text-[9px] text-slate-400 font-bold block">Kilograms (kg)</span>
+            </div>
+
+            <div className="bg-white border border-sky-150 p-3.5 rounded-xl text-center shadow-xs bg-sky-50/10">
+              <span className="text-[8px] font-bold text-sky-600 uppercase tracking-widest block mb-0.5">Acceleration</span>
+              <span className="text-lg font-black text-sky-600 font-mono">{acceleration}</span>
+              <span className="text-[9px] text-sky-500 font-bold block">m/s² (F / m)</span>
+            </div>
+
+            <div className="bg-white border border-emerald-150 p-3.5 rounded-xl text-center shadow-xs bg-emerald-50/10">
+              <span className="text-[8px] font-bold text-emerald-600 uppercase tracking-widest block mb-0.5">Current Speed</span>
+              <span className="text-lg font-black text-emerald-600 font-mono">{velocity.toFixed(1)}</span>
+              <span className="text-[9px] text-emerald-500 font-bold block">meters/sec (m/s)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ChemistryVisualLab({ chapterId }: { chapterId?: string }) {
+  const isMatterChapter = chapterId === "g9_chem_matter";
+  const [protons, setProtons] = useState<number>(1);
+  const [neutrons, setNeutrons] = useState<number>(1);
+  const [electrons, setElectrons] = useState<number>(1);
+
+  const totalMass = protons + neutrons;
+  const netCharge = protons - electrons;
+
+  const elements = [
+    { name: "Empty Space", symbol: "∅", desc: "No protons! Add some protons to build an element!" },
+    { name: "Hydrogen", symbol: "H", desc: "The simplest and most abundant element in the universe!" },
+    { name: "Helium", symbol: "He", desc: "A super-light, non-reactive noble gas used to fill festive balloons!" },
+    { name: "Lithium", symbol: "Li", desc: "A soft, silver-white metal used to power modern phone batteries!" },
+    { name: "Beryllium", symbol: "Be", desc: "A strong, lightweight metal used in aerospace and satellite structures!" },
+    { name: "Boron", symbol: "B", desc: "A metalloid used in making tough fiberglass and lab glassware!" },
+    { name: "Carbon", symbol: "C", desc: "The basic building block of all organic life on Earth!" },
+    { name: "Nitrogen", symbol: "N", desc: "Makes up 78% of the air we breathe and helps plants grow!" },
+    { name: "Oxygen", symbol: "O", desc: "The life-giving gas essential for respiration in humans and animals!" }
+  ];
+
+  const currentElement = elements[protons] || { name: "Heavy Nucleus", symbol: "X", desc: "An advanced, heavier element on the periodic table!" };
+
+  const handleReset = () => {
+    setProtons(1);
+    setNeutrons(1);
+    setElectrons(1);
+  };
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800">🧪 Chemistry Lab: Atomic Structure Sandbox</h3>
+          <p className="text-xs text-slate-500">Add subatomic particles to build elements and observe atomic mass, stability, and net charges!</p>
+        </div>
+        <span className="text-[10px] font-bold text-teal-600 bg-teal-50 border border-teal-100 px-3 py-1 rounded-full uppercase font-mono">Atom Sandbox</span>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Controls Column */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-150 space-y-4 shadow-xs">
+          <span className="text-xs font-black uppercase text-slate-600 tracking-wider block border-b border-slate-100 pb-1">1. Add Subatomic Particles</span>
+          
+          {/* Protons Control */}
+          <div className="flex items-center justify-between p-2.5 bg-orange-50/30 border border-orange-100 rounded-xl">
+            <div className="flex flex-col">
+              <span className="text-xs font-extrabold text-orange-700">🔴 Protons (p⁺)</span>
+              <span className="text-[8px] text-orange-500">Mass: 1 | Charge: +1</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setProtons(Math.max(0, protons - 1))} className="w-8 h-8 rounded-full bg-white border border-orange-200 flex items-center justify-center font-bold text-orange-600 hover:bg-orange-50 transition cursor-pointer">-</button>
+              <span className="font-mono font-black text-sm text-orange-800 w-4 text-center">{protons}</span>
+              <button onClick={() => setProtons(Math.min(8, protons + 1))} className="w-8 h-8 rounded-full bg-white border border-orange-200 flex items-center justify-center font-bold text-orange-600 hover:bg-orange-50 transition cursor-pointer">+</button>
+            </div>
+          </div>
+
+          {/* Neutrons Control */}
+          <div className="flex items-center justify-between p-2.5 bg-slate-100 border border-slate-200 rounded-xl">
+            <div className="flex flex-col">
+              <span className="text-xs font-extrabold text-slate-700">⚪ Neutrons (n⁰)</span>
+              <span className="text-[8px] text-slate-500">Mass: 1 | Charge: 0</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setNeutrons(Math.max(0, neutrons - 1))} className="w-8 h-8 rounded-full bg-white border border-slate-300 flex items-center justify-center font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer">-</button>
+              <span className="font-mono font-black text-sm text-slate-800 w-4 text-center">{neutrons}</span>
+              <button onClick={() => setNeutrons(Math.min(10, neutrons + 1))} className="w-8 h-8 rounded-full bg-white border border-slate-300 flex items-center justify-center font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer">+</button>
+            </div>
+          </div>
+
+          {/* Electrons Control */}
+          <div className="flex items-center justify-between p-2.5 bg-sky-50/30 border border-sky-100 rounded-xl">
+            <div className="flex flex-col">
+              <span className="text-xs font-extrabold text-sky-700">🔵 Electrons (e⁻)</span>
+              <span className="text-[8px] text-sky-500">Mass: 0 | Charge: -1</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setElectrons(Math.max(0, electrons - 1))} className="w-8 h-8 rounded-full bg-white border border-sky-200 flex items-center justify-center font-bold text-sky-600 hover:bg-sky-50 transition cursor-pointer">-</button>
+              <span className="font-mono font-black text-sm text-sky-800 w-4 text-center">{electrons}</span>
+              <button onClick={() => setElectrons(Math.min(10, electrons + 1))} className="w-8 h-8 rounded-full bg-white border border-sky-200 flex items-center justify-center font-bold text-sky-600 hover:bg-sky-50 transition cursor-pointer">+</button>
+            </div>
+          </div>
+
+          <button onClick={handleReset} className="w-full py-2.5 text-xs font-extrabold text-slate-700 bg-slate-100 border border-slate-200 hover:bg-slate-200 rounded-xl transition cursor-pointer">
+            🔄 Reset Atom
+          </button>
+        </div>
+
+        {/* Orbit Visualization Column */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-150 flex flex-col items-center justify-center relative min-h-60 shadow-xs">
+          <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest absolute top-3 left-4">Atomic Orbit Model</span>
+          
+          <div className="relative w-44 h-44 flex items-center justify-center">
+            {/* Orbit Shell 1 */}
+            <div className="absolute w-28 h-28 rounded-full border-2 border-dashed border-sky-200 animate-spin" style={{ animationDuration: "12s" }}>
+              {/* Electron on Shell 1 */}
+              {electrons > 0 && <div className="absolute top-0 left-1/2 -ml-1.5 -mt-1.5 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
+              {electrons > 1 && <div className="absolute bottom-0 left-1/2 -ml-1.5 -mb-1.5 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
+            </div>
+
+            {/* Orbit Shell 2 */}
+            <div className="absolute w-44 h-44 rounded-full border-2 border-dashed border-sky-100 animate-spin" style={{ animationDuration: "25s" }}>
+              {electrons > 2 && <div className="absolute top-4 left-4 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
+              {electrons > 3 && <div className="absolute top-4 right-4 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
+              {electrons > 4 && <div className="absolute bottom-4 left-4 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
+              {electrons > 5 && <div className="absolute bottom-4 right-4 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
+              {electrons > 6 && <div className="absolute top-1/2 right-0 -mr-1.5 -mt-1.5 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
+              {electrons > 7 && <div className="absolute top-1/2 left-0 -ml-1.5 -mt-1.5 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
+            </div>
+
+            {/* Nucleus Compound */}
+            <div className="w-12 h-12 rounded-full bg-rose-50 border border-orange-250 flex flex-wrap items-center justify-center gap-0.5 p-1 z-10 shadow-md">
+              {protons === 0 && neutrons === 0 && <span className="text-[8px] font-black text-slate-400">Empty</span>}
+              {Array.from({ length: Math.min(6, protons) }).map((_, i) => (
+                <div key={i} className="w-2.5 h-2.5 rounded-full bg-orange-500 border border-white text-[5px] text-white font-bold flex items-center justify-center select-none">+</div>
+              ))}
+              {Array.from({ length: Math.min(6, neutrons) }).map((_, i) => (
+                <div key={i} className="w-2.5 h-2.5 rounded-full bg-slate-400 border border-white text-[5px] text-white font-bold flex items-center justify-center select-none">0</div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Element Info Output Column */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-150 flex flex-col justify-between shadow-xs">
+          <div className="space-y-3">
+            <span className="text-xs font-black uppercase text-slate-600 tracking-wider block border-b border-slate-100 pb-1">2. Identified Element</span>
+            
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-teal-500 border-2 border-teal-600 flex flex-col items-center justify-center text-white font-black shadow-md">
+                <span className="text-xs leading-none font-mono">{protons}</span>
+                <span className="text-2xl leading-none">{currentElement.symbol}</span>
+              </div>
+              <div>
+                <h4 className="font-extrabold text-sm text-slate-800">{currentElement.name}</h4>
+                <p className="text-[10px] text-slate-500 leading-normal">{currentElement.desc}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-slate-100 grid grid-cols-2 gap-2 mt-4">
+            <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl text-center">
+              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Mass Number (p + n)</span>
+              <span className="text-base font-black text-slate-700 font-mono">{totalMass}</span>
+            </div>
+            <div className={`border p-2.5 rounded-xl text-center ${netCharge > 0 ? "bg-orange-50/10 border-orange-200 text-orange-700" : netCharge < 0 ? "bg-sky-50/10 border-sky-200 text-sky-700" : "bg-emerald-50/10 border-emerald-200 text-emerald-700"}`}>
+              <span className="text-[8px] font-bold opacity-75 uppercase tracking-widest block mb-0.5">Net Charge</span>
+              <span className="text-base font-black font-mono">{netCharge > 0 ? `+${netCharge}` : netCharge}</span>
+              <span className="text-[8px] font-semibold block">{netCharge > 0 ? "Positive Ion" : netCharge < 0 ? "Negative Ion" : "Neutral Atom"}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function SocialScienceVisualLab({ chapterId }: { chapterId?: string }) {
+  if (chapterId === "g6_soc_locating_places" || chapterId?.includes("locating")) {
+    return <LocatingPlacesVisualLab />;
+  }
+  if (chapterId === "g6_soc_motions_earth" || chapterId?.includes("motion")) {
+    return <MotionsEarthVisualLab />;
+  }
+  if (chapterId === "g6_soc_timeline_sources" || chapterId?.includes("timeline")) {
+    return <TimelineSourcesVisualLab />;
+  }
+  if (chapterId === "g6_soc_earliest_cities" || chapterId?.includes("city") || chapterId?.includes("harappan")) {
+    return <EarliestCitiesVisualLab />;
+  }
+  if (chapterId === "g6_soc_value_of_work" || chapterId?.includes("value") || chapterId?.includes("work")) {
+    return <ValueOfWorkVisualLab />;
+  }
+  if (chapterId === "g6_soc_government_diversity" || chapterId?.includes("government") || chapterId?.includes("diversity")) {
+    return <GovernmentDiversityVisualLab />;
+  }
+  if (chapterId === "g1_evs_computer" || chapterId?.includes("computer")) {
+    return <EvsComputerVisualLab />;
+  }
+  if (chapterId === "g1_evs_family" || chapterId?.includes("family")) {
+    return <EvsFamilyVisualLab />;
+  }
+  if (chapterId === "g1_evs_animals" || chapterId?.includes("animal")) {
+    return <EvsAnimalsVisualLab />;
+  }
+  if (chapterId === "g1_evs_seasons" || chapterId?.includes("season")) {
+    return <EvsSeasonsVisualLab />;
+  }
+  if (chapterId === "g9_physical_features" || chapterId?.includes("physical")) {
+    return <PhysicalGeographyVisualLab />;
+  }
+  if (chapterId === "g9_democracy" || chapterId?.includes("democracy")) {
+    return <DemocracyVisualLab />;
+  }
+  return <FrenchRevolutionVisualLab />;
+}
+
+export function EvsComputerVisualLab() {
+  const [activePart, setActivePart] = useState<"monitor" | "cpu" | "keyboard" | "mouse" | "printer" | "speakers">("monitor");
+  const [monitorMode, setMonitorMode] = useState<"typing" | "drawing" | "math" | "video">("typing");
+  const [typedText, setTypedText] = useState<string>("WELCOME TO COMPUTER CLASS! 💻");
+  const [drawingStars, setDrawingStars] = useState<{ x: number; y: number; color: string }[]>([]);
+  const [isPrinted, setIsPrinted] = useState<boolean>(false);
+
+  const keyRows = [
+    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+    ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+    ["Z", "X", "C", "V", "B", "N", "M", "1", "2", "3"]
+  ];
+
+  const handleKeyPress = (char: string) => {
+    setMonitorMode("typing");
+    setTypedText(prev => (prev.length > 35 ? char : prev + char));
+  };
+
+  const handleBackspace = () => {
+    setTypedText(prev => prev.slice(0, -1));
+  };
+
+  const handleAddStar = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const colors = ["#f59e0b", "#ec4899", "#3b82f6", "#10b981", "#8b5cf6"];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    setDrawingStars(prev => [...prev, { x, y, color: randomColor }]);
+  };
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="evs_computer_explorer">
+      {/* Header */}
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800">💻 EVS Chapter 4: Computer - A Smart Machine Visual Explorer</h3>
+          <p className="text-xs text-slate-500">Click computer parts to test Monitor 🖥️, CPU 🧠, Keyboard ⌨️, Mouse 🖱️, Printer 🖨️ & Speakers 🔊 interactively!</p>
+        </div>
+        <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full uppercase font-mono">Computer Workbench</span>
+      </div>
+
+      {/* Main Interactive Workbench */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Computer Parts Selector Column */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-150 shadow-xs space-y-3">
+          <span className="text-xs font-black uppercase text-slate-500 tracking-wider block">1. Click a Computer Part to Test</span>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { id: "monitor", name: "Monitor 🖥️", desc: "TV Screen for display" },
+              { id: "cpu", name: "CPU 🧠", desc: "Brain of Computer" },
+              { id: "keyboard", name: "Keyboard ⌨️", desc: "Type letters & numbers" },
+              { id: "mouse", name: "Mouse 🖱️", desc: "Point, click & draw" },
+              { id: "printer", name: "Printer 🖨️", desc: "Prints on real paper" },
+              { id: "speakers", name: "Speakers 🔊", desc: "Plays music & sounds" }
+            ].map(part => (
+              <button
+                key={part.id}
+                onClick={() => setActivePart(part.id as any)}
+                className={`p-3 rounded-xl border transition cursor-pointer text-left ${
+                  activePart === part.id
+                    ? "bg-indigo-600 border-indigo-700 text-white shadow-md font-bold"
+                    : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-indigo-50 hover:border-indigo-200"
+                }`}
+              >
+                <span className="block text-xs font-black">{part.name}</span>
+                <span className={`block text-[9px] mt-0.5 ${activePart === part.id ? "text-indigo-100" : "text-slate-500"}`}>{part.desc}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Active Part Info Box */}
+          <div className="mt-4 p-4 rounded-xl bg-indigo-50/60 border border-indigo-100 space-y-1.5">
+            <span className="text-[10px] font-black uppercase text-indigo-600 tracking-wider">Hardware Function</span>
+            <h4 className="text-xs font-black text-indigo-950">
+              {activePart === "monitor" && "🖥️ Monitor: Displays images, video, math, and your live typing like a smart TV!"}
+              {activePart === "cpu" && "🧠 CPU (Central Processing Unit): Processes all instructions fast and makes smart decisions!"}
+              {activePart === "keyboard" && "⌨️ Keyboard: Contains buttons called keys to type words, numbers, and symbols!"}
+              {activePart === "mouse" && "🖱️ Mouse: Handheld pointer device with left & right click buttons!"}
+              {activePart === "printer" && "🖨️ Printer: Converts soft copy on screen to hard copy printed paper!"}
+              {activePart === "speakers" && "🔊 Speakers: Output device that produces sound effects, audio stories, and music!"}
+            </h4>
+          </div>
+        </div>
+
+        {/* Live Computer Screen Simulation (Monitor) */}
+        <div className="lg:col-span-2 bg-slate-900 rounded-3xl p-5 border-4 border-slate-700 shadow-xl flex flex-col justify-between relative overflow-hidden min-h-[320px]">
+          {/* Top Monitor Bezel Bar */}
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-red-500"></div>
+              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+              <span className="text-[10px] font-mono font-bold text-slate-400 ml-2">Smart Monitor v1.0 [Screen Mode: {monitorMode.toUpperCase()}]</span>
+            </div>
+            
+            {/* Monitor Screen Mode Switches */}
+            <div className="flex gap-1">
+              <button onClick={() => setMonitorMode("typing")} className={`px-2 py-0.5 rounded text-[9px] font-bold cursor-pointer ${monitorMode === "typing" ? "bg-indigo-500 text-white" : "bg-slate-800 text-slate-400"}`}>📝 Typing</button>
+              <button onClick={() => setMonitorMode("drawing")} className={`px-2 py-0.5 rounded text-[9px] font-bold cursor-pointer ${monitorMode === "drawing" ? "bg-indigo-500 text-white" : "bg-slate-800 text-slate-400"}`}>🎨 Draw</button>
+              <button onClick={() => setMonitorMode("math")} className={`px-2 py-0.5 rounded text-[9px] font-bold cursor-pointer ${monitorMode === "math" ? "bg-indigo-500 text-white" : "bg-slate-800 text-slate-400"}`}>🔢 Math</button>
+              <button onClick={() => setMonitorMode("video")} className={`px-2 py-0.5 rounded text-[9px] font-bold cursor-pointer ${monitorMode === "video" ? "bg-indigo-500 text-white" : "bg-slate-800 text-slate-400"}`}>🎬 Video</button>
+            </div>
+          </div>
+
+          {/* Screen Content Area */}
+          <div className="flex-1 bg-slate-950 rounded-2xl border border-slate-800 p-4 flex flex-col items-center justify-center relative overflow-hidden min-h-[160px]">
+            {monitorMode === "typing" && (
+              <div className="w-full h-full flex flex-col items-center justify-center space-y-3 text-center">
+                <span className="text-4xl animate-bounce">🖥️</span>
+                <div className="bg-slate-900/90 border border-indigo-500/50 p-4 rounded-xl max-w-md w-full shadow-lg">
+                  <span className="text-[9px] uppercase font-mono font-bold text-indigo-400 block mb-1">Virtual Monitor Screen:</span>
+                  <p className="text-lg font-mono font-black text-emerald-400 tracking-wide break-all min-h-[30px]">
+                    {typedText || "< Type on Keyboard below >"}
+                    <span className="animate-ping">|</span>
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {monitorMode === "drawing" && (
+              <div 
+                onClick={handleAddStar}
+                className="w-full h-full bg-slate-900 rounded-xl border border-dashed border-indigo-500/40 relative cursor-crosshair flex flex-col items-center justify-center select-none min-h-[140px]"
+              >
+                <span className="text-[10px] text-slate-400 font-mono mb-2">🖱️ Click anywhere on screen to draw colorful stars! ({drawingStars.length} stars)</span>
+                {drawingStars.map((s, idx) => (
+                  <span key={idx} className="absolute text-xl animate-pulse" style={{ left: s.x - 10, top: s.y - 10, color: s.color }}>⭐</span>
+                ))}
+                {drawingStars.length === 0 && <span className="text-3xl opacity-30">🎨</span>}
+              </div>
+            )}
+
+            {monitorMode === "math" && (
+              <div className="text-center space-y-2 animate-fade-in">
+                <span className="text-3xl">🧠 ⚡</span>
+                <h4 className="text-base font-mono font-black text-amber-400">CPU Math Processing:</h4>
+                <div className="bg-slate-900 border border-amber-500/40 p-3 rounded-xl font-mono text-white text-xs space-y-1">
+                  <p>12 + 8 = <span className="text-emerald-400 font-bold">20</span> ✅</p>
+                  <p>100 ÷ 5 = <span className="text-emerald-400 font-bold">20</span> ✅</p>
+                  <p className="text-[9px] text-slate-400">Calculated in 0.00001 seconds! Never tires!</p>
+                </div>
+              </div>
+            )}
+
+            {monitorMode === "video" && (
+              <div className="text-center space-y-2 animate-fade-in">
+                <span className="text-4xl animate-pulse">🎬</span>
+                <p className="text-xs font-bold text-sky-300">Playing Educational Cartoon Video...</p>
+                <p className="text-[10px] font-mono text-slate-400">"Computers are electro-mechanical smart machines!"</p>
+              </div>
+            )}
+          </div>
+
+          {/* Interactive Input Hardware Panel */}
+          <div className="mt-3 pt-3 border-t border-slate-800 space-y-2">
+            {(activePart === "keyboard" || monitorMode === "typing") && (
+              <div className="space-y-1.5 bg-slate-900 p-2 rounded-xl border border-slate-800">
+                <div className="flex justify-between items-center text-[10px] text-slate-400 font-mono">
+                  <span>⌨️ Virtual Keyboard Keys:</span>
+                  <button onClick={() => setTypedText("")} className="text-rose-400 hover:underline cursor-pointer">Clear Screen</button>
+                </div>
+                <div className="flex flex-col gap-1 items-center">
+                  {keyRows.map((row, rIdx) => (
+                    <div key={rIdx} className="flex gap-1 justify-center">
+                      {row.map(k => (
+                        <button
+                          key={k}
+                          onClick={() => handleKeyPress(k)}
+                          className="w-6 h-6 sm:w-7 sm:h-7 rounded bg-slate-800 hover:bg-indigo-600 text-white font-mono font-black text-xs border border-slate-700 active:scale-95 cursor-pointer shadow-xs"
+                        >
+                          {k}
+                        </button>
+                      ))}
+                    </div>
+                  ))}
+                  <div className="flex gap-1 mt-0.5">
+                    <button onClick={() => handleKeyPress(" ")} className="px-6 py-1 rounded bg-slate-800 hover:bg-indigo-600 text-white text-[10px] font-mono font-bold border border-slate-700 cursor-pointer">SPACE</button>
+                    <button onClick={handleBackspace} className="px-3 py-1 rounded bg-rose-900/80 hover:bg-rose-700 text-white text-[10px] font-mono font-bold border border-rose-800 cursor-pointer">⌫ BACK</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activePart === "printer" && (
+              <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold text-white block">🖨️ Printer Hardware:</span>
+                  <p className="text-[10px] text-slate-400">Print current Monitor screen onto real paper!</p>
+                </div>
+                <button
+                  onClick={() => setIsPrinted(true)}
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold rounded-lg shadow-sm cursor-pointer"
+                >
+                  📄 Print Page
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Printed Paper Modal Notification */}
+      {isPrinted && (
+        <div className="bg-amber-50 border-2 border-amber-300 p-4 rounded-2xl flex items-center justify-between animate-fade-in shadow-md">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl animate-bounce">📄</span>
+            <div>
+              <h4 className="text-xs font-black text-amber-900">Printed Page Output:</h4>
+              <p className="text-[11px] font-bold text-amber-800 font-mono">"{typedText || "Computer Lesson Worksheet"}"</p>
+            </div>
+          </div>
+          <button onClick={() => setIsPrinted(false)} className="text-xs font-bold text-amber-700 bg-amber-200 px-3 py-1 rounded-lg cursor-pointer">Close</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function EvsFamilyVisualLab() {
+  const [selectedRole, setSelectedRole] = useState<string>("father");
+  const familyMembers = [
+    { id: "grandfather", name: "Grandfather 👴", role: "Tells wise stories & goes on morning walks" },
+    { id: "grandmother", name: "Grandmother 👵", role: "Teaches good values & prepares delicious snacks" },
+    { id: "father", name: "Father 👨", role: "Works hard, helps with school homework & buys toys" },
+    { id: "mother", name: "Mother 👩", role: "Cooks healthy food, cares for family & guides learning" },
+    { id: "children", name: "Brother & Sister 👦👧", role: "Play games together, share books & keep home tidy" }
+  ];
+
+  const current = familyMembers.find(m => m.id === selectedRole) || familyMembers[2];
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800">👨‍👩‍👧‍👦 EVS Chapter 1: My Family & Home Visual Explorer</h3>
+          <p className="text-xs text-slate-500">Explore family members, relations, and how family members love and help each other!</p>
+        </div>
+        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full uppercase font-mono">Family Tree</span>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl border border-slate-150 shadow-xs space-y-5">
+        <span className="text-xs font-black uppercase text-slate-500 tracking-wider block">Click a Family Member on the Tree</span>
+        
+        <div className="flex flex-wrap justify-center gap-3">
+          {familyMembers.map(m => (
+            <button
+              key={m.id}
+              onClick={() => setSelectedRole(m.id)}
+              className={`py-3 px-4 rounded-2xl border-2 transition cursor-pointer font-bold text-xs ${
+                selectedRole === m.id
+                  ? "bg-emerald-600 border-emerald-700 text-white shadow-md scale-105"
+                  : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-emerald-50"
+              }`}
+            >
+              {m.name}
+            </button>
+          ))}
+        </div>
+
+        <div className="bg-emerald-50/60 p-5 rounded-2xl border border-emerald-200 text-center space-y-2 animate-fade-in">
+          <span className="text-5xl block">{current.name.split(" ")[1]}</span>
+          <h4 className="text-sm font-black text-emerald-950">{current.name}</h4>
+          <p className="text-xs font-bold text-emerald-800 max-w-md mx-auto">{current.role}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function EvsAnimalsVisualLab() {
+  const [habitat, setHabitat] = useState<"jungle" | "farm" | "water">("jungle");
+  const animals = {
+    jungle: [
+      { name: "Lion 🦁", sound: "Roar!", type: "Wild Animal", food: "Meat (Carnivore)" },
+      { name: "Elephant 🐘", sound: "Trumpet!", type: "Wild Animal", food: "Leaves & Sugarcane (Herbivore)" }
+    ],
+    farm: [
+      { name: "Cow 🐄", sound: "Moo!", type: "Domestic Animal", food: "Grass & Hay (Gives Milk 🥛)" },
+      { name: "Dog 🐶", sound: "Woof!", type: "Pet Animal", food: "Pedigree & Biscuits (Guards House)" }
+    ],
+    water: [
+      { name: "Fish 🐟", sound: "Blub!", type: "Water Animal", food: "Small Plankton" },
+      { name: "Dolphin 🐬", sound: "Click-Click!", type: "Water Animal", food: "Small Fish" }
+    ]
+  };
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800">🐾 EVS Chapter 2: Animals Around Us Visual Explorer</h3>
+          <p className="text-xs text-slate-500">Discover animal habitats, wild vs domestic animals, sounds, and food habits!</p>
+        </div>
+        <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-3 py-1 rounded-full uppercase font-mono">Animal Kingdom</span>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl border border-slate-150 shadow-xs space-y-5">
+        <div className="flex justify-center gap-2">
+          {(["jungle", "farm", "water"] as const).map(h => (
+            <button
+              key={h}
+              onClick={() => setHabitat(h)}
+              className={`py-2 px-4 rounded-xl font-black text-xs border-2 transition cursor-pointer capitalize ${
+                habitat === h
+                  ? "bg-amber-500 border-amber-600 text-white shadow-sm"
+                  : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-amber-50"
+              }`}
+            >
+              {h === "jungle" ? "🌳 Jungle (Wild)" : h === "farm" ? "🚜 Farm (Domestic)" : "🌊 Water"}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {animals[habitat].map((item, idx) => (
+            <div key={idx} className="bg-amber-50/50 p-4 rounded-2xl border border-amber-200 flex items-center gap-4">
+              <span className="text-4xl">{item.name.split(" ")[1]}</span>
+              <div>
+                <h4 className="font-black text-xs text-amber-950">{item.name}</h4>
+                <p className="text-[10px] font-bold text-amber-800">Sound: "{item.sound}"</p>
+                <p className="text-[9px] text-slate-500">Category: {item.type} | Food: {item.food}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function EvsSeasonsVisualLab() {
+  const [season, setSeason] = useState<"summer" | "rainy" | "winter">("summer");
+  const seasonData = {
+    summer: { icon: "☀️", name: "Summer Season", wear: "Light Cotton Clothes 👕", eat: "Ice Creams & Mango Juice 🍦🥭", desc: "Days are hot and sunny!" },
+    rainy: { icon: "🌧️", name: "Rainy Season (Monsoon)", wear: "Raincoat & Umbrella 🧥☂️", eat: "Hot Soup & Corn 🌽", desc: "Clouds rain water to fill lakes!" },
+    winter: { icon: "❄️", name: "Winter Season", wear: "Woolen Sweater & Cap 🧶", eat: "Warm Milk & Dry Fruits 🥛", desc: "Days are cold and chilly!" }
+  };
+
+  const curr = seasonData[season];
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800">🌤️ EVS Chapter 3: Seasons & Weather Visual Explorer</h3>
+          <p className="text-xs text-slate-500">Learn about Summer, Rainy, and Winter seasons, clothing, and weather conditions!</p>
+        </div>
+        <span className="text-[10px] font-bold text-sky-600 bg-sky-50 border border-sky-100 px-3 py-1 rounded-full uppercase font-mono">Seasons Lab</span>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl border border-slate-150 shadow-xs space-y-5">
+        <div className="flex justify-center gap-2">
+          {(["summer", "rainy", "winter"] as const).map(s => (
+            <button
+              key={s}
+              onClick={() => setSeason(s)}
+              className={`py-2 px-4 rounded-xl font-black text-xs border-2 transition cursor-pointer capitalize ${
+                season === s
+                  ? "bg-sky-600 border-sky-700 text-white shadow-sm"
+                  : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-sky-50"
+              }`}
+            >
+              {seasonData[s].icon} {s}
+            </button>
+          ))}
+        </div>
+
+        <div className="bg-sky-50/60 p-5 rounded-2xl border border-sky-200 text-center space-y-3 animate-fade-in">
+          <span className="text-5xl block animate-pulse">{curr.icon}</span>
+          <h4 className="text-sm font-black text-sky-950">{curr.name}</h4>
+          <p className="text-xs text-slate-600">{curr.desc}</p>
+          <div className="flex justify-center gap-4 text-xs font-bold text-sky-900 pt-2 border-t border-sky-200">
+            <span>👕 Clothes: {curr.wear}</span>
+            <span>🍲 Food: {curr.eat}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function PhysicalGeographyVisualLab() {
+  const [activeFeature, setActiveFeature] = useState<number>(0);
+  const features = [
+    { title: "Himalayan Mountain Range 🏔️", desc: "Young fold mountains stretching across northern India with snow peaks like Mount Everest.", key: "Great Himalayas, Himachal, Shiwalik" },
+    { title: "Northern River Plains 🌾", desc: "Fertile alluvial plains formed by Indus, Ganga, and Brahmaputra rivers.", key: "Bhabar, Terai, Bhangar, Khadar" },
+    { title: "Peninsular Plateau ⛰️", desc: "Ancient crystalline triangular landmass composed of Central Highlands and Deccan Plateau.", key: "Western Ghats, Eastern Ghats" },
+    { title: "Thar Indian Desert 🏜️", desc: "Arid land with sand dunes and low vegetation in western Rajasthan.", key: "Barchans, Luni River" }
+  ];
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800">🏔️ Physical Features of India Visual Explorer</h3>
+          <p className="text-xs text-slate-500">Interactive geography landform sandbox: Mountains, Plains, Plateaus, Deserts!</p>
+        </div>
+        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full uppercase font-mono">Geography Lab</span>
+      </div>
+
+      <div className="bg-white p-5 rounded-2xl border border-slate-150 space-y-4">
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {features.map((f, idx) => (
+            <button
+              key={idx}
+              onClick={() => setActiveFeature(idx)}
+              className={`py-2 px-3 rounded-xl text-xs font-black whitespace-nowrap border transition cursor-pointer ${
+                activeFeature === idx ? "bg-emerald-600 text-white border-emerald-700 shadow-sm" : "bg-slate-50 border-slate-200 text-slate-700"
+              }`}
+            >
+              {f.title.split(" ")[0]} {f.title.split(" ")[1]}
+            </button>
+          ))}
+        </div>
+
+        <div className="p-5 rounded-2xl bg-emerald-50/50 border border-emerald-200 space-y-2 animate-fade-in">
+          <h4 className="text-sm font-extrabold text-emerald-950">{features[activeFeature].title}</h4>
+          <p className="text-xs font-medium text-slate-700">{features[activeFeature].desc}</p>
+          <p className="text-[10px] font-mono text-emerald-800">Key Terms: {features[activeFeature].key}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function DemocracyVisualLab() {
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800">🗳️ Democratic Rights & Governance Visual Explorer</h3>
+          <p className="text-xs text-slate-500">Explore the 3 pillars of Democracy: Legislature 📜, Executive 🏛️, Judiciary ⚖️!</p>
+        </div>
+        <span className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1 rounded-full uppercase font-mono">Civics Lab</span>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-1.5 text-center">
+          <span className="text-4xl block">📜</span>
+          <h4 className="font-black text-xs text-slate-800">1. Legislature</h4>
+          <p className="text-[10px] text-slate-500">Parliament (Lok Sabha & Rajya Sabha) makes new laws for citizens.</p>
+        </div>
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-1.5 text-center">
+          <span className="text-4xl block">🏛️</span>
+          <h4 className="font-black text-xs text-slate-800">2. Executive</h4>
+          <p className="text-[10px] text-slate-500">Prime Minister & Ministers execute laws and run government administration.</p>
+        </div>
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-1.5 text-center">
+          <span className="text-4xl block">⚖️</span>
+          <h4 className="font-black text-xs text-slate-800">3. Judiciary</h4>
+          <p className="text-[10px] text-slate-500">Supreme Court & High Courts protect Fundamental Rights and deliver justice.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function FrenchRevolutionVisualLab() {
+  const [activeTimelineIdx, setActiveTimelineIdx] = useState<number>(0);
+  const timelineEvents = [
+    { year: "1789", title: "The Outbreak of the Revolution", desc: "The French Revolution began with the storming of the Bastille on July 14, 1789, protesting against absolute royal oppression.", details: "Estate General meetings, Tennis Court Oath, and the formation of National Assembly.", emoji: "🏰" },
+    { year: "1791", title: "The Constitutional Monarchy", desc: "The National Assembly completed the draft of the constitution to limit the powers of the monarch, giving power to citizens.", details: "Citizens grouped into active/passive voters. Declaration of Rights of Man and Citizen.", emoji: "📜" },
+    { year: "1792", title: "France Becomes a Republic", desc: "The newly elected assembly, called the Convention, abolished the monarchy and declared France a republic.", details: "King Louis XVI was sentenced to death on charges of treason.", emoji: "⚖️" },
+    { year: "1793", title: "The Reign of Terror", desc: "Robespierre followed a policy of severe control and punishment, executing all perceived enemies with the guillotine.", details: "Maximum ceilings on wages/prices, rationing of bread, and severe strictness.", emoji: "⚡" },
+    { year: "1799", title: "Rise of Napoleon Bonaparte", desc: "After the fall of the Jacobins directory, political instability paved the way for the rise of military dictator Napoleon.", details: "He introduced progressive laws like protection of private property and uniform system of weights.", emoji: "🏇" }
+  ];
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800">🌍 Social Science Lab: History Timeline Explorer</h3>
+          <p className="text-xs text-slate-500">Trace key historic revolutions, milestones, and physical geographical structures interactively!</p>
+        </div>
+        <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full uppercase font-mono">Timeline Sandbox</span>
+      </div>
+
+      <div className="bg-white p-5 rounded-2xl border border-slate-150 shadow-xs flex flex-col gap-6">
+        <span className="text-xs font-black uppercase text-slate-600 tracking-wider block border-b border-slate-100 pb-1">French Revolution Milestones (Class 9 History)</span>
+        
+        <div className="relative flex items-center justify-between px-6 py-4 bg-slate-50 rounded-xl border border-slate-200 overflow-x-auto gap-4">
+          <div className="absolute left-6 right-6 h-1 bg-slate-300 top-1/2 -translate-y-1/2 -z-0"></div>
+          {timelineEvents.map((evt, idx) => (
+            <button
+              key={evt.year}
+              onClick={() => setActiveTimelineIdx(idx)}
+              className={`relative z-10 flex flex-col items-center gap-1.5 focus:outline-none cursor-pointer transition ${
+                activeTimelineIdx === idx ? "scale-110" : "opacity-75 hover:opacity-100"
+              }`}
+            >
+              <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center text-xl shadow-md ${
+                activeTimelineIdx === idx 
+                  ? "bg-indigo-600 border-indigo-700 text-white font-black" 
+                  : "bg-white border-slate-300 text-slate-700"
+              }`}>
+                {evt.emoji}
+              </div>
+              <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                activeTimelineIdx === idx ? "bg-indigo-100 text-indigo-700 font-black" : "bg-slate-200 text-slate-600"
+              }`}>{evt.year}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="bg-slate-50/50 p-5 rounded-2xl border border-slate-150 flex flex-col md:flex-row gap-5 items-center animate-fade-in" key={activeTimelineIdx}>
+          <div className="text-5xl shrink-0 p-4 bg-white border border-slate-200 rounded-3xl shadow-sm select-none">
+            {timelineEvents[activeTimelineIdx].emoji}
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-full font-mono">{timelineEvents[activeTimelineIdx].year}</span>
+              <h4 className="font-extrabold text-sm text-slate-800">{timelineEvents[activeTimelineIdx].title}</h4>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">{timelineEvents[activeTimelineIdx].desc}</p>
+            <p className="text-[10px] text-slate-400 italic leading-normal">Key associations: {timelineEvents[activeTimelineIdx].details}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function LanguageVisualLab({ chapterId, subject }: { chapterId?: string; subject?: string }) {
+  if (subject === "hindi" || chapterId?.startsWith("g1_hin_")) {
+    return <HindiLanguageLab chapterId={chapterId} />;
+  }
+  if (subject === "english" || chapterId?.startsWith("g1_eng_")) {
+    return <EnglishLanguageLab chapterId={chapterId} />;
+  }
+  return <TeluguLanguageLab chapterId={chapterId} />;
+}
+
+export function TeluguLanguageLab({ chapterId }: { chapterId?: string }) {
+  const [activeTab, setActiveTab] = useState<"guninthalu" | "ottulu" | "builder">(
+    chapterId === "g1_tel_guninthalu" ? "guninthalu" : chapterId === "g1_tel_ottulu" ? "ottulu" : "builder"
+  );
+
+  // Guninthalu state
+  const [baseConsonant, setBaseConsonant] = useState<string>("క");
+  const guninthaluList = [
+    { name: "తలకట్టు", en: "Thalakattu", symbol: "ౕ", exp: "అ (A)", form: (c: string) => c, sample: "కల 🖊️" },
+    { name: "దీర్ఘము", en: "Dheergamu", symbol: "ా", exp: "ఆ (Aa)", form: (c: string) => c + "ా", sample: "కాకి 🐦" },
+    { name: "గుడి", en: "Gudi", symbol: "ి", exp: "ఇ (I)", form: (c: string) => c === "క" ? "కి" : c + "ి", sample: "కిటికి 🪟" },
+    { name: "గుడి దీర్ఘము", en: "Gudi Dheergamu", symbol: "ీ", exp: "ఈ (Ee)", form: (c: string) => c === "క" ? "కీ" : c + "ీ", sample: "కీలు 🔑" },
+    { name: "కొమ్ము", en: "Kommu", symbol: "ు", exp: "ఉ (U)", form: (c: string) => c === "క" ? "కు" : c + "ు", sample: "కుక్క 🐶" },
+    { name: "కొమ్ము దీర్ఘము", en: "Kommu Dheergamu", symbol: "ూ", exp: "ఊ (Oo)", form: (c: string) => c === "క" ? "కూ" : c + "ూ", sample: "కూర 🍲" },
+    { name: "రుత్వము / వట్రసుడి", en: "Vatrasudi", symbol: "ృ", exp: "ఋ (Ru)", form: (c: string) => c + "ృ", sample: "కృషి 🌾" },
+    { name: "రుత్వదీర్ఘము", en: "Vatrasudi Dheergamu", symbol: "ౄ", exp: "ౠ (Roo)", form: (c: string) => c + "ౄ", sample: "కౄరుడు 🦁" },
+    { name: "ఎత్వము", en: "Etvamu", symbol: "ె", exp: "ఎ (E)", form: (c: string) => c + "ె", sample: "కెరటం 🌊" },
+    { name: "ఏత్వము / ఎత్వదీర్ఘము", en: "Etva Dheergamu", symbol: "ే", exp: "ఏ (Ee)", form: (c: string) => c + "ే", sample: "కేకు 🍰" },
+    { name: "ఐత్వము", en: "Aitvamu", symbol: "ై", exp: "ఐ (Ai)", form: (c: string) => c + "ై", sample: "కైక 👸" },
+    { name: "ఒత్వము", en: "Otvamu", symbol: "ొ", exp: "ఒ (O)", form: (c: string) => c + "ొ", sample: "కొడుకు 👦" },
+    { name: "ఓత్వము / ఒత్వదీర్ఘము", en: "Otva Dheergamu", symbol: "ో", exp: "ఓ (Oo)", form: (c: string) => c + "ో", sample: "కోట 🏰" },
+    { name: "ఔత్వము", en: "Autvamu", symbol: "ౌ", exp: "ఔ (Au)", form: (c: string) => c + "ౌ", sample: "కౌముది 🌕" },
+    { name: "సున్నా", en: "Sunna (Am)", symbol: "ం", exp: "అం (Am)", form: (c: string) => c + "ం", sample: "కంకణం 💍" },
+    { name: "విసర్గ", en: "Visarga (Aha)", symbol: "ః", exp: "అః (Aha)", form: (c: string) => c + "ః", sample: "దుఃఖం 😢" }
+  ];
+
+  // Ottulu state
+  const ottuluList = [
+    { letter: "క", ottu: "్క", name: "క-ఒత్తు", word: "అక్క 👧", meaning: "Elder Sister", image: "👧" },
+    { letter: "గ", ottu: "్గ", name: "గ-ఒత్తు", word: "ముగ్గు 🎨", meaning: "Rangoli / Pattern", image: "🎨" },
+    { letter: "చ", ottu: "్చ", name: "చ-ఒత్తు", word: "మచ్చ 🪞", meaning: "Mark / Spot", image: "🪞" },
+    { letter: "ట", ottu: "్ట", name: "ట-ఒత్తు", word: "చెట్టు 🌳", meaning: "Tree", image: "🌳" },
+    { letter: "త", ottu: "్త", name: "త-ఒత్తు", word: "అత్త 👵", meaning: "Aunt", image: "👵" },
+    { letter: "ప", ottu: "్ప", name: "ప-ఒత్తు", word: "అప్ప 🥟", meaning: "Snack / Elder Brother", image: "🥟" },
+    { letter: "మ", ottu: "్మ", name: "మ-ఒత్తు", word: "అమ్మ 👩‍🍼", meaning: "Mother", image: "👩‍🍼" },
+    { letter: "ల", ottu: "్ల", name: "ల-ఒత్తు", word: "పిల్లి 🐱", meaning: "Cat", image: "🐱" },
+    { letter: "వ", ottu: "్వ", name: "వ-ఒత్తు", word: "పువ్వు 🌸", meaning: "Flower", image: "🌸" }
+  ];
+  const [selectedOttuIdx, setSelectedOttuIdx] = useState<number>(0);
+
+  // Builder state
+  const [roundIdx, setRoundIdx] = useState<number>(0);
+  const [userSelectedIdxs, setUserSelectedIdxs] = useState<number[]>([]);
+  const [msg, setMsg] = useState<{ type: "success" | "error", text: string } | null>(null);
+
+  const rounds = [
+    {
+      word: "అమ్మ",
+      definition: "Mother (The source of absolute love)",
+      letters: ["అ", "మ్మ", "క", "ల"],
+      correctOrder: [0, 1],
+      image: "👩‍🍼"
+    },
+    {
+      word: "ఆట",
+      definition: "Play/Game (Fun interactive exercises)",
+      letters: ["ఆ", "ట", "ర", "మ"],
+      correctOrder: [0, 1],
+      image: "⚽"
+    },
+    {
+      word: "బాలిక",
+      definition: "Girl (Bright future student)",
+      letters: ["బా", "లి", "క", "ల"],
+      correctOrder: [0, 1, 2],
+      image: "👧"
+    }
+  ];
+
+  const currentRound = rounds[roundIdx];
+
+  const handleLetterClick = (idx: number) => {
+    if (userSelectedIdxs.includes(idx)) {
+      setUserSelectedIdxs(prev => prev.filter(i => i !== idx));
+      setMsg(null);
+    } else {
+      const nextList = [...userSelectedIdxs, idx];
+      setUserSelectedIdxs(nextList);
+
+      if (nextList.length === currentRound.correctOrder.length) {
+        const isCorrect = nextList.every((val, index) => val === currentRound.correctOrder[index]);
+        if (isCorrect) {
+          setMsg({ type: "success", text: `🌟 Correct! Excellent Word Building: '${currentRound.word}' - ${currentRound.definition}` });
+        } else {
+          setMsg({ type: "error", text: "❌ Oops! Not the correct spelling order. Try again!" });
+        }
+      }
+    }
+  };
+
+  const handleNext = () => {
+    setRoundIdx(prev => (prev + 1) % rounds.length);
+    setUserSelectedIdxs([]);
+    setMsg(null);
+  };
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="telugu_visual_lab">
+      {/* Header */}
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800">✍️ Telugu Visual Lab: గుణింతాలు & ఒత్తులు</h3>
+          <p className="text-xs text-slate-500">Interactive practice for Telugu Guninthalu (గుణింతాలు), Ottulu (ఒత్తులు) & Word Building!</p>
+        </div>
+        <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-3 py-1 rounded-full uppercase font-mono">Telugu Lab</span>
+      </div>
+
+      {/* Interactive Tabs */}
+      {chapterId === "g1_tel_guninthalu" ? (
+        <div className="flex gap-2 justify-center border-b border-slate-200 pb-3">
+          <span className="py-2 px-4 rounded-xl font-black text-xs bg-indigo-600 text-white border border-indigo-700 shadow-sm">
+            🎨 గుణింతాలు (Guninthalu Lesson 5)
+          </span>
+        </div>
+      ) : chapterId === "g1_tel_ottulu" ? (
+        <div className="flex gap-2 justify-center border-b border-slate-200 pb-3">
+          <span className="py-2 px-4 rounded-xl font-black text-xs bg-pink-600 text-white border border-pink-700 shadow-sm">
+            🔤 ఒత్తులు (Ottulu Lesson 6)
+          </span>
+        </div>
+      ) : (
+        <div className="flex gap-2 justify-center border-b border-slate-200 pb-3">
+          <button
+            onClick={() => setActiveTab("guninthalu")}
+            className={`py-2 px-4 rounded-xl font-black text-xs border transition cursor-pointer ${
+              activeTab === "guninthalu"
+                ? "bg-indigo-600 text-white border-indigo-700 shadow-sm"
+                : "bg-white text-slate-700 border-slate-200 hover:bg-indigo-50"
+            }`}
+          >
+            🎨 గుణింతాలు (Guninthalu)
+          </button>
+          <button
+            onClick={() => setActiveTab("ottulu")}
+            className={`py-2 px-4 rounded-xl font-black text-xs border transition cursor-pointer ${
+              activeTab === "ottulu"
+                ? "bg-pink-600 text-white border-pink-700 shadow-sm"
+                : "bg-white text-slate-700 border-slate-200 hover:bg-pink-50"
+            }`}
+          >
+            🔤 ఒత్తులు (Ottulu)
+          </button>
+          <button
+            onClick={() => setActiveTab("builder")}
+            className={`py-2 px-4 rounded-xl font-black text-xs border transition cursor-pointer ${
+              activeTab === "builder"
+                ? "bg-rose-600 text-white border-rose-700 shadow-sm"
+                : "bg-white text-slate-700 border-slate-200 hover:bg-rose-50"
+            }`}
+          >
+            🧩 పదాలు (Word Builder)
+          </button>
+        </div>
+      )}
+
+      {/* Tab 1: Guninthalu Explorer */}
+      {activeTab === "guninthalu" && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-150 shadow-xs space-y-6 animate-fade-in">
+          {/* Base Consonant Picker */}
+          <div className="space-y-2">
+            <span className="text-xs font-black uppercase text-slate-500 tracking-wider block">1. Select a Base Consonant (హల్లు):</span>
+            <div className="flex gap-2 flex-wrap">
+              {["క", "గ", "చ", "జ", "ట", "డ", "త", "ద", "న", "ప", "బ", "మ", "య", "ర", "ల", "వ", "స", "హ"].map(c => (
+                <button
+                  key={c}
+                  onClick={() => setBaseConsonant(c)}
+                  className={`w-10 h-10 rounded-xl font-black text-sm border-2 transition cursor-pointer ${
+                    baseConsonant === c
+                      ? "bg-indigo-600 text-white border-indigo-700 scale-105 shadow-sm"
+                      : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-indigo-50"
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Interactive Gunintham Grid Display */}
+          <div className="space-y-3">
+            <span className="text-xs font-black uppercase text-indigo-600 tracking-wider block">
+              2. Live '{baseConsonant}' Gunintham Chart ({baseConsonant} గుణింతము):
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
+              {guninthaluList.map((g, idx) => (
+                <div key={idx} className="bg-gradient-to-b from-indigo-50/80 to-purple-50/80 p-3 rounded-2xl border border-indigo-200 text-center space-y-1 hover:border-indigo-400 transition shadow-2xs">
+                  <span className="text-[10px] font-black text-indigo-950 block truncate">{g.name}</span>
+                  <span className="text-[9px] font-bold text-amber-700 block">{g.en} ({g.symbol})</span>
+                  <span className="text-2xl font-black text-indigo-950 block my-1">{g.form(baseConsonant)}</span>
+                  <span className="text-[9px] font-bold text-indigo-600 block">{g.exp}</span>
+                  <span className="text-[9px] text-slate-600 block pt-1 border-t border-indigo-150 font-bold bg-white/60 rounded">{g.sample}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 2: Ottulu Explorer */}
+      {activeTab === "ottulu" && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-150 shadow-xs space-y-6 animate-fade-in">
+          <span className="text-xs font-black uppercase text-pink-600 tracking-wider block">Select a Consonant to test its Ottu (ఒత్తు):</span>
+          
+          <div className="grid grid-cols-3 sm:grid-cols-9 gap-2">
+            {ottuluList.map((item, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedOttuIdx(idx)}
+                className={`p-3 rounded-2xl border-2 transition cursor-pointer text-center space-y-0.5 ${
+                  selectedOttuIdx === idx
+                    ? "bg-pink-600 text-white border-pink-700 scale-105 shadow-md"
+                    : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-pink-50"
+                }`}
+              >
+                <span className="block text-sm font-black">{item.letter}</span>
+                <span className={`block text-xs font-black ${selectedOttuIdx === idx ? "text-pink-100" : "text-pink-600"}`}>
+                  {item.letter}{item.ottu}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Detailed Active Ottu Card */}
+          {(() => {
+            const curr = ottuluList[selectedOttuIdx];
+            return (
+              <div className="bg-pink-50/70 p-6 rounded-2xl border border-pink-200 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                  <span className="text-5xl p-4 bg-white rounded-3xl border border-pink-200 shadow-sm">{curr.image}</span>
+                  <div>
+                    <span className="text-[10px] font-mono font-black uppercase text-pink-600 tracking-wider">Consonant Adjunct (ఒత్తు):</span>
+                    <h4 className="text-lg font-black text-pink-950">{curr.letter} ➡️ {curr.name} ({curr.letter}{curr.ottu})</h4>
+                    <p className="text-xs font-bold text-slate-600 mt-1">Word Example: <span className="text-pink-700 text-sm">{curr.word}</span> ({curr.meaning})</p>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-xl border border-pink-200 text-center max-w-xs w-full shadow-xs">
+                  <span className="text-[10px] font-mono font-bold text-slate-400 block mb-1">Double Consonant Sound:</span>
+                  <span className="text-xl font-black text-pink-600 font-mono block">{curr.word}</span>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
+      {/* Tab 3: Word Builder */}
+      {activeTab === "builder" && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-150 flex flex-col items-center gap-5 shadow-xs animate-fade-in">
+          <div className="text-5xl p-5 bg-rose-50 border-2 border-rose-100 rounded-full animate-pulse select-none">
+            {currentRound.image}
+          </div>
+
+          <div className="text-center space-y-1 max-w-xs">
+            <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Meaning:</span>
+            <p className="text-xs font-black text-slate-700">{currentRound.definition}</p>
+          </div>
+
+          <div className="flex gap-2.5 items-center justify-center min-h-[50px] w-full max-w-xs bg-slate-50 rounded-xl border border-slate-200 border-dashed p-2">
+            {userSelectedIdxs.length === 0 && (
+              <span className="text-[10px] font-bold text-slate-400 italic">Select letters below...</span>
+            )}
+            {userSelectedIdxs.map((letterIdx, index) => (
+              <div key={index} className="w-11 h-11 rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 text-white flex items-center justify-center text-lg font-black shadow-sm relative">
+                {currentRound.letters[letterIdx]}
+                <span className="absolute -top-1.5 -right-1.5 bg-slate-800 text-white border border-white text-[7px] w-4 h-4 rounded-full flex items-center justify-center">
+                  {index + 1}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-3 justify-center flex-wrap">
+            {currentRound.letters.map((letter, idx) => {
+              const isSelected = userSelectedIdxs.includes(idx);
+              return (
+                <button
+                  key={idx}
+                  onClick={() => handleLetterClick(idx)}
+                  className={`w-12 h-12 rounded-2xl text-lg font-black border-2 transition cursor-pointer ${
+                    isSelected 
+                      ? "bg-rose-50 border-rose-500 text-rose-600 scale-95 shadow-inner" 
+                      : "bg-white border-slate-200 hover:border-rose-400 hover:scale-102"
+                  }`}
+                >
+                  {letter}
+                </button>
+              );
+            })}
+          </div>
+
+          {msg && (
+            <div className={`p-3 rounded-xl border text-center text-[11px] font-black w-full max-w-xs animate-bounce ${
+              msg.type === "success" ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-rose-50 border-rose-200 text-rose-700"
+            }`}>
+              {msg.text}
+            </div>
+          )}
+
+          <button
+            onClick={handleNext}
+            className="w-full max-w-xs py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs rounded-xl shadow-sm hover:scale-[1.01] transition cursor-pointer flex items-center justify-center gap-1.5"
+          >
+            ⏩ Next Word / తదుపరి పదం
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function HindiLanguageLab({ chapterId }: { chapterId?: string }) {
+  const swarList = [
+    { letter: "अ", word: "अनार 🍎", mean: "Pomegranate" },
+    { letter: "आ", word: "आम 🥭", mean: "Mango" },
+    { letter: "इ", word: "इमली 🫛", mean: "Tamarind" },
+    { letter: "ई", word: "ईख 🌾", mean: "Sugarcane" }
+  ];
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800">🇮🇳 Hindi Visual Lab: स्वर और शब्द</h3>
+          <p className="text-xs text-slate-500">Explore Hindi Vowels (स्वर) and Vocabulary interactively!</p>
+        </div>
+        <span className="text-[10px] font-bold text-orange-600 bg-orange-50 border border-orange-100 px-3 py-1 rounded-full uppercase font-mono">Hindi Lab</span>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white p-5 rounded-2xl border border-slate-150">
+        {swarList.map((item, idx) => (
+          <div key={idx} className="bg-orange-50/60 p-4 rounded-2xl border border-orange-200 text-center space-y-1">
+            <span className="text-3xl font-black text-orange-600 block">{item.letter}</span>
+            <span className="text-sm font-black text-slate-800 block">{item.word}</span>
+            <span className="text-[10px] font-bold text-slate-500">{item.mean}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function EnglishLanguageLab({ chapterId }: { chapterId?: string }) {
+  const words = [
+    { word: "CAT 🐱", letters: ["C", "A", "T"], mean: "Feline Pet" },
+    { word: "DOG 🐶", letters: ["D", "O", "G"], mean: "Loyal Canine" },
+    { word: "SUN ☀️", letters: ["S", "U", "N"], mean: "Daylight Star" }
+  ];
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800">🇬🇧 English Language Lab: CVC Word Builder</h3>
+          <p className="text-xs text-slate-500">Learn English spelling and phonics CVC words interactively!</p>
+        </div>
+        <span className="text-[10px] font-bold text-purple-600 bg-purple-50 border border-purple-100 px-3 py-1 rounded-full uppercase font-mono">English Lab</span>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-5 rounded-2xl border border-slate-150">
+        {words.map((item, idx) => (
+          <div key={idx} className="bg-purple-50/60 p-4 rounded-2xl border border-purple-200 text-center space-y-2">
+            <h4 className="text-xl font-black text-purple-900">{item.word}</h4>
+            <div className="flex justify-center gap-1">
+              {item.letters.map((l, lIdx) => (
+                <span key={lIdx} className="w-8 h-8 rounded-lg bg-purple-600 text-white font-mono font-black text-sm flex items-center justify-center">
+                  {l}
+                </span>
+              ))}
+            </div>
+            <span className="text-[10px] text-slate-500 font-bold block">{item.mean}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function LocatingPlacesVisualLab() {
+  const [lat, setLat] = useState<number>(28);
+  const [lng, setLng] = useState<number>(77);
+  const [activePreset, setActivePreset] = useState<string>("delhi");
+
+  const presets = [
+    { id: "delhi", name: "New Delhi 🇮🇳", lat: 28.6, lng: 77.2, desc: "Capital of India (28.6° N, 77.2° E)" },
+    { id: "mumbai", name: "Mumbai 🇮🇳", lat: 19.1, lng: 72.9, desc: "Financial Hub on West Coast (19.1° N, 72.9° E)" },
+    { id: "equator", name: "Equator / Gabon 🇬🇦", lat: 0, lng: 9.5, desc: "0° Latitude, Central Africa" },
+    { id: "greenwich", name: "Greenwich / London 🇬🇧", lat: 51.5, lng: 0.0, desc: "Prime Meridian (0° Longitude)" },
+    { id: "tokyo", name: "Tokyo 🇯🇵", lat: 35.7, lng: 139.7, desc: "Far East Time Zone (35.7° N, 139.7° E)" },
+    { id: "sydney", name: "Sydney 🇦🇺", lat: -33.9, lng: 151.2, desc: "Southern Hemisphere (33.9° S, 151.2° E)" }
+  ];
+
+  const applyPreset = (p: typeof presets[0]) => {
+    setLat(p.lat);
+    setLng(p.lng);
+    setActivePreset(p.id);
+  };
+
+  const nsHemisphere = lat >= 0 ? "Northern Hemisphere (ఉత్తరార్ధగోళం)" : "Southern Hemisphere (దక్షిణార్ధగోళం)";
+  const ewHemisphere = lng >= 0 ? "Eastern Hemisphere (తూర్పు అర్ధగోళం)" : "Western Hemisphere (పశ్చిమ అర్ధగోళం)";
+  
+  const hrsOffset = lng / 15;
+  const absOffsetHrs = Math.floor(Math.abs(hrsOffset));
+  const absOffsetMins = Math.round((Math.abs(hrsOffset) - absOffsetHrs) * 60);
+  const timeOffsetStr = `${hrsOffset >= 0 ? "+" : "-"}${absOffsetHrs}h ${absOffsetMins > 0 ? absOffsetMins + "m" : ""}`;
+
+  const pinX = 200 + (lng / 180) * 160;
+  const pinY = 100 - (lat / 90) * 80;
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="locating_places_lab">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <span className="text-[10px] font-black uppercase text-indigo-600 tracking-wider block">
+            Geography Lab • Grade 6 Social Science
+          </span>
+          <h3 className="font-extrabold text-base text-slate-800">🌍 Locating Places on Earth: Latitude & Longitude Navigator</h3>
+          <p className="text-xs text-slate-500">Explore Parallels of Latitude, Meridians of Longitude, Hemispheres & Time Zones!</p>
+        </div>
+        <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full uppercase font-mono shrink-0">
+          GIS Coordinates
+        </span>
+      </div>
+
+      <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
+        <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">
+          Quick Fly-To Places on Globe:
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {presets.map(p => (
+            <button
+              key={p.id}
+              onClick={() => applyPreset(p)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                activePreset === p.id 
+                  ? "bg-indigo-600 text-white border-indigo-600 shadow-xs" 
+                  : "bg-slate-50 hover:bg-indigo-50 text-slate-700 border-slate-200"
+              }`}
+            >
+              {p.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-7 bg-indigo-950 p-5 rounded-2xl text-white space-y-4 shadow-md flex flex-col justify-between">
+          <div className="flex justify-between items-center border-b border-indigo-800/80 pb-3">
+            <span className="text-xs font-mono font-bold text-indigo-300">
+              Active Coordinates: <span className="text-amber-300 font-extrabold">{Math.abs(lat)}°{lat >= 0 ? "N" : "S"}, {Math.abs(lng)}°{lng >= 0 ? "E" : "W"}</span>
+            </span>
+            <span className="text-[10px] bg-indigo-800 px-2 py-0.5 rounded font-mono text-indigo-200">
+              Globe View
+            </span>
+          </div>
+
+          <div className="relative w-full h-56 bg-slate-900 rounded-xl border border-indigo-800 overflow-hidden flex items-center justify-center">
+            <svg viewBox="0 0 400 200" className="w-full h-full">
+              <ellipse cx="200" cy="100" rx="180" ry="90" fill="#030712" stroke="#312e81" strokeWidth="2" />
+              
+              <line x1="20" y1="100" x2="380" y2="100" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 2" />
+              <text x="382" y="103" fill="#f59e0b" fontSize="8" fontWeight="bold">0° Equator</text>
+              
+              <line x1="30" y1="76" x2="370" y2="76" stroke="#818cf8" strokeWidth="1" strokeDasharray="2 2" />
+              <text x="372" y="79" fill="#818cf8" fontSize="7">23.5°N</text>
+
+              <line x1="30" y1="124" x2="370" y2="124" stroke="#818cf8" strokeWidth="1" strokeDasharray="2 2" />
+              <text x="372" y="127" fill="#818cf8" fontSize="7">23.5°S</text>
+
+              <line x1="200" y1="10" x2="200" y2="190" stroke="#ef4444" strokeWidth="2" strokeDasharray="4 2" />
+              <text x="200" y="8" fill="#ef4444" fontSize="8" textAnchor="middle" fontWeight="bold">0° Prime Meridian</text>
+
+              <line x1="273" y1="10" x2="273" y2="190" stroke="#10b981" strokeWidth="1.5" strokeDasharray="3 2" />
+              <text x="273" y="198" fill="#10b981" fontSize="7" textAnchor="middle" fontWeight="bold">82.5°E (IST)</text>
+
+              <circle cx={pinX} cy={pinY} r="7" fill="#ec4899" className="animate-ping opacity-75" />
+              <circle cx={pinX} cy={pinY} r="5" fill="#f43f5e" stroke="#ffffff" strokeWidth="2" />
+              <line x1={pinX} y1="0" x2={pinX} y2="200" stroke="#ec4899" strokeWidth="0.5" strokeDasharray="1 3" />
+              <line x1="0" y1={pinY} x2="400" y2={pinY} stroke="#ec4899" strokeWidth="0.5" strokeDasharray="1 3" />
+            </svg>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 text-center text-[10px] font-mono">
+            <div className="bg-indigo-900/80 p-2 rounded-lg border border-indigo-700">
+              <span className="text-indigo-300 block">Hemispheres:</span>
+              <span className="text-amber-300 font-bold block">{nsHemisphere}</span>
+              <span className="text-emerald-300 font-bold block">{ewHemisphere}</span>
+            </div>
+            <div className="bg-indigo-900/80 p-2 rounded-lg border border-indigo-700">
+              <span className="text-indigo-300 block">Time Offset vs GMT:</span>
+              <span className="text-rose-300 font-extrabold text-xs block">{timeOffsetStr}</span>
+              <span className="text-slate-300 text-[9px] block">15° Longitude = 1 Hr</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-5 space-y-4">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4">
+            <h4 className="font-extrabold text-sm text-slate-800 flex items-center justify-between">
+              <span>Adjust Coordinates:</span>
+              <span className="text-xs text-indigo-600 font-mono font-bold">Manual Drag</span>
+            </h4>
+
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs font-bold text-slate-700">
+                <span>Latitude (అక్షాంశం):</span>
+                <span className="text-indigo-600 font-mono">{lat}° ({lat >= 0 ? "N" : "S"})</span>
+              </div>
+              <input
+                type="range"
+                min="-90"
+                max="90"
+                value={lat}
+                onChange={(e) => {
+                  setLat(Number(e.target.value));
+                  setActivePreset("custom");
+                }}
+                className="w-full accent-indigo-600 cursor-pointer"
+              />
+              <div className="flex justify-between text-[9px] text-slate-400 font-bold">
+                <span>90°S (South Pole)</span>
+                <span>0° (Equator)</span>
+                <span>90°N (North Pole)</span>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs font-bold text-slate-700">
+                <span>Longitude (రేఖాంశం):</span>
+                <span className="text-rose-600 font-mono">{lng}° ({lng >= 0 ? "E" : "W"})</span>
+              </div>
+              <input
+                type="range"
+                min="-180"
+                max="180"
+                value={lng}
+                onChange={(e) => {
+                  setLng(Number(e.target.value));
+                  setActivePreset("custom");
+                }}
+                className="w-full accent-rose-600 cursor-pointer"
+              />
+              <div className="flex justify-between text-[9px] text-slate-400 font-bold">
+                <span>180°W (West)</span>
+                <span>0° (Prime Meridian)</span>
+                <span>180°E (Date Line)</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 p-4 rounded-2xl space-y-2">
+            <span className="text-[10px] font-black uppercase text-indigo-800 tracking-wider block">
+              💡 Geography Key Concept:
+            </span>
+            <p className="text-xs text-indigo-950 leading-relaxed font-serif">
+              <b>Latitudes</b> (Parallels) measure distance North or South of the Equator. <b>Longitudes</b> (Meridians) measure distance East or West of the Prime Meridian. Together, they create an exact geographic coordinate to locate any school, city, or ship in the ocean!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function TimelineSourcesVisualLab() {
+  const [activeTab, setActiveTab] = useState<"timeline" | "sources">("timeline");
+  const [selectedEraIdx, setSelectedEraIdx] = useState<number>(0);
+  const [classifiedItems, setClassifiedItems] = useState<Record<string, "literary" | "archaeological">>({});
+
+  const eras = [
+    { title: "Indus Valley Civilization", time: "2500 BCE - 1500 BCE", icon: "🏛️", desc: "Planned brick cities (Harappa & Mohenjo-daro), drainage systems, terracotta seals, and bronze statues.", sources: "Harappan Seals, Great Bath ruins, Dancing Girl bronze, Pottery" },
+    { title: "Vedic Period", time: "1500 BCE - 600 BCE", icon: "📖", desc: "Composition of the Rigveda, Samaveda, Yajurveda, and Atharvaveda; transition into agrarian societies.", sources: "Rigveda Hymns, Iron tools at Painted Grey Ware sites" },
+    { title: "Mahajanapadas & Mauryan Empire", time: "600 BCE - 185 BCE", icon: "📜", desc: "Emperor Ashoka's empire spanning most of South Asia, propagation of Dhamma and Ahimsa.", sources: "Ashoka Pillar Edicts at Sarnath, Kautilya's Arthashastra, Sanchi Stupa" },
+    { title: "Gupta Golden Age", time: "320 CE - 550 CE", icon: "🪙", desc: "Fluorescence of Indian science (Aryabhata), mathematics (Zero), literature (Kalidasa), and art.", sources: "Gupta Gold Dinara Coins, Ajanta Cave Frescoes, Iron Pillar of Delhi" },
+    { title: "Medieval & Modern India", time: "1200 CE - 1947 CE", icon: "🏰", desc: "Mughal architecture, Maratha history, colonial period, and freedom struggle.", sources: "Red Fort, Taj Mahal, Royal Farman decrees, Independence records" }
+  ];
+
+  const sourceItems = [
+    { id: "1", name: "Ashoka's Stone Pillar Edict", correct: "archaeological", desc: "Carved on stone pillars" },
+    { id: "2", name: "Rigveda Hymns on Birch Bark", correct: "literary", desc: "Written manuscript text" },
+    { id: "3", name: "Gupta Gold Coins (Dinara)", correct: "archaeological", desc: "Physical currency metal" },
+    { id: "4", name: "Kalidasa's Abhijnanasakuntalam", correct: "literary", desc: "Sanskrit drama play text" },
+    { id: "5", name: "Harappan Terracotta Seal", correct: "archaeological", desc: "Excavated clay artifact" },
+    { id: "6", name: "Kautilya's Arthashastra", correct: "literary", desc: "Ancient treatise on governance" }
+  ];
+
+  const handleClassify = (id: string, category: "literary" | "archaeological") => {
+    setClassifiedItems(prev => ({ ...prev, [id]: category }));
+  };
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="timeline_sources_lab">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <span className="text-[10px] font-black uppercase text-amber-600 tracking-wider block">
+            History Lab • Grade 6 Social Science
+          </span>
+          <h3 className="font-extrabold text-base text-slate-800">📜 Timeline & Sources of History</h3>
+          <p className="text-xs text-slate-500">Explore Chronology (BCE/CE) and Detective Tools of Historians!</p>
+        </div>
+        <div className="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
+          <button
+            onClick={() => setActiveTab("timeline")}
+            className={`px-3 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+              activeTab === "timeline" ? "bg-amber-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🗓️ Timeline (BCE/CE)
+          </button>
+          <button
+            onClick={() => setActiveTab("sources")}
+            className={`px-3 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+              activeTab === "sources" ? "bg-amber-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🔎 Source Detective
+          </button>
+        </div>
+      </div>
+
+      {activeTab === "timeline" ? (
+        <div className="space-y-6">
+          <div className="bg-amber-950 p-6 rounded-2xl text-white space-y-4 shadow-md">
+            <span className="text-xs font-mono font-bold text-amber-300 block text-center">
+              INDIAN HISTORY CHRONOLOGICAL TIMELINE (BCE to CE)
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
+              {eras.map((era, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedEraIdx(idx)}
+                  className={`p-3 rounded-xl border text-center transition cursor-pointer flex flex-col items-center justify-between gap-2 ${
+                    selectedEraIdx === idx
+                      ? "bg-amber-500 text-slate-950 border-amber-300 font-extrabold shadow-sm scale-102"
+                      : "bg-amber-900/60 hover:bg-amber-800/80 text-amber-100 border-amber-800"
+                  }`}
+                >
+                  <span className="text-2xl">{era.icon}</span>
+                  <div>
+                    <span className="text-[10px] font-bold block leading-tight">{era.title}</span>
+                    <span className="text-[9px] font-mono opacity-80 block mt-0.5">{era.time}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-amber-200/80 shadow-xs space-y-3">
+            <div className="flex items-center gap-3">
+              <span className="text-4xl">{eras[selectedEraIdx].icon}</span>
+              <div>
+                <span className="text-[10px] font-black uppercase text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                  {eras[selectedEraIdx].time}
+                </span>
+                <h4 className="font-extrabold text-lg text-slate-900">{eras[selectedEraIdx].title}</h4>
+              </div>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-serif">
+              {eras[selectedEraIdx].desc}
+            </p>
+            <div className="bg-amber-50/80 border border-amber-200 p-3 rounded-xl text-xs text-amber-950 font-mono">
+              <span className="font-extrabold block text-[10px] uppercase text-amber-800">Key Historical Sources Recovered:</span>
+              <span>{eras[selectedEraIdx].sources}</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-6">
+          <div>
+            <h4 className="font-extrabold text-sm text-slate-800">Classify the Historical Sources:</h4>
+            <p className="text-xs text-slate-500">Categorize each artifact into <b>Literary (రాత పూర్వకం)</b> or <b>Archaeological (పురావస్తు)</b> sources!</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {sourceItems.map(item => {
+              const choice = classifiedItems[item.id];
+              const isCorrect = choice === item.correct;
+              return (
+                <div key={item.id} className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 flex flex-col justify-between">
+                  <div>
+                    <h5 className="font-extrabold text-xs text-slate-900">{item.name}</h5>
+                    <span className="text-[10px] text-slate-500 font-mono block">{item.desc}</span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleClassify(item.id, "literary")}
+                      className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition cursor-pointer ${
+                        choice === "literary"
+                          ? isCorrect ? "bg-emerald-600 text-white border-emerald-600" : "bg-rose-600 text-white border-rose-600"
+                          : "bg-white hover:bg-slate-100 text-slate-700 border-slate-200"
+                      }`}
+                    >
+                      📜 Literary
+                    </button>
+                    <button
+                      onClick={() => handleClassify(item.id, "archaeological")}
+                      className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition cursor-pointer ${
+                        choice === "archaeological"
+                          ? isCorrect ? "bg-emerald-600 text-white border-emerald-600" : "bg-rose-600 text-white border-rose-600"
+                          : "bg-white hover:bg-slate-100 text-slate-700 border-slate-200"
+                      }`}
+                    >
+                      🏺 Archaeological
+                    </button>
+                  </div>
+
+                  {choice && (
+                    <span className={`text-[9px] font-bold block text-center ${isCorrect ? "text-emerald-700" : "text-rose-700"}`}>
+                      {isCorrect ? "✅ Correct Classification!" : `❌ Incorrect. Correct: ${item.correct.toUpperCase()}`}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function ValueOfWorkVisualLab() {
+  const [activeTab, setActiveTab] = useState<"sectors" | "chain" | "pledge">("sectors");
+  const [selectedSector, setSelectedSector] = useState<"primary" | "secondary" | "tertiary">("primary");
+  const [selectedWorkers, setSelectedWorkers] = useState<string[]>(["Farmer 🌾", "Teacher 📚", "Sanitation Worker 🧹"]);
+
+  const sectors = {
+    primary: {
+      title: "Primary Sector (పాథమిక రంగం)",
+      icon: "🌾",
+      desc: "Direct extraction and harvesting of natural resources from Earth.",
+      examples: [
+        { title: "Farmer (రైతు)", role: "Grows crops, food grains, fruits, and vegetables.", impact: "Feeds the entire nation" },
+        { title: "Fisherman (చేపలు పట్టువారు)", role: "Catches fish and marine food from rivers and oceans.", impact: "Provides protein & nutrition" },
+        { title: "Miner & Dairy Worker", role: "Extracts minerals, milk, and natural raw materials.", impact: "Supplies raw materials for industry" }
+      ]
+    },
+    secondary: {
+      title: "Secondary Sector (ద్వితీయ రంగం)",
+      icon: "🏭",
+      desc: "Manufacturing, processing, and craftsmanship that converts raw materials into finished products.",
+      examples: [
+        { title: "Textile Weaver & Tailor", role: "Spins raw cotton yarn into cloth and garments.", impact: "Clothes our community" },
+        { title: "Construction Worker (భవన నిర్మాతలు)", role: "Builds homes, schools, bridges, and roads.", impact: "Provides shelter & infrastructure" },
+        { title: "Potter & Blacksmith", role: "Crafts utensils, tools, and clay items.", impact: "Creates essential daily utility goods" }
+      ]
+    },
+    tertiary: {
+      title: "Tertiary Sector (సేవా రంగం)",
+      icon: "🚑",
+      desc: "Service activities that support people and industries directly.",
+      examples: [
+        { title: "Teacher (ఉపాధ్యాయులు)", role: "Educates children and builds future generations.", impact: "Spreads knowledge & values" },
+        { title: "Doctor & Healthcare Worker", role: "Treats sick people and protects public health.", impact: "Saves lives and restores wellness" },
+        { title: "Sanitation Worker & Driver", role: "Keeps streets clean and moves goods safely.", impact: "Ensures health, hygiene & mobility" }
+      ]
+    }
+  };
+
+  const chainSteps = [
+    { step: 1, role: "Farmer 🌾", sector: "Primary", desc: "Grows raw cotton in fertile agricultural fields" },
+    { step: 2, role: "Truck Driver 🚛", sector: "Tertiary", desc: "Transports raw cotton bales from village to textile mill" },
+    { step: 3, role: "Mill Worker 🧵", sector: "Secondary", desc: "Spins raw cotton thread and weaves fabric cloth" },
+    { step: 4, role: "Tailor ✂️", sector: "Secondary", desc: "Stitches fabric into comfortable shirts and uniforms" },
+    { step: 5, role: "Shopkeeper 🛍️", sector: "Tertiary", desc: "Sells the finished clothing in local market to families" }
+  ];
+
+  const availableWorkerList = [
+    "Farmer 🌾", "Teacher 📚", "Sanitation Worker 🧹", "Doctor 🩺", 
+    "Police Officer 👮", "Truck Driver 🚛", "Factory Worker 🏭", "Electrician ⚡"
+  ];
+
+  const toggleWorker = (w: string) => {
+    if (selectedWorkers.includes(w)) {
+      if (selectedWorkers.length > 1) {
+        setSelectedWorkers(prev => prev.filter(item => item !== w));
+      }
+    } else {
+      setSelectedWorkers(prev => [...prev, w]);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="value_of_work_lab">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <span className="text-[10px] font-black uppercase text-emerald-600 tracking-wider block">
+            Civics Lab • Grade 6 Social Science
+          </span>
+          <h3 className="font-extrabold text-base text-slate-800">🤝 The Value of Work & Dignity of Labor</h3>
+          <p className="text-xs text-slate-500">Explore Economic Sectors, Interdependence, and Equal Respect for All Professions!</p>
+        </div>
+        <div className="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
+          <button
+            onClick={() => setActiveTab("sectors")}
+            className={`px-3 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+              activeTab === "sectors" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🏭 Sectors
+          </button>
+          <button
+            onClick={() => setActiveTab("chain")}
+            className={`px-3 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+              activeTab === "chain" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🔗 Interdependence
+          </button>
+          <button
+            onClick={() => setActiveTab("pledge")}
+            className={`px-3 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+              activeTab === "pledge" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            📜 Gratitude Card
+          </button>
+        </div>
+      </div>
+
+      {activeTab === "sectors" && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-3 gap-3">
+            {(["primary", "secondary", "tertiary"] as const).map(sec => (
+              <button
+                key={sec}
+                onClick={() => setSelectedSector(sec)}
+                className={`p-3 rounded-xl border text-center transition cursor-pointer ${
+                  selectedSector === sec
+                    ? "bg-emerald-600 text-white border-emerald-600 font-extrabold shadow-xs"
+                    : "bg-white hover:bg-slate-100 text-slate-700 border-slate-200 font-bold"
+                }`}
+              >
+                <span className="text-xl block">{sectors[sec].icon}</span>
+                <span className="text-xs block mt-1">{sec.toUpperCase()} SECTOR</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4">
+            <div>
+              <h4 className="font-extrabold text-base text-slate-900">{sectors[selectedSector].title}</h4>
+              <p className="text-xs text-slate-500">{sectors[selectedSector].desc}</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {sectors[selectedSector].examples.map((ex, idx) => (
+                <div key={idx} className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200 space-y-1">
+                  <h5 className="font-extrabold text-xs text-emerald-950">{ex.title}</h5>
+                  <p className="text-[10px] text-slate-600 leading-normal">{ex.role}</p>
+                  <span className="text-[9px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded border border-emerald-100 inline-block mt-2">
+                    🌟 Impact: {ex.impact}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "chain" && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-6">
+          <div>
+            <h4 className="font-extrabold text-sm text-slate-900">Case Study: How a Cotton Shirt Reaches You</h4>
+            <p className="text-xs text-slate-500">Notice how every worker across Primary, Secondary, and Tertiary sectors is indispensable!</p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2 items-stretch">
+            {chainSteps.map((c) => (
+              <div key={c.step} className="flex-1 bg-slate-50 p-3 rounded-xl border border-slate-200 text-center space-y-2 flex flex-col justify-between">
+                <div>
+                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-mono font-black text-[10px] flex items-center justify-center mx-auto">
+                    {c.step}
+                  </span>
+                  <h5 className="font-black text-xs text-slate-900 mt-2">{c.role}</h5>
+                  <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 inline-block">
+                    {c.sector}
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-600 leading-tight">{c.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === "pledge" && (
+        <div className="bg-gradient-to-br from-emerald-900 to-teal-950 text-white p-6 rounded-2xl space-y-4 shadow-md">
+          <div className="text-center space-y-1">
+            <span className="text-[10px] font-mono text-emerald-300 font-bold uppercase tracking-wider block">
+              Dignity of Labor Pledge & Respect Card
+            </span>
+            <h4 className="text-lg font-black text-amber-300">"I Respect All Honest Work!"</h4>
+          </div>
+
+          <div className="bg-white/10 p-4 rounded-xl space-y-3">
+            <span className="text-xs font-bold text-emerald-200 block">Select community workers to honor:</span>
+            <div className="flex flex-wrap gap-2">
+              {availableWorkerList.map(w => (
+                <button
+                  key={w}
+                  onClick={() => toggleWorker(w)}
+                  className={`px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer border ${
+                    selectedWorkers.includes(w)
+                      ? "bg-amber-400 text-slate-950 border-amber-400 font-extrabold"
+                      : "bg-white/10 hover:bg-white/20 text-white border-white/20"
+                  }`}
+                >
+                  {w}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white text-slate-900 p-5 rounded-xl border border-amber-300 space-y-2 text-center font-serif">
+            <span className="text-2xl">🤝🌟📜</span>
+            <h5 className="font-black text-sm text-emerald-950">Certificate of Gratitude & Respect</h5>
+            <p className="text-xs text-slate-700 leading-relaxed max-w-lg mx-auto">
+              "I promise to always treat <b>{selectedWorkers.join(", ")}</b> and every worker in my community with kindness, gratitude, politeness, and equal human dignity!"
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function MotionsEarthVisualLab() {
+  const [orbitAngle, setOrbitAngle] = useState<number>(0);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  useEffect(() => {
+    let interval: any;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setOrbitAngle(prev => (prev + 2) % 360);
+      }, 50);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  const getSeason = (angle: number) => {
+    if (angle >= 45 && angle < 135) return { name: "Summer Solstice (June 21)", desc: "Northern Hemisphere tilts TOWARD the Sun. Longest day in India!", icon: "☀️" };
+    if (angle >= 135 && angle < 225) return { name: "Autumnal Equinox (Sept 23)", desc: "Direct rays hit Equator. Day and night are equal worldwide!", icon: "🍂" };
+    if (angle >= 225 && angle < 315) return { name: "Winter Solstice (Dec 22)", desc: "Northern Hemisphere tilts AWAY from Sun. Shortest day in India!", icon: "❄️" };
+    return { name: "Vernal Equinox (March 21)", desc: "Spring season! Sun directly over Equator, equal day & night.", icon: "🌸" };
+  };
+
+  const currentSeason = getSeason(orbitAngle);
+  const earthX = 200 + 130 * Math.cos((orbitAngle * Math.PI) / 180);
+  const earthY = 110 + 60 * Math.sin((orbitAngle * Math.PI) / 180);
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="motions_earth_lab">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider block">
+            Geography Lab • Grade 6 Social Science
+          </span>
+          <h3 className="font-extrabold text-base text-slate-800">🌌 Motions of the Earth: Rotation & Revolution</h3>
+          <p className="text-xs text-slate-500">Explore Day & Night, Earth's 23.5° Tilt, Solstices, Equinoxes & Leap Years!</p>
+        </div>
+        <button
+          onClick={() => setIsPlaying(!isPlaying)}
+          className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer border ${
+            isPlaying ? "bg-rose-600 text-white border-rose-600" : "bg-blue-600 text-white border-blue-600 shadow-xs"
+          }`}
+        >
+          {isPlaying ? "⏸️ Pause Orbit" : "▶️ Orbit Revolution"}
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8 bg-slate-950 p-6 rounded-2xl text-white space-y-4 shadow-md flex flex-col justify-between">
+          <div className="flex justify-between items-center border-b border-slate-800 pb-3 text-xs font-mono">
+            <span className="text-blue-300 font-bold">Orbit Angle: {orbitAngle}°</span>
+            <span className="text-amber-300 font-extrabold">{currentSeason.icon} {currentSeason.name}</span>
+          </div>
+
+          <div className="relative w-full h-64 bg-slate-900/90 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
+            <svg viewBox="0 0 400 220" className="w-full h-full">
+              <ellipse cx="200" cy="110" rx="130" ry="60" fill="none" stroke="#334155" strokeWidth="1.5" strokeDasharray="4 4" />
+              
+              <circle cx="200" cy="110" r="22" fill="#fbbf24" className="animate-pulse" />
+              <circle cx="200" cy="110" r="28" fill="#f59e0b" opacity="0.3" />
+              <text x="200" y="113" fill="#78350f" fontSize="8" fontWeight="black" textAnchor="middle">SUN</text>
+
+              <line x1={earthX - 10} y1={earthY - 20} x2={earthX + 10} y2={earthY + 20} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="2 2" />
+              <circle cx={earthX} cy={earthY} r="12" fill="#3b82f6" stroke="#1d4ed8" strokeWidth="1.5" />
+              <path d={`M ${earthX} ${earthY - 12} A 12 12 0 0 1 ${earthX} ${earthY + 12} Z`} fill="#0f172a" opacity="0.6" />
+              <circle cx={earthX} cy={earthY} r="2" fill="#f87171" />
+            </svg>
+          </div>
+
+          <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs font-mono space-y-1">
+            <span className="text-amber-400 font-extrabold block">{currentSeason.name}</span>
+            <p className="text-slate-300 text-[11px] leading-normal">{currentSeason.desc}</p>
+          </div>
+        </div>
+
+        <div className="lg:col-span-4 space-y-4">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4">
+            <h4 className="font-extrabold text-sm text-slate-800">Revolution Position Slider:</h4>
+            <input
+              type="range"
+              min="0"
+              max="359"
+              value={orbitAngle}
+              onChange={(e) => {
+                setOrbitAngle(Number(e.target.value));
+                setIsPlaying(false);
+              }}
+              className="w-full accent-blue-600 cursor-pointer"
+            />
+            <div className="flex justify-between text-[9px] text-slate-500 font-mono font-bold">
+              <span>0° (Mar 21)</span>
+              <span>90° (Jun 21)</span>
+              <span>180° (Sep 23)</span>
+              <span>270° (Dec 22)</span>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 p-4 rounded-2xl space-y-2">
+            <span className="text-[10px] font-black uppercase text-blue-800 tracking-wider block">
+              💡 Leap Year Math Formula:
+            </span>
+            <p className="text-xs text-blue-950 font-serif leading-relaxed">
+              Earth takes <b>365 days and 6 hours (¼ day)</b> to orbit the Sun. Every 4 years, four 6-hour quarters equal 24 hours (1 full day), added to February as Feb 29 (366 days)!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function EarliestCitiesVisualLab() {
+  const [activeTab, setActiveTab] = useState<"layout" | "artifacts" | "bath">("layout");
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="earliest_cities_lab">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <span className="text-[10px] font-black uppercase text-orange-600 tracking-wider block">
+            History Lab • Grade 6 Social Science
+          </span>
+          <h3 className="font-extrabold text-base text-slate-800">🏛️ Earliest Cities: Harappan Civilization (~2500 BCE)</h3>
+          <p className="text-xs text-slate-500">Explore Citadel, Great Bath, Interlocking Bricks, Drains, Seals & Lothal Dockyard!</p>
+        </div>
+        <div className="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
+          <button
+            onClick={() => setActiveTab("layout")}
+            className={`px-3 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+              activeTab === "layout" ? "bg-orange-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🏰 City Layout
+          </button>
+          <button
+            onClick={() => setActiveTab("bath")}
+            className={`px-3 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+              activeTab === "bath" ? "bg-orange-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🌊 Great Bath & Drains
+          </button>
+          <button
+            onClick={() => setActiveTab("artifacts")}
+            className={`px-3 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+              activeTab === "artifacts" ? "bg-orange-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🏺 Seals & Crafts
+          </button>
+        </div>
+      </div>
+
+      {activeTab === "layout" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-orange-950 p-6 rounded-2xl text-white space-y-3 shadow-md">
+            <span className="text-[10px] font-mono font-bold text-orange-300 uppercase block">
+              1. Citadel (West Side - High Platform)
+            </span>
+            <h4 className="font-extrabold text-base text-amber-300">The Fortress & Public Center</h4>
+            <p className="text-xs text-orange-100 leading-relaxed font-serif">
+              Built on elevated mud-brick platforms to protect against Indus river floods. Contained public buildings like the Great Bath, Granaries for grain storage, and assembly halls.
+            </p>
+          </div>
+
+          <div className="bg-amber-900 p-6 rounded-2xl text-white space-y-3 shadow-md">
+            <span className="text-[10px] font-mono font-bold text-amber-300 uppercase block">
+              2. Lower Town (East Side - Broad Grid)
+            </span>
+            <h4 className="font-extrabold text-base text-amber-200">Residential Neighborhoods</h4>
+            <p className="text-xs text-amber-100 leading-relaxed font-serif">
+              Larger area with two-story brick houses built around central courtyards. Streets intersected at right angles in a rectangular grid system with covered street drains.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "bath" && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4">
+          <h4 className="font-extrabold text-sm text-slate-900">The Great Bath of Mohenjo-daro</h4>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            A large rectangular tank in the Citadel made of baked bricks, coated with plaster, and sealed with a layer of natural tar (bitumen) to prevent water leakage. Steps led down from two sides, surrounded by rooms for changing clothes.
+          </p>
+          <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl text-xs text-amber-950 space-y-1">
+            <span className="font-black block uppercase text-amber-800 text-[10px]">Sanitation & Drainage Standards:</span>
+            <p>Every Harappan house had its own paved bath space. Drains flowed into covered street sewers equipped with inspection holes at regular intervals for municipal cleaning!</p>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "artifacts" && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+            <span className="text-2xl block">🦏</span>
+            <h5 className="font-extrabold text-xs text-slate-900">Steatite Seals</h5>
+            <p className="text-[10px] text-slate-600">Stamped on clay packages for trade authentication with animal motifs (humpless bull, unicorn).</p>
+          </div>
+          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+            <span className="text-2xl block">💃</span>
+            <h5 className="font-extrabold text-xs text-slate-900">Dancing Girl Statue</h5>
+            <p className="text-[10px] text-slate-600">Lost-wax bronze casting masterpiece demonstrating advanced metallurgy 4,500 years ago.</p>
+          </div>
+          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+            <span className="text-2xl block">⚓</span>
+            <h5 className="font-extrabold text-xs text-slate-900">Lothal Dockyard</h5>
+            <p className="text-[10px] text-slate-600">World's earliest known tidal dockyard in Gujarat connecting Indus goods to Mesopotamia.</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function GovernmentDiversityVisualLab() {
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="government_diversity_lab">
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+        <div>
+          <span className="text-[10px] font-black uppercase text-teal-600 tracking-wider block">
+            Civics Lab • Grade 6 Social Science
+          </span>
+          <h3 className="font-extrabold text-base text-slate-800">🗳️ Diversity & Local Self-Government</h3>
+          <p className="text-xs text-slate-500">Explore Unity in Diversity, Panchayati Raj System & Municipal Corporations!</p>
+        </div>
+        <span className="text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 px-3 py-1 rounded-full uppercase font-mono">
+          3-Tier Democracy
+        </span>
+      </div>
+
+      <div className="bg-teal-950 p-6 rounded-2xl text-white space-y-4 shadow-md">
+        <span className="text-xs font-mono font-bold text-teal-300 block text-center uppercase">
+          Panchayati Raj System (Rural Local Government)
+        </span>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-teal-900/80 p-4 rounded-xl border border-teal-700 space-y-2">
+            <span className="text-[10px] font-black text-amber-300 uppercase block">Level 1: Village</span>
+            <h5 className="font-extrabold text-sm text-white">Gram Panchayat</h5>
+            <p className="text-[11px] text-teal-100 leading-normal">
+              Elected by <b>Gram Sabha</b> (all adult village voters). Headed by the <b>Sarpanch</b> and Ward Members (Panchs).
+            </p>
+          </div>
+
+          <div className="bg-teal-900/80 p-4 rounded-xl border border-teal-700 space-y-2">
+            <span className="text-[10px] font-black text-amber-300 uppercase block">Level 2: Block</span>
+            <h5 className="font-extrabold text-sm text-white">Panchayat Samiti</h5>
+            <p className="text-[11px] text-teal-100 leading-normal">
+              Coordinates development plans for a cluster of villages at the Block level under a Block Development Officer (BDO).
+            </p>
+          </div>
+
+          <div className="bg-teal-900/80 p-4 rounded-xl border border-teal-700 space-y-2">
+            <span className="text-[10px] font-black text-amber-300 uppercase block">Level 3: District</span>
+            <h5 className="font-extrabold text-sm text-white">Zilla Parishad</h5>
+            <p className="text-[11px] text-teal-100 leading-normal">
+              Highest rural tier; manages district-wide budgets, agricultural funds, and rural roads under District Collector.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-3">
+        <h4 className="font-extrabold text-sm text-slate-900">🇮🇳 "Unity in Diversity" Key Concept</h4>
+        <p className="text-xs text-slate-700 leading-relaxed font-serif">
+          Coined by Jawaharlal Nehru in his book <i>'Discovery of India'</i>, Unity in Diversity reflects how India's multi-cultural society—with 22 official languages, diverse cuisines, traditional clothing, and religious festivals—remains united under one national Constitution.
+        </p>
+      </div>
+    </div>
+  );
 }

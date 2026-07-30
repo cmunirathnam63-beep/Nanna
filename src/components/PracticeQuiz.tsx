@@ -37,6 +37,7 @@ export default function PracticeQuiz({
   const [stagedOption, setStagedOption] = useState<string | null>(null);
   const [mcqStatuses, setMcqStatuses] = useState<Record<number, "not_visited" | "not_answered" | "answered" | "marked" | "marked_answered">>({});
   const [confirmSubmitOpen, setConfirmSubmitOpen] = useState<boolean>(false);
+  const [showPalette, setShowPalette] = useState<boolean>(false);
 
   // Load CBSE worksheet on mount or chapter change
   useEffect(() => {
@@ -69,6 +70,7 @@ export default function PracticeQuiz({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           chapter: chapterTitle,
+          chapterId: chapterId,
           attempt: attemptToLoad
         })
       });
@@ -118,6 +120,16 @@ export default function PracticeQuiz({
     }
   };
 
+  const handlePrevQuestion = () => {
+    if (currentIdx > 0) {
+      setCurrentIdx(prev => prev - 1);
+      const prevAns = userAnswers[currentIdx - 1];
+      setSelectedOption(prevAns || null);
+      setIsSubmitted(!!prevAns);
+      setShowHint(false);
+    }
+  };
+
   const handleRecheck = () => {
     setCurrentIdx(0);
     setSelectedOption(null);
@@ -156,6 +168,7 @@ export default function PracticeQuiz({
     setCurrentMcqIdx(0);
     setStagedOption(null);
     setConfirmSubmitOpen(false);
+    setShowPalette(false);
     
     const initialStatuses: Record<number, "not_visited" | "not_answered" | "answered" | "marked" | "marked_answered"> = {};
     for (let i = 0; i < 20; i++) {
@@ -329,7 +342,7 @@ export default function PracticeQuiz({
   const isCorrect = selectedOption === currentProblem.correctAnswer;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-natural-beige-dark overflow-hidden" id="quiz_viewport">
+    <div className="w-full overflow-hidden" id="quiz_viewport">
       {/* Quiz Progress header */}
       <div className="bg-natural-beige-light border-b border-natural-beige-dark p-4 flex justify-between items-center">
         <div>
@@ -576,102 +589,120 @@ export default function PracticeQuiz({
           </div>
         </div>
       ) : quizMode === "mcq_in_one" ? (
-        /* MCQ IN ONE: JEE EXAM STYLE ONE-QUESTION-AT-A-TIME CONSOLE */
-        <div className="p-4 space-y-4 animate-fade-in" id="mcq_in_one_active_view">
-          {/* Top Panel - Palette Grid */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center text-[10px] px-1 font-bold text-natural-sage uppercase tracking-wider">
-              <span>JEE Exam Console</span>
-              <span className="text-natural-primary">Time Elapsed: Active</span>
+        /* MCQ IN ONE: MAXIMIZED DIVISION VIEW */
+        <div className="p-4 sm:p-6 space-y-5 animate-fade-in" id="mcq_in_one_active_view">
+          {/* Top Control Bar: Status + Palette Drawer Toggle */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-natural-beige-dark/60">
+            <div className="flex items-center gap-2">
+              <span className="bg-natural-primary/10 text-natural-primary font-mono text-xs font-black px-3 py-1 rounded-full border border-natural-primary/20">
+                Question {currentMcqIdx + 1} of {worksheet.problems.length}
+              </span>
+              <span className={`text-[10px] uppercase font-extrabold border px-2.5 py-0.5 rounded-md ${getProblemDifficulty(currentMcqIdx).color}`}>
+                {getProblemDifficulty(currentMcqIdx).dot} {getProblemDifficulty(currentMcqIdx).label}
+              </span>
             </div>
 
-            {/* Grid of 20 Palette Squares */}
-            <div className="grid grid-cols-10 gap-1.5 justify-center py-2.5 bg-natural-beige-light/40 border border-natural-beige-dark/50 rounded-xl px-2">
-              {worksheet.problems.map((_, idx) => {
-                const status = mcqStatuses[idx] || "not_visited";
-                const isActive = currentMcqIdx === idx;
-                
-                let btnStyle = "bg-white border-slate-300 text-slate-700 hover:bg-slate-50";
-                
-                if (status === "answered") {
-                  btnStyle = "bg-[#16a34a] border-[#15803d] text-white";
-                } else if (status === "marked") {
-                  btnStyle = "bg-[#7c3aed] border-[#6d28d9] text-white";
-                } else if (status === "marked_answered") {
-                  btnStyle = "bg-[#7c3aed] border-[#6d28d9] text-white relative after:content-[''] after:absolute after:bottom-0.5 after:right-0.5 after:w-1.5 after:h-1.5 after:bg-[#16a34a] after:rounded-full after:border after:border-white";
-                } else if (status === "not_answered") {
-                  btnStyle = "bg-natural-terracotta border-[#b91c1c] text-white";
-                }
-
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => handlePaletteClick(idx)}
-                    className={`w-7 h-7 text-[10px] font-black rounded-lg border transition-all flex items-center justify-center cursor-pointer ${btnStyle} ${
-                      isActive ? "ring-2 ring-natural-dark ring-offset-1 scale-105" : ""
-                    }`}
-                    title={`Question ${idx + 1}: ${status}`}
-                  >
-                    {idx + 1}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Legend Map */}
-            <div className="grid grid-cols-4 gap-1 text-[8px] font-black uppercase text-center bg-natural-beige-light/20 p-1.5 border border-natural-beige-dark/30 rounded-lg text-natural-sage">
-              <div className="flex items-center justify-center gap-1">
-                <span className="w-2 h-2 rounded bg-[#16a34a]" /> Saved
-              </div>
-              <div className="flex items-center justify-center gap-1">
-                <span className="w-2 h-2 rounded bg-natural-terracotta" /> Skip/Not Ans
-              </div>
-              <div className="flex items-center justify-center gap-1">
-                <span className="w-2 h-2 rounded bg-[#7c3aed]" /> Marked
-              </div>
-              <div className="flex items-center justify-center gap-1">
-                <span className="w-2.5 h-2.5 rounded border border-slate-300 bg-white" /> Not Visited
-              </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowPalette(prev => !prev)}
+                className="text-[10px] font-bold text-natural-dark bg-natural-beige-light hover:bg-natural-beige-dark/50 border border-natural-beige-dark px-3 py-1.5 rounded-lg transition cursor-pointer flex items-center gap-1"
+              >
+                {showPalette ? "📐 Hide Palette" : "📊 Question Palette (1-20)"}
+              </button>
             </div>
           </div>
 
-          {/* Active Question Panel */}
-          {worksheet.problems[currentMcqIdx] && (
-            <div className="border border-natural-beige-dark rounded-2xl p-4 bg-white space-y-4" id="jee_question_box">
-              {/* Question Index and Difficulty Badge */}
-              <div className="flex justify-between items-center pb-2 border-b border-dashed border-natural-beige-dark">
-                <span className="bg-natural-primary/10 text-natural-primary font-mono text-[10px] font-black px-2.5 py-0.5 rounded-full border border-natural-primary/20">
-                  Question {currentMcqIdx + 1} of 20
-                </span>
-                <span className={`text-[9px] uppercase font-bold border px-2 py-0.5 rounded-md ${getProblemDifficulty(currentMcqIdx).color}`}>
-                  {getProblemDifficulty(currentMcqIdx).dot} {getProblemDifficulty(currentMcqIdx).label} Level
-                </span>
+          {/* Collapsible Palette Grid */}
+          {showPalette && (
+            <div className="space-y-2 p-3 bg-natural-beige-light/40 border border-natural-beige-dark/60 rounded-xl animate-fade-in">
+              <div className="flex justify-between items-center text-[10px] px-1 font-bold text-natural-sage uppercase tracking-wider">
+                <span>Question Palette</span>
+                <span className="text-natural-primary">Saved: {Object.keys(userAnswers).length} / 20</span>
               </div>
 
-              {/* Question Text */}
-              <p className="font-extrabold text-xs text-natural-dark leading-relaxed">
-                {worksheet.problems[currentMcqIdx].question}
-              </p>
+              {/* Grid of 20 Palette Squares */}
+              <div className="grid grid-cols-10 gap-1.5 justify-center py-2 bg-white/80 border border-natural-beige-dark/50 rounded-xl p-2">
+                {worksheet.problems.map((_, idx) => {
+                  const status = mcqStatuses[idx] || "not_visited";
+                  const isActive = currentMcqIdx === idx;
+                  
+                  let btnStyle = "bg-white border-slate-300 text-slate-700 hover:bg-slate-50";
+                  
+                  if (status === "answered") {
+                    btnStyle = "bg-[#16a34a] border-[#15803d] text-white";
+                  } else if (status === "marked") {
+                    btnStyle = "bg-[#7c3aed] border-[#6d28d9] text-white";
+                  } else if (status === "marked_answered") {
+                    btnStyle = "bg-[#7c3aed] border-[#6d28d9] text-white relative after:content-[''] after:absolute after:bottom-0.5 after:right-0.5 after:w-1.5 after:h-1.5 after:bg-[#16a34a] after:rounded-full after:border after:border-white";
+                  } else if (status === "not_answered") {
+                    btnStyle = "bg-natural-terracotta border-[#b91c1c] text-white";
+                  }
 
-              {/* Options */}
-              <div className="grid grid-cols-1 gap-2.5">
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => handlePaletteClick(idx)}
+                      className={`w-7 h-7 text-[10px] font-black rounded-lg border transition-all flex items-center justify-center cursor-pointer ${btnStyle} ${
+                        isActive ? "ring-2 ring-natural-dark ring-offset-1 scale-105" : ""
+                      }`}
+                      title={`Question ${idx + 1}: ${status}`}
+                    >
+                      {idx + 1}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Legend Map */}
+              <div className="grid grid-cols-4 gap-1 text-[8px] font-black uppercase text-center bg-white/60 p-1.5 border border-natural-beige-dark/30 rounded-lg text-natural-sage">
+                <div className="flex items-center justify-center gap-1">
+                  <span className="w-2 h-2 rounded bg-[#16a34a]" /> Saved
+                </div>
+                <div className="flex items-center justify-center gap-1">
+                  <span className="w-2 h-2 rounded bg-natural-terracotta" /> Skip/Not Ans
+                </div>
+                <div className="flex items-center justify-center gap-1">
+                  <span className="w-2 h-2 rounded bg-[#7c3aed]" /> Marked
+                </div>
+                <div className="flex items-center justify-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded border border-slate-300 bg-white" /> Not Visited
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MAXIMIZED QUESTION DIVISION */}
+          {worksheet.problems[currentMcqIdx] && (
+            <div className="border border-natural-beige-dark rounded-2xl p-5 sm:p-7 bg-white space-y-6 shadow-xs min-h-[260px] flex flex-col justify-between" id="jee_question_box">
+              {/* Question Text */}
+              <div className="space-y-2">
+                <div className="text-[10px] font-extrabold uppercase tracking-widest text-natural-sage">
+                  Question {currentMcqIdx + 1} of {worksheet.problems.length}
+                </div>
+                <h3 className="font-extrabold text-base sm:text-lg text-natural-dark leading-relaxed">
+                  {worksheet.problems[currentMcqIdx].question}
+                </h3>
+              </div>
+
+              {/* Options Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
                 {worksheet.problems[currentMcqIdx].options.map((opt, oIdx) => {
                   const letter = opt.trim().charAt(0);
                   const isStaged = stagedOption === letter;
 
-                  let buttonStyle = "bg-white border border-natural-beige-dark hover:border-natural-sage hover:bg-natural-beige-light/30 text-natural-dark";
+                  let buttonStyle = "bg-white border-2 border-natural-beige-dark/80 hover:border-natural-sage hover:bg-natural-beige-light/30 text-natural-dark";
                   if (isStaged) {
-                    buttonStyle = "bg-natural-cream border-2 border-natural-terracotta text-natural-dark font-extrabold";
+                    buttonStyle = "bg-natural-cream border-2 border-natural-terracotta text-natural-dark font-extrabold shadow-xs";
                   }
 
                   return (
                     <button
                       key={oIdx}
                       onClick={() => setStagedOption(letter)}
-                      className={`p-3 rounded-xl text-xs font-semibold text-left transition-all duration-100 flex items-center justify-between cursor-pointer ${buttonStyle}`}
+                      className={`p-4 rounded-xl text-xs sm:text-sm font-bold text-left transition-all duration-150 flex items-center justify-between cursor-pointer ${buttonStyle}`}
                     >
                       <span>{opt}</span>
-                      {isStaged && <span className="text-[10px] text-natural-terracotta bg-white border border-natural-terracotta/20 px-2 py-0.5 rounded-full font-black">Staged</span>}
+                      {isStaged && <span className="text-[10px] text-natural-terracotta bg-white border border-natural-terracotta/30 px-2.5 py-1 rounded-full font-black shrink-0">Selected</span>}
                     </button>
                   );
                 })}
@@ -679,78 +710,69 @@ export default function PracticeQuiz({
             </div>
           )}
 
-          {/* Bottom Action Control Row 1: Clear & Review */}
-          <div className="flex justify-between items-center gap-2">
-            <button
-              onClick={handleJeeClearResponse}
-              className="text-[10px] font-bold text-natural-sage hover:text-natural-dark bg-natural-beige-light/40 hover:bg-natural-beige-light border border-natural-beige-dark px-3 py-1.5 rounded-lg transition cursor-pointer uppercase tracking-wider"
-            >
-              Clear Response
-            </button>
-
-            <button
-              onClick={handleJeeMarkForReview}
-              className="text-[10px] font-black text-white bg-[#7c3aed] hover:bg-[#6d28d9] px-3.5 py-1.5 rounded-lg transition cursor-pointer flex items-center gap-1 uppercase tracking-wider"
-            >
-              <Bookmark size={11} /> Mark for Review & Next
-            </button>
-          </div>
-
-          {/* Bottom Action Control Row 2: Prev, Save & Next, Next */}
-          <div className="pt-2 border-t border-natural-beige-dark/50 flex justify-between items-center gap-2">
+          {/* MAXIMIZED NAVIGATION ACTION BAR (PREV / SAVE & NEXT / NEXT) */}
+          <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
             <button
               onClick={handleJeePrev}
               disabled={currentMcqIdx === 0}
-              className="flex items-center gap-1 px-3 py-2 bg-white disabled:opacity-40 disabled:cursor-not-allowed border border-natural-beige-dark rounded-xl text-xs font-bold text-natural-dark hover:bg-natural-beige-light/20 transition cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2.5 bg-white disabled:opacity-40 disabled:cursor-not-allowed border-2 border-natural-beige-dark rounded-xl text-xs font-black text-natural-dark hover:bg-natural-beige-light/40 transition cursor-pointer shadow-2xs"
             >
-              <ChevronLeft size={14} /> Prev
+              <ChevronLeft size={16} /> Previous
             </button>
 
-            <button
-              onClick={handleJeeSaveAndNext}
-              className="flex-1 max-w-[150px] px-3 py-2 bg-[#16a34a] hover:bg-[#15803d] text-white rounded-xl text-xs font-black shadow-sm transition cursor-pointer text-center uppercase tracking-wider"
-            >
-              Save & Next
-            </button>
+            <div className="flex items-center gap-2 flex-1 justify-end">
+              <button
+                onClick={handleJeeClearResponse}
+                className="text-[10px] font-bold text-natural-sage hover:text-natural-dark bg-natural-beige-light/50 hover:bg-natural-beige-light border border-natural-beige-dark px-3 py-2 rounded-xl transition cursor-pointer hidden sm:block"
+              >
+                Clear Selection
+              </button>
 
-            <button
-              onClick={handleJeeNext}
-              disabled={currentMcqIdx === worksheet.problems.length - 1}
-              className="flex items-center gap-1 px-3 py-2 bg-white disabled:opacity-40 disabled:cursor-not-allowed border border-natural-beige-dark rounded-xl text-xs font-bold text-natural-dark hover:bg-natural-beige-light/20 transition cursor-pointer"
-            >
-              Next <ChevronRight size={14} />
-            </button>
+              <button
+                onClick={handleJeeMarkForReview}
+                className="text-[10px] font-extrabold text-white bg-[#7c3aed] hover:bg-[#6d28d9] px-3.5 py-2 rounded-xl transition cursor-pointer flex items-center gap-1 uppercase tracking-wider shadow-2xs hidden sm:flex"
+              >
+                <Bookmark size={12} /> Mark & Next
+              </button>
+
+              <button
+                onClick={handleJeeSaveAndNext}
+                className="px-5 py-2.5 bg-[#16a34a] hover:bg-[#15803d] text-white rounded-xl text-xs font-black shadow-xs transition cursor-pointer text-center uppercase tracking-wider flex items-center gap-1"
+              >
+                Save & Next <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
 
           {/* Submit Exam Section */}
           <div className="pt-3 border-t border-dashed border-natural-beige-dark/70 text-center">
             {confirmSubmitOpen ? (
-              <div className="bg-natural-cream/80 border border-natural-terracotta/30 rounded-xl p-3 text-xs space-y-2 animate-fade-in">
+              <div className="bg-natural-cream/80 border border-natural-terracotta/30 rounded-xl p-3.5 text-xs space-y-2.5 animate-fade-in max-w-md mx-auto">
                 <p className="font-extrabold text-natural-dark">
-                  Are you sure you want to submit the exam?
+                  Are you ready to submit the exam paper?
                 </p>
                 <p className="text-[10px] text-natural-sage">
-                  You have saved answers for {Object.keys(userAnswers).length} out of 20 questions.
+                  Saved responses: {Object.keys(userAnswers).length} / {worksheet.problems.length}.
                 </p>
-                <div className="flex justify-center gap-2">
+                <div className="flex justify-center gap-2.5">
                   <button
                     onClick={() => setConfirmSubmitOpen(false)}
-                    className="px-3 py-1 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg font-bold text-[10px] text-slate-700 cursor-pointer"
+                    className="px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg font-bold text-[10px] text-slate-700 cursor-pointer"
                   >
-                    Cancel
+                    Keep Working
                   </button>
                   <button
                     onClick={submitJeeExam}
-                    className="px-3.5 py-1 bg-natural-terracotta hover:bg-natural-terracotta/95 text-white rounded-lg font-black text-[10px] cursor-pointer"
+                    className="px-4 py-1.5 bg-natural-terracotta hover:bg-natural-terracotta/95 text-white rounded-lg font-black text-[10px] cursor-pointer shadow-2xs"
                   >
-                    Yes, Submit
+                    Yes, Submit Now
                   </button>
                 </div>
               </div>
             ) : (
               <button
                 onClick={() => setConfirmSubmitOpen(true)}
-                className="w-full py-2 bg-natural-primary hover:bg-natural-primary/95 text-white font-black text-xs rounded-xl shadow-sm transition cursor-pointer uppercase tracking-wider"
+                className="w-full py-2.5 bg-natural-primary hover:bg-natural-primary/95 text-white font-black text-xs rounded-xl shadow-xs transition cursor-pointer uppercase tracking-wider"
               >
                 Submit Exam Paper
               </button>
@@ -805,7 +827,15 @@ export default function PracticeQuiz({
 
           {/* Bottom Action bar */}
           <div className="pt-4 border-t border-natural-beige-dark flex flex-wrap justify-between items-center gap-3">
-            <div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handlePrevQuestion}
+                disabled={currentIdx === 0}
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-white disabled:opacity-40 disabled:cursor-not-allowed border-2 border-natural-beige-dark rounded-xl text-xs font-black text-natural-dark hover:bg-natural-beige-light/40 transition cursor-pointer shadow-2xs"
+              >
+                <ChevronLeft size={16} /> Previous
+              </button>
+
               {!isSubmitted ? (
                 <button
                   onClick={() => setShowHint(prev => !prev)}
@@ -817,11 +847,11 @@ export default function PracticeQuiz({
                 <div className="flex items-center gap-2 text-xs font-extrabold">
                   {isCorrect ? (
                     <span className="text-[#3c5030] bg-[#e7f0e3] border border-natural-primary/30 px-3 py-1.5 rounded-lg flex items-center gap-1">
-                      🎉 Correct Answer! (+20 Points)
+                      🎉 Correct! (+20 Pts)
                     </span>
                   ) : (
                     <span className="text-natural-terracotta bg-natural-cream border border-natural-terracotta/30 px-3 py-1.5 rounded-lg flex items-center gap-1">
-                      💪 Don't give up, let's learn!
+                      💪 Solution below
                     </span>
                   )}
                 </div>

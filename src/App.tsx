@@ -16,6 +16,9 @@ import {
   GRADE_1_MATHS_CHAPTERS,
   GRADE_1_EVS_CHAPTERS,
   GRADE_1_TELUGU_CHAPTERS,
+  GRADE_6_TELUGU_CHAPTERS,
+  GRADE_6_HINDI_CHAPTERS,
+  GRADE_6_SOCIALSCIENCE_CHAPTERS,
   GRADE_1_HINDI_CHAPTERS,
   GRADE_1_ENGLISH_CHAPTERS
 } from "./data/lessons";
@@ -49,8 +52,11 @@ export default function App() {
       return [];
     }
     // grade === 6
+    if (selectedSubject === "telugu") return GRADE_6_TELUGU_CHAPTERS;
+    if (selectedSubject === "hindi") return GRADE_6_HINDI_CHAPTERS;
+    if (selectedSubject === "social_science") return GRADE_6_SOCIALSCIENCE_CHAPTERS;
     if (selectedSubject === "maths") return GRADE_6_CHAPTERS;
-    return [];
+    return GRADE_6_CHAPTERS;
   };
 
   const currentChapters = getChaptersForGrade(selectedGrade);
@@ -68,9 +74,15 @@ export default function App() {
   const [activeTool, setActiveTool] = useState<"fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers" | "clock">("fraction");
   const [activeHighlightMode, setActiveHighlightMode] = useState<string>("all");
 
-  // Indian CBSE Student Profile States
-  const [studentName] = useState<string>("నాన్న");
-  const [studentRoll] = useState<string>("CBSE-6-Roll14");
+  // Indian CBSE Student Profile States (Grade-wise)
+  const [gradeStudentNames, setGradeStudentNames] = useState<Record<1 | 6 | 9, string>>({
+    1: "L Sidharth",
+    6: "L Sree Akhil",
+    9: "L Parinitha"
+  });
+
+  const studentName = gradeStudentNames[selectedGrade] || "L Sree Akhil";
+  const studentRoll = `CBSE-${selectedGrade}-Roll${selectedGrade === 1 ? '01' : selectedGrade === 6 ? '14' : '09'}`;
   const [schoolName] = useState<string>("Delhi Public School, R.K. Puram");
   
   const [scorePoints, setScorePoints] = useState<number>(140);
@@ -145,24 +157,140 @@ export default function App() {
   return (
     <div className="min-h-screen bg-natural-bg text-slate-800 font-sans flex flex-col antialiased" id="root_viewport">
       {/* Top Header */}
-      <header className="bg-natural-beige-light border-b border-natural-beige-dark px-4 md:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xs shrink-0 select-none">
-        {/* App Branding */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-natural-primary flex items-center justify-center text-white font-black shadow-md shadow-natural-primary/20 text-lg">
+      <header className="bg-natural-beige-light border-b border-natural-beige-dark px-4 md:px-6 py-3 flex flex-row items-center justify-between gap-3 shadow-xs shrink-0 select-none">
+        {/* App Branding / Active Chapter Header */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button 
+            onClick={() => {
+              setActiveSection("dashboard");
+            }}
+            className="w-10 h-10 rounded-2xl bg-natural-primary hover:bg-natural-primary/90 flex items-center justify-center text-white font-black shadow-md shadow-natural-primary/20 text-lg transition cursor-pointer shrink-0"
+            title="Go to Dashboard"
+            id="app_header_logo_btn"
+          >
             Σ
-          </div>
-          <div>
-            <h1 className="text-sm md:text-base font-black text-natural-dark tracking-tight">CBSE Math & Learning Companion</h1>
-            <p className="text-[9px] md:text-[10px] text-natural-sage font-bold uppercase tracking-wider">Interactive, Gamified Self-Study</p>
-          </div>
+          </button>
+          {(activeSection === "lessons" || activeSection === "quiz" || activeSection === "visualtools") && selectedChapter ? (
+            <div className="flex items-center gap-2.5" id="header_active_chapter_info">
+              <button
+                onClick={() => setActiveSection("dashboard")}
+                className="flex items-center gap-1.5 text-xs font-bold text-natural-dark bg-white hover:bg-natural-beige-light px-3 py-1.5 rounded-xl border border-natural-beige-dark shadow-2xs transition cursor-pointer shrink-0 active:scale-95"
+                id="header_back_to_chapters_btn"
+              >
+                <ArrowLeft size={14} /> Back to Chapters
+              </button>
+              <div className="hidden sm:block h-6 w-px bg-natural-beige-dark/80" />
+              <div>
+                <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] text-natural-primary font-extrabold uppercase tracking-wider">
+                  <span>Grade {selectedGrade}</span>
+                  <span>•</span>
+                  <span className="capitalize">{selectedSubject === "maths" ? "Mathematics" : selectedSubject === "social_science" ? "Social Science" : selectedSubject}</span>
+                </div>
+                <h1 className="text-sm md:text-base font-black text-natural-dark tracking-tight line-clamp-1 max-w-[180px] sm:max-w-xs md:max-w-sm">
+                  {selectedChapter.chapterNumber ? `Ch ${selectedChapter.chapterNumber}: ` : ""}{selectedChapter.title}
+                </h1>
+              </div>
+            </div>
+          ) : showChapters ? (
+            <div className="flex items-center gap-2.5" id="chapters_view_header">
+              <button
+                onClick={() => {
+                  setShowChapters(false);
+                  setShowGrade1Topics(false);
+                  setShowGrade6And9Topics(false);
+                }}
+                className="flex items-center gap-1.5 text-xs font-bold text-natural-dark bg-white hover:bg-natural-beige-light px-3 py-1.5 rounded-xl border border-natural-beige-dark shadow-2xs transition cursor-pointer shrink-0 active:scale-95"
+                id="header_change_grade_btn"
+              >
+                <ArrowLeft size={14} /> Change Grade
+              </button>
+              <div className="hidden sm:block h-6 w-px bg-natural-beige-dark/80" />
+              <div className="flex items-center gap-2">
+                <span className="text-xl">
+                  {selectedGrade === 1 ? "🌱" : selectedGrade === 6 ? "📙" : "🚀"}
+                </span>
+                <div>
+                  <h1 className="text-sm md:text-base font-black text-natural-dark tracking-tight leading-tight">
+                    Grade {selectedGrade} Syllabus
+                  </h1>
+                  <p className="text-[9px] md:text-[10px] text-natural-sage font-bold uppercase tracking-wider leading-tight">
+                    {selectedGrade === 1 
+                      ? (!showGrade1Topics ? "Select a Subject" : `${selectedSubject} Module`) 
+                      : (!showGrade6And9Topics ? "Select a Subject" : `NCERT ${selectedSubject === "maths" ? "Mathematics" : selectedSubject === "social_science" ? "Social Science" : selectedSubject.toUpperCase()}`)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <h1 className="text-sm md:text-base font-black text-natural-dark tracking-tight">CBSE Math & Learning Companion</h1>
+              <p className="text-[9px] md:text-[10px] text-natural-sage font-bold uppercase tracking-wider">Interactive, Gamified Self-Study</p>
+            </div>
+          )}
         </div>
 
+        {/* Chapter Navigation Tabs in Top Division */}
+        {(activeSection === "lessons" || activeSection === "quiz" || activeSection === "visualtools") && selectedChapter && (
+          <div className="flex items-center gap-1.5 shrink-0" id="top_header_chapter_tabs">
+            <button
+              onClick={() => setActiveSection("lessons")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                activeSection === "lessons"
+                  ? "bg-natural-primary text-white shadow-xs font-black"
+                  : "bg-white/80 hover:bg-white text-natural-sage hover:text-natural-dark border border-natural-beige-dark/60 shadow-2xs"
+              }`}
+            >
+              <span>📖</span> <span>Lesson</span>
+            </button>
+            <button
+              onClick={() => setActiveSection("quiz")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 cursor-pointer ${
+                activeSection === "quiz"
+                  ? "bg-natural-primary text-white shadow-xs font-black"
+                  : "bg-white/80 hover:bg-white text-natural-sage hover:text-natural-dark border border-natural-beige-dark/60 shadow-2xs"
+              }`}
+            >
+              <span>✍️</span> <span>Practice Tab</span>
+            </button>
+            <button
+              onClick={() => {
+                setActiveTool(
+                  selectedSubject === "physics" ? "motion" :
+                  selectedSubject === "chemistry" ? "atombuilder" :
+                  selectedChapter.id === "g9_coordinate" ? "coordinate" :
+                  selectedChapter.id === "g9_polynomials" ? "polynomials" :
+                  "fraction"
+                );
+                setActiveSection("visualtools");
+              }}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                activeSection === "visualtools"
+                  ? "bg-natural-primary text-white shadow-xs font-black"
+                  : "bg-white/80 hover:bg-white text-natural-sage hover:text-natural-dark border border-natural-beige-dark/60 shadow-2xs"
+              }`}
+            >
+              <span>🔬</span> <span>Visual Explorer</span>
+            </button>
+          </div>
+        )}
+
         {/* Student Profile Stats Card */}
-        <div className="flex flex-wrap items-center justify-center gap-3 bg-white border border-natural-beige-dark/60 p-2 md:p-2.5 rounded-2xl shadow-xs">
-          <div className="flex items-center gap-2 px-3 border-r border-slate-100">
-            <span className="text-base">👨‍🏫</span>
+        <div className="flex flex-wrap items-center justify-center gap-3 bg-white border border-natural-beige-dark/60 p-2 md:p-2.5 rounded-2xl shadow-xs shrink-0">
+          <div 
+            onClick={() => {
+              const newName = prompt(`Enter student name for Grade ${selectedGrade}:`, studentName);
+              if (newName && newName.trim()) {
+                setGradeStudentNames(prev => ({ ...prev, [selectedGrade]: newName.trim() }));
+              }
+            }}
+            className="flex items-center gap-2 px-3 border-r border-slate-100 cursor-pointer hover:bg-natural-beige-light/50 p-1 rounded-xl transition"
+            title="Click to edit student name"
+          >
+            <span className="text-base">🎓</span>
             <div>
-              <span className="text-[8px] font-bold text-natural-sage block leading-none">Student</span>
+              <span className="text-[8px] font-bold text-natural-sage block leading-none flex items-center gap-1">
+                Student <span className="text-[7px] text-natural-primary font-normal">✏️</span>
+              </span>
               <span className="text-xs font-black text-slate-800">{studentName}</span>
             </div>
           </div>
@@ -190,37 +318,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* Navigation Tab Bar */}
-      <nav className="bg-white border-b border-natural-beige-dark sticky top-0 z-40 shadow-xs select-none">
-        <div className="max-w-5xl mx-auto px-4 flex justify-around md:justify-start gap-1 md:gap-4 py-2">
-          {[
-            { id: "dashboard", label: "Dashboard", icon: Trophy, onClick: () => { setActiveSection("dashboard"); setShowChapters(false); } },
-            { id: "visualtools", label: "Math Lab", icon: Compass, onClick: () => { setActiveTool("fraction"); setActiveSection("visualtools"); } },
-            { id: "tutor", label: "Mitra (AI)", icon: Sparkles, onClick: () => setActiveSection("tutor") },
-            { id: "achievements", label: "Trophy Room", icon: Award, onClick: () => setActiveSection("achievements") }
-          ].map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeSection === tab.id || 
-              (tab.id === "dashboard" && (activeSection === "lessons" || activeSection === "quiz"));
-            return (
-              <button
-                key={tab.id}
-                onClick={tab.onClick}
-                className={`flex items-center gap-2 py-2 px-3 md:px-4 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                  isActive
-                    ? "bg-natural-primary text-white shadow-sm"
-                    : "text-natural-sage hover:text-natural-dark hover:bg-natural-beige-light/50"
-                }`}
-                id={`nav_${tab.id}`}
-              >
-                <Icon size={15} />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
-
       {/* Main Workspace Column */}
       <main className="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 lg:p-8 space-y-6" id="app_workspace">
         {/* Render the active viewport nicely */}
@@ -239,9 +336,9 @@ export default function App() {
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4" id="grade_selector_group">
                       {[
-                        { g: 1 as const, label: "Grade 1", emoji: "🌱", sub: "Class I" },
-                        { g: 6 as const, label: "Grade 6", emoji: "📙", sub: "Class VI" },
-                        { g: 9 as const, label: "Grade 9", emoji: "🚀", sub: "Class IX" }
+                        { g: 1 as const, label: "Grade 1", emoji: "🌱", sub: "Class I", student: gradeStudentNames[1] },
+                        { g: 6 as const, label: "Grade 6", emoji: "📙", sub: "Class VI", student: gradeStudentNames[6] },
+                        { g: 9 as const, label: "Grade 9", emoji: "🚀", sub: "Class IX", student: gradeStudentNames[9] }
                       ].map((item) => (
                         <button
                           key={item.g}
@@ -251,12 +348,19 @@ export default function App() {
                             setShowGrade1Topics(false);
                             setShowGrade6And9Topics(false);
                           }}
-                          className="p-5 rounded-2xl border text-center transition cursor-pointer flex flex-col items-center justify-center gap-2 bg-white hover:bg-natural-cream text-natural-dark border-natural-beige-dark/60 hover:border-natural-primary/40 hover:scale-[1.02] duration-200 shadow-xs"
+                          className={`p-5 rounded-2xl border text-center transition cursor-pointer flex flex-col items-center justify-center gap-2 duration-200 shadow-xs ${
+                            selectedGrade === item.g 
+                              ? "bg-natural-beige-light border-natural-primary shadow-sm" 
+                              : "bg-white hover:bg-natural-cream text-natural-dark border-natural-beige-dark/60 hover:border-natural-primary/40 hover:scale-[1.02]"
+                          }`}
                           id={`btn_grade_${item.g}`}
                         >
                           <span className="text-3xl">{item.emoji}</span>
                           <span className="text-sm font-black">{item.label}</span>
                           <span className="text-[10px] font-extrabold opacity-75 block leading-none">{item.sub}</span>
+                          <span className="text-[11px] font-bold text-natural-primary bg-natural-beige-light px-2.5 py-1 rounded-full border border-natural-beige-dark/60 mt-1 flex items-center gap-1">
+                            👤 {item.student}
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -290,35 +394,6 @@ export default function App() {
                 </div>
               ) : (
                 <div className="space-y-6 animate-fade-in" id="syllabus_chapters_view">
-                  {/* Selected Syllabus Header with Back Button */}
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-natural-beige-light border border-natural-beige-dark/60 rounded-2xl p-4 shadow-xs" id="chapters_view_header">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">
-                        {selectedGrade === 1 ? "🌱" : selectedGrade === 6 ? "📙" : "🚀"}
-                      </span>
-                      <div>
-                        <h4 className="font-extrabold text-sm text-natural-dark leading-none">
-                          Grade {selectedGrade} Syllabus
-                        </h4>
-                        <p className="text-[10px] text-natural-sage mt-1 font-bold uppercase tracking-wider">
-                          {selectedGrade === 1 
-                            ? (!showGrade1Topics ? "Select a Subject" : `${selectedSubject} Module`) 
-                            : (!showGrade6And9Topics ? "Select a Subject" : `NCERT ${selectedSubject === "maths" ? "Mathematics" : selectedSubject === "social_science" ? "Social Science" : selectedSubject.toUpperCase()}`)}
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setShowChapters(false);
-                        setShowGrade1Topics(false);
-                        setShowGrade6And9Topics(false);
-                      }}
-                      className="flex items-center gap-1.5 text-xs font-extrabold text-natural-primary bg-white hover:bg-natural-cream border border-natural-beige-dark/60 px-4 py-2 rounded-xl cursor-pointer transition shadow-xs hover:scale-[1.02] duration-150"
-                    >
-                      <ArrowLeft size={12} /> Change Grade
-                    </button>
-                  </div>
-
                   {/* Subject Selector */}
                   {selectedGrade === 1 ? (
                     <div className="space-y-6">
@@ -335,22 +410,29 @@ export default function App() {
                               { s: "hindi" as const, label: "Hindi / హిందీ", desc: "Learn letters, counting, & simple fruits!", emoji: "🍇", activeBg: "bg-teal-600 border-teal-600 text-white shadow-md", inactiveBg: "bg-white hover:bg-teal-50/40 text-natural-dark border-natural-beige-dark/60" },
                               { s: "english" as const, label: "English / ఆంగ్లం", desc: "Learn phonics, naming words, & action words!", emoji: "🔤", activeBg: "bg-blue-600 border-blue-600 text-white shadow-md", inactiveBg: "bg-white hover:bg-blue-50/40 text-natural-dark border-natural-beige-dark/60" }
                             ].map((item) => (
-                              <button
+                              <div
                                 key={item.s}
-                                onClick={() => {
-                                  setSelectedSubject(item.s);
-                                  setShowGrade1Topics(true);
-                                }}
-                                className={`p-4 rounded-2xl border text-left transition duration-200 cursor-pointer flex gap-3.5 items-center ${
-                                  selectedSubject === item.s ? item.activeBg : item.inactiveBg
-                                }`}
+                                className="p-4 rounded-3xl border bg-white border-natural-beige-dark/60 hover:border-natural-primary/40 hover:scale-[1.01] hover:bg-natural-cream/10 transition-all duration-200 flex flex-col justify-between gap-3.5"
                               >
-                                <span className="text-3xl shrink-0">{item.emoji}</span>
-                                <div className="space-y-0.5">
-                                  <h4 className="font-extrabold text-sm">{item.label}</h4>
-                                  <p className="text-[10px] opacity-80 leading-normal">{item.desc}</p>
+                                <div className="flex gap-3.5 items-start">
+                                  <span className="text-3xl shrink-0 mt-0.5">{item.emoji}</span>
+                                  <div className="space-y-0.5">
+                                    <h4 className="font-extrabold text-sm text-natural-dark">{item.label}</h4>
+                                    <p className="text-[10px] text-natural-sage leading-normal">{item.desc}</p>
+                                  </div>
                                 </div>
-                              </button>
+                                <div className="pt-3 border-t border-natural-beige-dark/30">
+                                  <button
+                                    onClick={() => {
+                                      setSelectedSubject(item.s);
+                                      setShowGrade1Topics(true);
+                                    }}
+                                    className="w-full text-[10px] font-bold text-natural-primary bg-natural-beige-light hover:bg-natural-primary hover:text-white px-2 py-1.5 rounded-full border border-natural-beige-dark/50 transition duration-150 flex items-center justify-center gap-1 cursor-pointer"
+                                  >
+                                    📖 Lessons
+                                  </button>
+                                </div>
+                              </div>
                             ))}
                           </div>
                         </div>
@@ -386,14 +468,24 @@ export default function App() {
                                       {chapter.id === "g1_evs_family" && <User size={18} className="text-natural-primary" />}
                                       {chapter.id === "g1_evs_animals" && <Sparkles size={18} className="text-natural-primary animate-pulse" />}
                                       {chapter.id === "g1_evs_seasons" && <Compass size={18} className="text-natural-terracotta" />}
+                                      {chapter.id === "g1_evs_computer" && <Smartphone size={18} className="text-indigo-600 animate-pulse" />}
                                       {chapter.id === "g1_tel_achulu" && <BookOpen size={18} className="text-natural-primary" />}
+                                      {chapter.id === "g1_tel_hallulu" && <Sparkles size={18} className="text-natural-terracotta" />}
                                       {chapter.id === "g1_tel_words" && <Layers size={18} className="text-natural-primary animate-pulse" />}
+                                      {chapter.id === "g1_tel_words2" && <Layers size={18} className="text-natural-primary animate-pulse" />}
+                                      {chapter.id === "g1_tel_words3" && <Sparkles size={18} className="text-natural-terracotta animate-pulse" />}
+                                      {chapter.id === "g1_tel_guninthalu" && <Sparkles size={18} className="text-indigo-600 animate-pulse" />}
+                                      {chapter.id === "g1_tel_ottulu" && <Layers size={18} className="text-pink-600 animate-pulse" />}
                                       {chapter.id === "g1_hin_swar" && <BookOpen size={18} className="text-natural-primary" />}
                                       {chapter.id === "g1_hin_fruits" && <Sparkles size={18} className="text-natural-primary animate-pulse" />}
                                       {chapter.id === "g1_hin_gintee" && <Hash size={18} className="text-natural-sage" />}
                                       {chapter.id === "g1_eng_alphabet" && <BookOpen size={18} className="text-natural-primary" />}
                                       {chapter.id === "g1_eng_nouns" && <Ruler size={18} className="text-natural-primary" />}
                                       {chapter.id === "g1_eng_verbs" && <Sparkles size={18} className="text-natural-primary animate-pulse" />}
+                                      {chapter.id === "g1_eng_spelling" && <Sparkles size={18} className="text-amber-600 animate-pulse" />}
+                                      {chapter.id === "g6_soc_locating_places" && <Compass size={18} className="text-indigo-600 animate-pulse" />}
+                                      {chapter.id === "g6_soc_timeline_sources" && <BookOpen size={18} className="text-amber-600" />}
+                                      {chapter.id === "g6_soc_value_of_work" && <Sparkles size={18} className="text-emerald-600 animate-pulse" />}
                                     </div>
                                     <div>
                                       <span className="text-[8px] font-bold text-natural-sage uppercase tracking-wider">{chapter.badge}</span>
@@ -450,17 +542,15 @@ export default function App() {
                                 ]
                               : [
                                   { s: "maths" as const, label: "Maths / గణితం", desc: "Learn playing with numbers, decimals, fractions, and algebra!", emoji: "🍎", activeBg: "bg-slate-800 border-slate-800 text-white shadow-md", inactiveBg: "bg-white hover:bg-orange-50/40 text-natural-dark border-natural-beige-dark/60" },
+                                  { s: "social_science" as const, label: "Social Science / సామాజిక శాస్త్రం", desc: "Locating places on Earth, timeline & sources of history, value of work!", emoji: "🌍", activeBg: "bg-slate-800 border-slate-800 text-white shadow-md", inactiveBg: "bg-white hover:bg-indigo-50/40 text-natural-dark border-natural-beige-dark/60" },
                                   { s: "telugu" as const, label: "Telugu / తెలుగు", desc: "Discover intermediate telugu prose, poetry, and sweet idioms!", emoji: "✍️", activeBg: "bg-slate-800 border-slate-800 text-white shadow-md", inactiveBg: "bg-white hover:bg-rose-50/40 text-natural-dark border-natural-beige-dark/60" },
+                                  { s: "hindi" as const, label: "Hindi / हिंदी", desc: "Explore NCERT Vasant Part 1 poems, stories, & grammar!", emoji: "🍇", activeBg: "bg-slate-800 border-slate-800 text-white shadow-md", inactiveBg: "bg-white hover:bg-teal-50/40 text-natural-dark border-natural-beige-dark/60" },
                                   { s: "english" as const, label: "English / ఆంగ్లం", desc: "Practice creative writing, essential grammar, and classic stories!", emoji: "🔤", activeBg: "bg-slate-800 border-slate-800 text-white shadow-md", inactiveBg: "bg-white hover:bg-blue-50/40 text-natural-dark border-natural-beige-dark/60" }
                                 ]
                             ).map((item) => (
-                              <button
+                              <div
                                 key={item.s}
-                                onClick={() => {
-                                  setSelectedSubject(item.s);
-                                  setShowGrade6And9Topics(true);
-                                }}
-                                className={`p-5 rounded-2xl border text-left transition duration-200 cursor-pointer flex flex-col justify-between items-stretch gap-4 bg-white border-natural-beige-dark/60 hover:border-natural-primary/40 hover:scale-[1.01] hover:bg-natural-cream/10`}
+                                className="p-5 rounded-2xl border text-left transition duration-200 flex flex-col justify-between items-stretch gap-4 bg-white border-natural-beige-dark/60 hover:border-natural-primary/40 hover:scale-[1.01] hover:bg-natural-cream/10"
                               >
                                 <div className="flex gap-4 items-start">
                                   <span className="text-3xl shrink-0 mt-0.5">{item.emoji}</span>
@@ -469,12 +559,28 @@ export default function App() {
                                     <p className="text-[10px] text-natural-sage leading-normal">{item.desc}</p>
                                   </div>
                                 </div>
-                                <div className="pt-3 border-t border-natural-beige-dark/30 flex justify-end">
-                                  <span className="text-[10px] font-bold text-natural-primary bg-natural-beige-light hover:bg-natural-primary hover:text-white px-3 py-1.5 rounded-full border border-natural-beige-dark/50 transition duration-150 flex items-center gap-1">
-                                    📖 Topics Button
-                                  </span>
+                                <div className="pt-3 border-t border-natural-beige-dark/30 grid grid-cols-2 gap-2">
+                                  <button
+                                    onClick={() => {
+                                      setSelectedSubject(item.s);
+                                      setShowGrade6And9Topics(true);
+                                    }}
+                                    className="text-[10px] font-bold text-natural-primary bg-natural-beige-light hover:bg-natural-primary hover:text-white px-2 py-1.5 rounded-full border border-natural-beige-dark/50 transition duration-150 flex items-center justify-center gap-1 cursor-pointer"
+                                  >
+                                    📖 Study Chapters
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setSelectedSubject(item.s);
+                                      setActiveSection("visualtools");
+                                      setActiveTool(item.s === "physics" ? "motion" as any : item.s === "chemistry" ? "atombuilder" as any : "fraction");
+                                    }}
+                                    className="text-[10px] font-black text-white bg-natural-terracotta hover:bg-natural-terracotta-dark px-2 py-1.5 rounded-full shadow-xs hover:scale-[1.02] transition duration-150 flex items-center justify-center gap-1 cursor-pointer animate-pulse"
+                                  >
+                                    🔬 Visual Tool
+                                  </button>
                                 </div>
-                              </button>
+                              </div>
                             ))}
                           </div>
                         </div>
@@ -496,10 +602,9 @@ export default function App() {
                             {currentChapters.length > 0 ? (
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {currentChapters.map((chapter) => (
-                                  <button
+                                  <div
                                     key={chapter.id}
-                                    onClick={() => handleChapterSelect(chapter)}
-                                    className={`p-4 rounded-2xl border text-left transition duration-200 cursor-pointer flex justify-between items-center group relative overflow-hidden shadow-xs bg-white border-natural-beige-dark hover:border-natural-primary/50 hover:bg-natural-cream/20`}
+                                    className={`p-4 rounded-2xl border text-left transition duration-200 flex flex-col justify-between gap-3 group relative overflow-hidden shadow-xs bg-white border-natural-beige-dark hover:border-natural-primary/50 hover:bg-natural-cream/20`}
                                   >
                                     <div className="flex items-center gap-3">
                                       <div className="w-10 h-10 rounded-xl bg-natural-beige-light flex items-center justify-center text-lg shadow-inner group-hover:scale-105 transition shrink-0">
@@ -531,10 +636,24 @@ export default function App() {
                                         </p>
                                       </div>
                                     </div>
-                                    <span className="text-[10px] font-bold text-natural-primary bg-natural-beige-light px-3 py-1 rounded-full border border-natural-beige-dark/50 shrink-0">
-                                      Open
-                                    </span>
-                                  </button>
+                                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                                      <button
+                                        onClick={() => handleChapterSelect(chapter)}
+                                        className="text-[10px] font-bold text-natural-dark bg-natural-beige-light hover:bg-natural-beige-dark/60 px-3 py-1.5 rounded-xl border border-natural-beige-dark/50 shrink-0 transition flex items-center gap-1 cursor-pointer"
+                                      >
+                                        📖 Study
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          setSelectedChapter(chapter);
+                                          setActiveSection("quiz");
+                                        }}
+                                        className="text-[10px] font-black text-white bg-natural-primary hover:bg-natural-primary/90 px-3 py-1.5 rounded-xl shadow-xs hover:scale-[1.02] transition shrink-0 flex items-center gap-1 cursor-pointer"
+                                      >
+                                        ✍️ Practice Tab
+                                      </button>
+                                    </div>
+                                  </div>
                                 ))}
                               </div>
                             ) : (
@@ -588,62 +707,41 @@ export default function App() {
             </div>
           )}
 
+
           {/* 2. CHAPTER LESSON VIEW */}
           {activeSection === "lessons" && (
-            <div className="p-6 space-y-4 animate-fade-in">
-              <button
-                onClick={() => setActiveSection("dashboard")}
-                className="flex items-center gap-1.5 text-xs font-semibold text-natural-sage hover:text-natural-dark transition cursor-pointer mb-2"
-              >
-                <ArrowLeft size={14} /> Back to Chapters
-              </button>
-              <LessonSection
-                selectedChapter={selectedChapter}
-                onOpenTool={(toolId, highlightMode) => {
-                  setActiveTool(toolId);
-                  setActiveHighlightMode(highlightMode || "all");
-                  setActiveSection("visualtools");
-                }}
-                onOpenWorksheet={() => setActiveSection("quiz")}
-                onActionComplete={handleTutorAction}
-              />
-            </div>
+            <LessonSection
+              selectedChapter={selectedChapter}
+              onOpenTool={(toolId, highlightMode) => {
+                setActiveTool(toolId);
+                setActiveHighlightMode(highlightMode || "all");
+                setActiveSection("visualtools");
+              }}
+              onOpenWorksheet={() => setActiveSection("quiz")}
+              onActionComplete={handleTutorAction}
+            />
           )}
 
           {/* 3. WORKSHEET QUIZ VIEW */}
           {activeSection === "quiz" && (
-            <div className="p-6 space-y-4 animate-fade-in">
-              <button
-                onClick={() => setActiveSection("lessons")}
-                className="flex items-center gap-1.5 text-xs font-semibold text-natural-sage hover:text-natural-dark transition cursor-pointer mb-2"
-              >
-                <ArrowLeft size={14} /> Back to Lesson
-              </button>
-              <PracticeQuiz
-                chapterId={selectedChapter.id}
-                chapterTitle={selectedChapter.title}
-                onQuizComplete={handleQuizComplete}
-                onAskTutor={launchCustomTutorQuestion}
-              />
-            </div>
+            <PracticeQuiz
+              chapterId={selectedChapter.id}
+              chapterTitle={selectedChapter.title}
+              onQuizComplete={handleQuizComplete}
+              onAskTutor={launchCustomTutorQuestion}
+            />
           )}
 
           {/* 4. VISUAL TOOLS VIEW */}
           {activeSection === "visualtools" && (
-            <div className="p-6 space-y-4 animate-fade-in">
-              <button
-                onClick={() => setActiveSection("lessons")}
-                className="flex items-center gap-1.5 text-xs font-semibold text-natural-sage hover:text-natural-dark transition cursor-pointer mb-2"
-              >
-                <ArrowLeft size={14} /> Back to Lesson
-              </button>
-              <VisualTools
-                chapterId={selectedChapter.id}
-                initialTool={activeTool}
-                initialHighlightMode={activeHighlightMode}
-                onActionComplete={handleActionComplete}
-              />
-            </div>
+            <VisualTools
+              chapterId={selectedChapter.id}
+              subject={selectedSubject}
+              grade={selectedGrade}
+              initialTool={activeTool}
+              initialHighlightMode={activeHighlightMode}
+              onActionComplete={handleActionComplete}
+            />
           )}
 
           {/* 5. AI TUTOR CHAT VIEW */}
@@ -652,6 +750,8 @@ export default function App() {
               <TutorChat
                 currentChapterId={selectedChapter.title}
                 activeToolId={activeTool}
+                studentName={studentName}
+                selectedGrade={selectedGrade}
                 onTutorAction={handleTutorAction}
               />
             </div>
@@ -739,6 +839,36 @@ export default function App() {
           </div>
         </div>
       </main>
+
+      {/* Navigation Tab Bar (Moved to bottom) */}
+      <nav className="bg-white border-t border-natural-beige-dark sticky bottom-0 z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] select-none">
+        <div className="max-w-5xl mx-auto px-4 flex justify-around md:justify-start gap-1 md:gap-4 py-2">
+          {[
+            { id: "dashboard", label: "Dashboard", icon: Trophy, onClick: () => { setActiveSection("dashboard"); setShowChapters(false); } },
+            { id: "tutor", label: "Mitra (AI)", icon: Sparkles, onClick: () => setActiveSection("tutor") },
+            { id: "achievements", label: "Trophy Room", icon: Award, onClick: () => setActiveSection("achievements") }
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeSection === tab.id || 
+              (tab.id === "dashboard" && (activeSection === "lessons" || activeSection === "quiz"));
+            return (
+              <button
+                key={tab.id}
+                onClick={tab.onClick}
+                className={`flex items-center gap-2 py-2 px-3 md:px-4 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                  isActive
+                    ? "bg-natural-primary text-white shadow-sm"
+                    : "text-natural-sage hover:text-natural-dark hover:bg-natural-beige-light/50"
+                }`}
+                id={`nav_${tab.id}`}
+              >
+                <Icon size={15} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
