@@ -196,7 +196,7 @@ export default function Grade6TopicExplorer({ defaultTab = "geometry", hideTabSw
             {/* Visual Canvas */}
             <div className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col items-center justify-center space-y-4">
               <div className="w-full overflow-x-auto py-2">
-                <div className="relative min-w-[320px] max-w-2xl mx-auto h-16 flex items-center justify-between px-6">
+                <div className="relative w-full max-w-2xl mx-auto h-16 flex items-center justify-between px-4 sm:px-6 min-w-0">
                   <div className="absolute top-1/2 left-6 right-6 h-1 bg-slate-800 -translate-y-1/2" />
                   {Array.from({ length: numCollinearPoints }).map((_, idx) => {
                     const label = idx < 26 ? String.fromCharCode(65 + idx) : `P${idx + 1}`;

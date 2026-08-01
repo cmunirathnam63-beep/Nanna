@@ -20,7 +20,7 @@ export interface LessonContent {
   chapterId: string;
   title: string;
   introduction: string;
-  keyFormulas: { name: string; formula: string; explanation: string }[];
+  keyFormulas: { name: string; formula: string; explanation: string; image?: string; diagramType?: string }[];
   steps: { title: string; desc: string; example: string }[];
   didYouKnow: string;
   visualContext: string;

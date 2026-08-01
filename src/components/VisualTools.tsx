@@ -4689,22 +4689,54 @@ export function InteractiveMapPointingLab({ defaultGrade = 6 }: { defaultGrade?:
             <text x="55" y="215" fill="#fdba74" fontSize="10" fontWeight="bold" fontFamily="monospace">23°30' N (Tropic of Cancer)</text>
             <text x="305" y="55" fill="#a5b4fc" fontSize="10" fontWeight="bold" fontFamily="monospace">82°30' E (IST)</text>
 
-            {/* India Mainland Vector Outline */}
+            {/* India Mainland Vector Outline - Cartographically Accurate NCERT Map */}
+            {/* Neighboring Country Outlines */}
+            {/* Pakistan */}
+            <path d="M 185 55 L 160 80 L 130 160 L 95 210 L 60 210 L 40 180 L 60 120 L 120 70 Z" fill="#0f172a" stroke="#475569" strokeWidth="1" strokeDasharray="3,3" opacity="0.6" />
+            <text x="75" y="140" fill="#64748b" fontSize="9" fontWeight="bold">PAKISTAN</text>
+
+            {/* Nepal */}
+            <path d="M 245 110 L 280 122 L 335 125 L 315 140 L 260 135 Z" fill="#0f172a" stroke="#475569" strokeWidth="1" strokeDasharray="3,3" opacity="0.6" />
+            <text x="280" y="132" fill="#64748b" fontSize="8" fontWeight="bold">NEPAL</text>
+
+            {/* Bhutan */}
+            <path d="M 345 125 L 370 130 L 365 140 L 342 138 Z" fill="#0f172a" stroke="#475569" strokeWidth="1" strokeDasharray="3,3" opacity="0.6" />
+            <text x="348" y="135" fill="#64748b" fontSize="7" fontWeight="bold">BHUTAN</text>
+
+            {/* Bangladesh */}
+            <path d="M 350 205 Q 365 190 380 195 L 385 220 L 355 228 Z" fill="#0f172a" stroke="#475569" strokeWidth="1" strokeDasharray="3,3" opacity="0.6" />
+            <text x="355" y="212" fill="#64748b" fontSize="8" fontWeight="bold">BANGLADESH</text>
+
+            {/* China / Tibet */}
+            <text x="310" y="80" fill="#64748b" fontSize="9" fontWeight="bold">CHINA (TIBET)</text>
+
+            {/* India Mainland Main Vector Boundary */}
             <path
-              d="M 220 40 
-                 C 200 60, 180 80, 170 100 
-                 C 150 120, 120 150, 110 180 
-                 C 100 200, 120 220, 110 240 
-                 C 100 260, 130 280, 150 300 
-                 C 160 320, 170 350, 180 380 
-                 C 190 410, 210 440, 215 470 
-                 C 220 470, 230 450, 240 420 
-                 C 250 390, 270 360, 290 340 
-                 C 310 320, 340 290, 350 260 
-                 C 360 250, 380 240, 400 220 
-                 C 420 200, 440 170, 420 150 
-                 C 400 130, 360 130, 330 120 
-                 C 300 110, 270 80, 250 50 Z"
+              d="M 215 45 
+                 C 200 50, 185 55, 185 55 
+                 C 170 70, 160 80, 160 80 
+                 C 145 120, 130 160, 130 160 
+                 C 110 180, 95 210, 95 210 
+                 C 105 215, 115 220, 115 220 
+                 C 110 235, 105 245, 105 245 
+                 C 120 250, 140 252, 140 252 
+                 C 145 270, 148 280, 148 280 
+                 C 152 310, 160 330, 160 330 
+                 C 168 370, 175 400, 175 400 
+                 C 190 435, 215 470, 215 470 
+                 C 225 450, 240 435, 240 435 
+                 C 260 400, 285 360, 285 360 
+                 C 305 320, 330 280, 330 280 
+                 C 342 250, 350 225, 350 225 
+                 C 355 205, 355 205, 355 205 
+                 C 375 200, 395 210, 395 210 
+                 C 410 190, 415 175, 415 175 
+                 C 425 150, 425 125, 425 125 
+                 C 400 120, 370 130, 370 130 
+                 C 355 128, 335 125, 335 125 
+                 C 310 123, 280 122, 280 122 
+                 C 255 110, 245 110, 245 110 
+                 C 230 80, 215 45, 215 45 Z"
               fill="#1e293b"
               stroke="#38bdf8"
               strokeWidth="2.5"
@@ -4713,54 +4745,57 @@ export function InteractiveMapPointingLab({ defaultGrade = 6 }: { defaultGrade?:
 
             {/* Himalayas Mountain Arc */}
             <path
-              d="M 165 95 Q 260 125 380 135"
+              d="M 160 80 Q 260 115 415 125"
               fill="none"
               stroke="#fbbf24"
-              strokeWidth="6"
+              strokeWidth="5"
               strokeLinecap="round"
-              opacity="0.8"
+              opacity="0.85"
             />
+            <text x="235" y="100" fill="#fef08a" fontSize="8" fontWeight="bold">HIMALAYAN MOUNTAINS</text>
 
             {/* Thar Desert Shaded Area */}
-            <ellipse cx="135" cy="185" rx="22" ry="18" fill="#d97706" opacity="0.4" stroke="#f59e0b" strokeWidth="1" />
+            <ellipse cx="130" cy="175" rx="20" ry="16" fill="#d97706" opacity="0.45" stroke="#f59e0b" strokeWidth="1" />
+            <text x="112" y="178" fill="#fef3c7" fontSize="7" fontWeight="bold">Thar Desert</text>
 
             {/* Deccan Plateau Shaded Area */}
-            <polygon points="180,290 270,290 215,410" fill="#059669" opacity="0.3" stroke="#10b981" strokeWidth="1" />
+            <polygon points="170,290 270,290 215,410" fill="#059669" opacity="0.35" stroke="#10b981" strokeWidth="1" />
+            <text x="190" y="340" fill="#a7f3d0" fontSize="8" fontWeight="bold">Deccan Plateau</text>
 
             {/* Western Ghats & Eastern Ghats */}
-            <path d="M 165 310 C 170 350, 185 400, 210 455" fill="none" stroke="#22c55e" strokeWidth="4" strokeLinecap="round" />
-            <path d="M 285 320 C 275 360, 260 400, 235 450" fill="none" stroke="#22c55e" strokeWidth="3" strokeDasharray="5,3" strokeLinecap="round" />
+            <path d="M 152 280 C 158 330, 168 380, 195 455" fill="none" stroke="#22c55e" strokeWidth="4" strokeLinecap="round" />
+            <path d="M 320 280 C 300 320, 275 360, 235 440" fill="none" stroke="#22c55e" strokeWidth="3" strokeDasharray="5,3" strokeLinecap="round" />
 
             {/* Indian Major Rivers SVG Vector Paths */}
             {/* River Indus */}
-            <path d="M 190 75 Q 160 60 135 75 T 90 110" fill="none" stroke={selectedPointId === "river_indus" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_indus" ? "3.5" : "2"} opacity="0.85" />
+            <path d="M 330 80 L 210 60 Q 160 70 135 75 T 90 110" fill="none" stroke={selectedPointId === "river_indus" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_indus" ? "3.5" : "2"} opacity="0.85" />
 
             {/* River Ganga */}
-            <path d="M 220 120 Q 250 150 260 165 T 320 200 T 350 230" fill="none" stroke={selectedPointId === "river_ganga" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_ganga" ? "3.5" : "2.5"} opacity="0.9" />
+            <path d="M 235 110 Q 250 140 270 165 T 310 185 T 350 225" fill="none" stroke={selectedPointId === "river_ganga" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_ganga" ? "3.5" : "2.5"} opacity="0.9" />
 
             {/* River Yamuna */}
-            <path d="M 210 125 Q 210 155 215 170 T 270 175" fill="none" stroke={selectedPointId === "river_yamuna" ? "#38bdf8" : "#38bdf8"} strokeWidth={selectedPointId === "river_yamuna" ? "3" : "1.8"} strokeDasharray="3,2" opacity="0.8" />
+            <path d="M 230 115 Q 205 145 220 155 T 270 165" fill="none" stroke={selectedPointId === "river_yamuna" ? "#38bdf8" : "#38bdf8"} strokeWidth={selectedPointId === "river_yamuna" ? "3" : "1.8"} strokeDasharray="3,2" opacity="0.8" />
 
             {/* River Brahmaputra */}
-            <path d="M 290 115 L 380 125 Q 420 135 410 150 T 385 155 T 350 220" fill="none" stroke={selectedPointId === "river_brahmaputra" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_brahmaputra" ? "3.5" : "2.5"} opacity="0.9" />
+            <path d="M 310 110 L 400 120 Q 420 125 415 140 T 380 150 T 355 210" fill="none" stroke={selectedPointId === "river_brahmaputra" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_brahmaputra" ? "3.5" : "2.5"} opacity="0.9" />
 
             {/* River Narmada */}
-            <path d="M 250 248 Q 210 245 190 245 T 140 255" fill="none" stroke={selectedPointId === "river_narmada" ? "#38bdf8" : "#06b6d4"} strokeWidth={selectedPointId === "river_narmada" ? "3.5" : "2.2"} opacity="0.85" />
+            <path d="M 255 240 Q 210 242 190 245 T 142 250" fill="none" stroke={selectedPointId === "river_narmada" ? "#38bdf8" : "#06b6d4"} strokeWidth={selectedPointId === "river_narmada" ? "3.5" : "2.2"} opacity="0.85" />
 
             {/* River Tapi */}
-            <path d="M 240 265 Q 210 265 185 265 T 145 270" fill="none" stroke={selectedPointId === "river_tapi" ? "#38bdf8" : "#06b6d4"} strokeWidth={selectedPointId === "river_tapi" ? "3" : "1.8"} opacity="0.8" />
+            <path d="M 242 260 Q 210 262 185 264 T 143 265" fill="none" stroke={selectedPointId === "river_tapi" ? "#38bdf8" : "#06b6d4"} strokeWidth={selectedPointId === "river_tapi" ? "3" : "1.8"} opacity="0.8" />
 
             {/* River Mahanadi */}
-            <path d="M 270 255 Q 295 265 310 275 T 345 280" fill="none" stroke={selectedPointId === "river_mahanadi" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_mahanadi" ? "3.5" : "2"} opacity="0.85" />
+            <path d="M 265 255 Q 295 265 310 270 T 330 275" fill="none" stroke={selectedPointId === "river_mahanadi" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_mahanadi" ? "3.5" : "2"} opacity="0.85" />
 
             {/* River Godavari */}
-            <path d="M 160 300 Q 200 305 240 310 T 295 340" fill="none" stroke={selectedPointId === "river_godavari" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_godavari" ? "3.5" : "2.5"} opacity="0.9" />
+            <path d="M 165 300 Q 210 310 240 315 T 285 335" fill="none" stroke={selectedPointId === "river_godavari" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_godavari" ? "3.5" : "2.5"} opacity="0.9" />
 
             {/* River Krishna */}
-            <path d="M 165 350 Q 200 355 230 360 T 285 375" fill="none" stroke={selectedPointId === "river_krishna" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_krishna" ? "3.5" : "2.5"} opacity="0.9" />
+            <path d="M 170 345 Q 200 350 230 355 T 275 370" fill="none" stroke={selectedPointId === "river_krishna" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_krishna" ? "3.5" : "2.5"} opacity="0.9" />
 
             {/* River Kaveri */}
-            <path d="M 175 415 Q 195 420 210 430 T 240 435" fill="none" stroke={selectedPointId === "river_kaveri" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_kaveri" ? "3.5" : "2.2"} opacity="0.9" />
+            <path d="M 180 420 Q 195 422 210 428 T 235 435" fill="none" stroke={selectedPointId === "river_kaveri" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_kaveri" ? "3.5" : "2.2"} opacity="0.9" />
 
             {/* Lakshadweep Island Dots */}
             <g fill="#38bdf8">

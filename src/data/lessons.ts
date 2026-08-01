@@ -848,6 +848,302 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     didYouKnow: "The science of map-making is called Cartography, and a collection of maps bound together in a book is called an Atlas!",
     visualContext: "numberline"
   },
+  g6_soc_locating_places: {
+    chapterId: "g6_soc_locating_places",
+    title: "🌍 Grade 6 Social Science: Locating Places on Earth (Globe, Latitudes & Longitudes)",
+    introduction: "How do you locate any place on the Earth's spherical surface? Geographers created an imaginary grid system of horizontal lines called Latitudes (Parallels) and vertical lines called Longitudes (Meridians). Where these lines cross forms a geographic coordinate grid, allowing us to pinpoint any location on Earth!",
+    keyFormulas: [
+      {
+        name: "1. Definition of Latitude (Parallels)",
+        formula: "Angular distance North or South of Equator (0° to 90°N / 90°S)",
+        explanation: "Latitude is the angular distance of a place north or south of the Equator, measured in degrees. All imaginary horizontal circles drawn parallel to the Equator are called Parallels of Latitude. Latitude lines never intersect and decrease in circumference from Equator (0°) towards the Poles (90°N / 90°S).",
+        diagramType: "latitude"
+      },
+      {
+        name: "2. Definition of Longitude (Meridians)",
+        formula: "Angular distance East or West of Prime Meridian (0° to 180°E / 180°W)",
+        explanation: "Longitude is the angular distance of a place east or west of the Prime Meridian, measured in degrees. Imaginary vertical semicircular lines running from the North Pole to the South Pole are called Meridians of Longitude. All meridians are equal in length and converge at the poles.",
+        diagramType: "longitude"
+      },
+      {
+        name: "3. Definition of Equator (0° Latitude)",
+        formula: "0° Parallel dividing Earth into Northern & Southern Hemispheres",
+        explanation: "The Equator is an imaginary circular line drawn around the middle of the Earth, equidistant from both poles. It serves as the 0° reference line for latitude and divides Earth into the Northern Hemisphere and Southern Hemisphere.",
+        diagramType: "equator"
+      },
+      {
+        name: "4. Tropic of Cancer (23½° N / 23.5° N)",
+        formula: "Parallel at 23½° North of Equator (Passes through India)",
+        explanation: "The Tropic of Cancer is an important parallel of latitude located at 23½° N in the Northern Hemisphere. It marks the northern boundary of the Torrid Zone where the Sun shines directly overhead at noon on June 21 (Summer Solstice). In India, it passes through 8 states: Gujarat, Rajasthan, MP, Chhattisgarh, Jharkhand, West Bengal, Tripura, and Mizoram.",
+        diagramType: "tropic_cancer"
+      },
+      {
+        name: "5. Tropic of Capricorn (23½° S / 23.5° S)",
+        formula: "Parallel at 23½° South of Equator",
+        explanation: "The Tropic of Capricorn is an important parallel of latitude located at 23½° S in the Southern Hemisphere. It marks the southern boundary of the Torrid Zone where the Sun shines directly overhead at noon on December 22 (Winter Solstice in Northern Hemisphere).",
+        diagramType: "tropic_capricorn"
+      },
+      {
+        name: "6. Definition of Prime Meridian (0° Longitude)",
+        formula: "0° Meridian passing through Greenwich Observatory (London)",
+        explanation: "The Prime Meridian is 0° longitude passing through the Royal Observatory in Greenwich, London. It serves as the starting meridian for longitude and time measurement, dividing Earth into the Eastern Hemisphere and Western Hemisphere.",
+        diagramType: "prime_meridian"
+      },
+      {
+        name: "7. Definition of Geographic Grid System",
+        formula: "Grid Address = (Latitude Line, Longitude Line)",
+        explanation: "The grid is the network formed by the intersection of parallels of latitude and meridians of longitude. By knowing the latitude and longitude coordinates, any place on Earth can be located precisely.",
+        diagramType: "grid"
+      },
+      {
+        name: "8. How Longitude Changes Time (1° = 4 Minutes Rule)",
+        formula: "360° Rotation = 24 Hours (1,440 Mins) ➔ 1° Longitude = 4 Minutes",
+        explanation: "• WHY TIME CHANGES: Earth rotates 360° on its axis every 24 hours (1,440 minutes).\n• THE MAGIC MATH: 1,440 minutes ÷ 360° = 4 minutes for every 1° degree of longitude!\n• EAST vs. WEST RULE:\n  - Going EAST ➡️ (Right): Sun rises earlier! ADD +4 minutes for every 1° degree.\n  - Going WEST ⬅️ (Left): Sun rises later! SUBTRACT -4 minutes for every 1° degree.",
+        diagramType: "time_rule"
+      },
+      {
+        name: "9. Why India Needs Indian Standard Time (IST)",
+        formula: "30° Longitude Width in India ➔ 2-Hour Time Gap ➔ Standard Meridian 82°30' E",
+        explanation: "• THE PROBLEM: India is huge! It spans ~30° longitudes from Gujarat (68°E) in the West to Arunachal Pradesh (97°E) in the East.\n• THE TIME GAP: 30° × 4 minutes = 120 minutes = 2 HOURS difference in sunrise between Gujarat and Assam!\n• THE SOLUTION: If every town used its own sun time, train schedules, school exams, and news would be in complete chaos! So India selected ONE central line: 82°30' E (passing through Mirzapur, UP). Everyone in India sets their clocks to this single time — Indian Standard Time (IST)!",
+        diagramType: "ist_map"
+      },
+      {
+        name: "10. How IST is Calculated from London (GMT + 5:30)",
+        formula: "82.5° E × 4 Minutes = 330 Minutes = 5 Hours 30 Minutes Ahead of London",
+        explanation: "• STARTING LINE: Prime Meridian 0° at Greenwich, London.\n• INDIA'S LINE: 82°30' E (82.5° East of London).\n• THE MATH: 82.5° × 4 minutes = 330 minutes = 5 Hours 30 Minutes.\n• RESULT: Because India is to the EAST of London, India is always 5 HOURS 30 MINUTES AHEAD of London (+5:30)!\n• EASY EXAMPLE: When it is 12:00 Noon in London, add 5 hrs 30 mins ➔ It is 5:30 PM in India!",
+        diagramType: "gmt_difference"
+      },
+      {
+        name: "11. Which is Longer: Latitude or Longitude?",
+        formula: "Equator (0° Latitude) = Longest Circle (40,075 km) | All Longitudes = Equal (20,004 km Pole to Pole)",
+        explanation: "• ALL LONGITUDE MERIDIANS are equal in length (~20,004 km from North Pole to South Pole).\n• LATITUDE PARALLELS change length! The Equator (0°) is a full circle around Earth's middle (~40,075 km), making it LONGER than any longitude circle (~40,008 km) because Earth bulges at the equator.\n• SUMMARY: The Equator (0° Latitude) is the LONGEST line on Earth, but as you move toward the poles, latitudes shrink down to a single point (0 km at 90°N/S)!",
+        diagramType: "length_comparison"
+      },
+      {
+        name: "12. The Three Heat Zones of Earth",
+        formula: "Torrid Zone (Hot ☀️) | Temperate Zone (Moderate 🌤️) | Frigid Zone (Freezing ❄️)",
+        explanation: "• TORRID ZONE: Between Tropic of Cancer (23½°N) & Capricorn (23½°S). Receives direct overhead midday sun all year; hottest zone!\n• TEMPERATE ZONE: Between Tropics (23½°) & Polar Circles (66½°). Sun rays fall slanting; moderate temperature.\n• FRIGID ZONE: Between Polar Circles (66½°) & Poles (90°). Extremely cold because sun barely rises above the horizon!",
+        diagramType: "heat_zones"
+      },
+      {
+        name: "13. Globe & Earth's Axial Tilt (23½° Tilt)",
+        formula: "Axis Tilt = 23½° from Vertical Line | 66½° Angle with Orbital Plane",
+        explanation: "• WHAT IS A GLOBE: A true miniature model of the Earth.\n• THE AXIS NEEDLE: A needle is fixed through the globe in a tilted manner called its axis.\n• THE TILT ANGLE: Earth's real axis is tilted at 23½° from the vertical line (or 66½° angle with its orbit). This tilt causes seasons on Earth!",
+        diagramType: "globe_axis"
+      },
+      {
+        name: "14. Arctic Circle (66½° N) & Antarctic Circle (66½° S)",
+        formula: "Arctic Circle = 66½° North | Antarctic Circle = 66½° South",
+        explanation: "• ARCTIC CIRCLE (66½° N): Important parallel in the Northern Hemisphere surrounding the North Pole.\n• ANTARCTIC CIRCLE (66½° S): Important parallel in the Southern Hemisphere surrounding the South Pole.\n• Beyond these circles lie the polar Frigid Zones with 6-month continuous daylight and 6-month night!",
+        diagramType: "polar_circles"
+      },
+      {
+        name: "15. International Date Line (IDL - 180° Meridian)",
+        formula: "180° Longitude Meridian in Pacific Ocean (Where Calendar Date Changes)",
+        explanation: "• THE 180° MERIDIAN: Exactly opposite to the Prime Meridian (0°) in the Pacific Ocean.\n• DATE CHANGE: Crossing the IDL going WEST adds a calendar day (+1 day); crossing going EAST subtracts a day (-1 day).\n• ZIG-ZAG LINE: It is drawn zig-zag so it does NOT cut through any island, avoiding having two different dates in the same country!",
+        diagramType: "idl_line"
+      }
+    ],
+    steps: [
+      {
+        title: "1. Easy Memory Trick: Flat-itude vs. Long-itude",
+        desc: "• LATITUDE = 'Flat-itude' (horizontal sleeping circles parallel to Equator like ladder steps 🪜)\n• LONGITUDE = 'Long' lines (vertical standing semicircles running long from North Pole to South Pole 🍊)",
+        example: "Equator (0°) is the longest latitude line. Prime Meridian (0°) is the reference longitude line."
+      },
+      {
+        title: "2. The 5 Major Parallels of Latitude to Remember",
+        desc: "1. Equator (0°)\n2. Tropic of Cancer (23½° N)\n3. Tropic of Capricorn (23½° S)\n4. Arctic Circle (66½° N)\n5. Antarctic Circle (66½° S)",
+        example: "The zone between Tropic of Cancer and Tropic of Capricorn is the Torrid Zone, receiving direct heat from the sun."
+      },
+      {
+        title: "3. Finding Pinpoint Location on Map Grid",
+        desc: "Step 1: Identify the parallel of latitude.\nStep 2: Identify the meridian of longitude.\nStep 3: Locate the exact intersection spot.",
+        example: "Dhubri in Assam is located at 26° N latitude and 90° E longitude. Where line 26°N crosses line 90°E is Dhubri!"
+      },
+      {
+        title: "4. How Longitude Calculates Local Time (1° = 4 Minutes)",
+        desc: "• Earth spins 360° in 24 hours (1,440 minutes).\n• 1° Longitude = 4 Minutes difference.\n• East of Greenwich (0°): Add time (+4 min/degree).\n• West of Greenwich (0°): Subtract time (-4 min/degree).",
+        example: "If it is 12:00 Noon at Greenwich (0°), at 15° East it is 12:00 + (15 × 4 min) = 12:00 + 60 min = 1:00 PM!"
+      },
+      {
+        title: "5. Why India Uses Indian Standard Time (IST = 82°30' E)",
+        desc: "• India spans 30° longitudes from Gujarat (68°E) to Arunachal Pradesh (97°E).\n• That creates a 2-hour sun time difference (30° × 4 min = 120 min = 2 hrs) between West & East India!\n• To avoid train & school schedule confusion, India picked 82°30' E (Mirzapur, UP) as our ONE standard time.\n• IST Calculation: 82.5° × 4 min = 330 minutes = 5 hours 30 minutes ahead of GMT (London).",
+        example: "When cricket matches start at 12:00 Noon in London (0° GMT), fans in India watch it live at 5:30 PM IST!"
+      }
+    ],
+    didYouKnow: "The Tropic of Cancer passes through 8 Indian states! You can remember them with the mnemonic: 'G-R-M-C-J-W-T-M' (Gujarat, Rajasthan, MP, Chhattisgarh, Jharkhand, West Bengal, Tripura, Mizoram)!",
+    visualContext: "numberline"
+  },
+  g6_soc_motions_earth: {
+    chapterId: "g6_soc_motions_earth",
+    title: "🌌 Grade 6 Social Science: Motions of the Earth (Rotation & Revolution)",
+    introduction: "The Earth has two main movements — Rotation (spinning on its tilted axis causing Day and Night) and Revolution (orbiting around the Sun in an elliptical path causing Seasons).",
+    keyFormulas: [
+      {
+        name: "Earth's Rotation",
+        formula: "Spinning on axis (tilt 66½° to orbital plane) = 24 Hours",
+        explanation: "Causes Day and Night. The circle that divides day from night on the globe is called the Circle of Illumination."
+      },
+      {
+        name: "Earth's Revolution",
+        formula: "Orbiting around Sun = 365¼ Days (1 Year)",
+        explanation: "The extra ¼ day (6 hours) accumulated over 4 years adds 1 extra day (Feb 29) to create a Leap Year (366 days)."
+      },
+      {
+        name: "Summer & Winter Solstices",
+        formula: "June 21 (Summer Solstice in N. Hemisphere) | Dec 22 (Winter Solstice in N. Hemisphere)",
+        explanation: "June 21: Sun directly over Tropic of Cancer (longest day in Northern Hemisphere). Dec 22: Sun directly over Tropic of Capricorn (longest night in Northern Hemisphere)."
+      },
+      {
+        name: "Equinoxes (March 21 & Sept 23)",
+        formula: "Direct sun rays on Equator = Equal Day & Equal Night worldwide",
+        explanation: "Neither pole is tilted towards the Sun, resulting in equal 12-hour days and nights everywhere on Earth."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Understanding Circle of Illumination",
+        desc: "The imaginary line separating the illuminated half of the Earth from the dark half. Because Earth's axis is tilted, the axis does not coincide with the circle of illumination.",
+        example: "When India experiences daytime, North America on the opposite side of Earth experiences night!"
+      },
+      {
+        title: "2. Why Do Seasons Change?",
+        desc: "Seasons change due to the revolution of the Earth and the inclination of Earth's axis in a fixed direction.",
+        example: "In June, Northern Hemisphere leans toward the Sun (Summer), while Southern Hemisphere leans away (Winter)."
+      },
+      {
+        title: "3. Solstices vs. Equinoxes",
+        desc: "Solstices mark extreme tilts (longest/shortest day), while Equinoxes mark balanced sunlight at the Equator.",
+        example: "Christmas is celebrated in Australia during summer because Australia is in the Southern Hemisphere!"
+      }
+    ],
+    didYouKnow: "At the North and South Poles, night and day each last for 6 full months continuously due to Earth's axial tilt!",
+    visualContext: "numberline"
+  },
+  g6_soc_timeline_sources: {
+    chapterId: "g6_soc_timeline_sources",
+    title: "📜 Grade 6 Social Science: Timeline & Sources of History",
+    introduction: "History is the systematic study of our past based on evidence. Historians and archaeologists reconstruct ancient human life using manuscripts, inscriptions, artifacts, monuments, coins, and chronological timelines.",
+    keyFormulas: [
+      {
+        name: "Primary Sources of History",
+        formula: "Manuscripts + Inscriptions + Archaeology (Artifacts, Coins, Bones)",
+        explanation: "Primary sources are direct evidence created during the period being studied. Manuscripts were handwritten on palm leaves/birch bark; inscriptions were carved on stone/metal."
+      },
+      {
+        name: "Timeline System (BCE & CE)",
+        formula: "BCE (Before Common Era) ← 0 (Birth of Christ) → CE (Common Era)",
+        explanation: "BCE years count backwards (e.g., 500 BCE was earlier than 200 BCE). CE years count forwards (e.g., 2026 CE)."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Manuscripts vs. Inscriptions",
+        desc: "Manuscripts: Written on soft materials like palm leaves or birch bark (vulnerable to insects). Inscriptions: Carved on hard surfaces like rocks, pillars, or metal plates (durable).",
+        example: "Ashoka's Edicts carved on stone pillars across India are famous inscriptions!"
+      },
+      {
+        title: "2. Role of Archaeologists",
+        desc: "Archaeologists excavate buried cities, analyze pottery, tools, ornaments, seeds, and animal bones to reconstruct daily ancient life.",
+        example: "Finding charred wheat grains at ancient sites proves that early humans practiced farming!"
+      }
+    ],
+    didYouKnow: "The word 'India' comes from the Indus River, called 'Sindhu' in Sanskrit and 'Indos' by ancient Greeks!",
+    visualContext: "numberline"
+  },
+  g6_soc_earliest_cities: {
+    chapterId: "g6_soc_earliest_cities",
+    title: "🏛️ Grade 6 Social Science: Earliest Cities & Harappan Civilization",
+    introduction: "Around 4700 years ago (c. 2500 BCE), one of the world's earliest urban civilizations flourished along the Indus Valley — the Harappan Civilization, known for grid town planning and advanced sanitation.",
+    keyFormulas: [
+      {
+        name: "Harappan City Layout",
+        formula: "Citadel (High Western Part) + Lower Town (Eastern Residential Part)",
+        explanation: "Citadel housed public buildings & grain stores; Lower Town contained brick houses with courtyards along grid streets."
+      },
+      {
+        name: "Great Bath at Mohenjodaro",
+        formula: "Water-tight tank lined with baked bricks, plaster & natural tar",
+        explanation: "Used for special ritual bathing. Features steps leading down from two sides and surrounding rooms."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Advanced Harappan Sanitation",
+        desc: "Houses had separate bathing areas and covered street drains with gentle slopes and inspection holes.",
+        example: "Harappan bricklaying used an interlocking pattern that made walls exceptionally strong for over 4,000 years!"
+      },
+      {
+        title: "2. Trade & Crafts",
+        desc: "Harappans were skilled craftspeople making terracotta toys, stone seals, bronze statues, and bead jewelry. Lothal had a massive brick dockyard for maritime sea trade.",
+        example: "Harappan seals featuring animal motifs were used to stamp clay tags on trade bags."
+      }
+    ],
+    didYouKnow: "Harappan cities had covered drains made of precision-cut baked bricks with inspection holes — thousands of years before modern city sewer systems!",
+    visualContext: "numberline"
+  },
+  g6_soc_value_of_work: {
+    chapterId: "g6_soc_value_of_work",
+    title: "🤝 Grade 6 Social Science: The Value of Work & Interdependence",
+    introduction: "Every honest occupation contributes to society. Understanding the dignity of labor, occupational sectors (primary, secondary, tertiary), and economic interdependence helps us build an inclusive community.",
+    keyFormulas: [
+      {
+        name: "3 Sectors of Occupation",
+        formula: "Primary (Raw materials) + Secondary (Manufacturing) + Tertiary (Services)",
+        explanation: "Primary: Farming, fishing, mining. Secondary: Weaving, brickmaking, carpentry. Tertiary: Teaching, healthcare, transport, banking."
+      },
+      {
+        name: "Dignity of Labor",
+        formula: "Equal respect for all forms of honest physical and mental work",
+        explanation: "No work is superior or inferior; every occupation keeps society functioning smoothly."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Economic Interdependence",
+        desc: "A farmer needs a blacksmith for tools; a blacksmith needs a farmer for food; both need doctors, teachers, and shopkeepers.",
+        example: "The cotton shirt you wear involves a farmer (primary), factory worker (secondary), and shopkeeper (tertiary)!"
+      },
+      {
+        title: "2. Equality & Gender in Work",
+        desc: "Promoting equal opportunities, fair wages, and shared household responsibilities regardless of gender.",
+        example: "Women and men excel equally across all professions including science, farming, medicine, and aviation."
+      }
+    ],
+    didYouKnow: "Mahatma Gandhi strongly practiced and promoted the 'Dignity of Labor', personally doing cleaning tasks to show that all work is honourable!",
+    visualContext: "numberline"
+  },
+  g6_soc_government_diversity: {
+    chapterId: "g6_soc_government_diversity",
+    title: "🗳️ Grade 6 Social Science: Diversity & Local Government",
+    introduction: "India's 'Unity in Diversity' is strengthened by democratic governance. Panchayati Raj in rural villages and Municipal Corporations in urban cities empower citizens at the grassroot level.",
+    keyFormulas: [
+      {
+        name: "Panchayati Raj (3 Tiers)",
+        formula: "Gram Panchayat (Village) → Panchayat Samiti (Block) → Zilla Parishad (District)",
+        explanation: "Gram Sabha consists of all adult voters in a village. Gram Panchayat is headed by the elected Sarpanch."
+      },
+      {
+        name: "3 Levels of Government in India",
+        formula: "Local Level + State Level + National/Central Level",
+        explanation: "Local: Village/Town issues. State: State-wide affairs (e.g. state police/education). National: Defense, foreign policy, currency."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Unity in Diversity",
+        desc: "India has over 1,600 languages, diverse festivals, foods, and clothes, yet remains united under one Constitution.",
+        example: "Celebrating Diwali, Eid, Christmas, and Pongal together across the nation showcases our shared national fabric."
+      },
+      {
+        title: "2. How Gram Panchayat Functions",
+        desc: "Gram Panchayat maintains village roads, water pumps, streetlights, primary schools, and health centers using local tax revenue and government grants.",
+        example: "The Gram Sabha reviews Panchayat accounts and approves development plans for the village."
+      }
+    ],
+    didYouKnow: "The phrase 'Unity in Diversity' was coined by Pandit Jawaharlal Nehru in his landmark book 'The Discovery of India'!",
+    visualContext: "numberline"
+  },
   g9_maps_location: {
     chapterId: "g9_maps_location",
     title: "🗺️ Grade 9 Social Science: India - Size, Location & Map Skills",

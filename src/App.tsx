@@ -300,48 +300,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Student Profile Stats Card */}
-        <div className="flex flex-wrap items-center justify-center gap-3 bg-white border border-natural-beige-dark/60 p-2 md:p-2.5 rounded-2xl shadow-xs shrink-0">
-          <div 
-            onClick={() => {
-              const newName = prompt(`Enter student name for Grade ${selectedGrade}:`, studentName);
-              if (newName && newName.trim()) {
-                setGradeStudentNames(prev => ({ ...prev, [selectedGrade]: newName.trim() }));
-              }
-            }}
-            className="flex items-center gap-2 px-3 border-r border-slate-100 cursor-pointer hover:bg-natural-beige-light/50 p-1 rounded-xl transition"
-            title="Click to edit student name"
-          >
-            <span className="text-base">🎓</span>
-            <div>
-              <span className="text-[8px] font-bold text-natural-sage block leading-none flex items-center gap-1">
-                Student <span className="text-[7px] text-natural-primary font-normal">✏️</span>
-              </span>
-              <span className="text-xs font-black text-slate-800">{studentName}</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 px-3 border-r border-slate-100">
-            <span className="text-amber-500 text-sm">⭐</span>
-            <div>
-              <span className="text-[8px] font-bold text-natural-sage block leading-none">XP Points</span>
-              <span className="text-xs font-black text-amber-600 font-mono">{scorePoints}</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 px-3 border-r border-slate-100">
-            <Flame size={14} className="fill-current text-natural-terracotta" />
-            <div>
-              <span className="text-[8px] font-bold text-natural-sage block leading-none">Streak</span>
-              <span className="text-xs font-black text-natural-dark font-mono">{streakDays} Days</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 px-3">
-            <CheckCircle size={13} className="text-natural-primary" />
-            <div>
-              <span className="text-[8px] font-bold text-natural-sage block leading-none">Completed</span>
-              <span className="text-xs font-black text-slate-700 font-mono">{completedQuizzes} Tests</span>
-            </div>
-          </div>
-        </div>
       </header>
 
       {/* Main Workspace Column */}

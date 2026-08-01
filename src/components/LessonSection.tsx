@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { BookOpen, Sparkles, HelpCircle, ArrowRight, Play, FileText, ArrowLeft } from "lucide-react";
 import { playSpeechWithLang, playTeluguSpeech } from "../utils/teluguAudio";
 import { LESSONS_DATA } from "../data/lessons";
+import DefinitionDiagram from "./DefinitionDiagram";
 import { Chapter } from "../types";
 import Grade1InteractiveGame from "./Grade1Games";
 import {
@@ -379,6 +380,209 @@ interface LessonSectionProps {
   onOpenTool: (toolId: "fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers" | "clock", highlightMode?: string) => void;
   onOpenWorksheet: () => void;
   onActionComplete?: (points: number) => void;
+}
+
+function IstStudentExplainer() {
+  const [selectedLng, setSelectedLng] = useState<number>(82.5);
+  const [londonTimeHour, setLondonTimeHour] = useState<number>(12);
+
+  const totalMins = Math.round(selectedLng * 4);
+  const hrs = Math.floor(Math.abs(totalMins) / 60);
+  const mins = Math.abs(totalMins) % 60;
+
+  let localTotalMins = londonTimeHour * 60 + totalMins;
+  if (localTotalMins < 0) localTotalMins += 24 * 60;
+  localTotalMins = localTotalMins % (24 * 60);
+
+  const localHour24 = Math.floor(localTotalMins / 60);
+  const localMin = localTotalMins % 60;
+
+  const formatTime = (h: number, m: number) => {
+    const period = h >= 12 ? "PM" : "AM";
+    const displayH = h % 12 === 0 ? 12 : h % 12;
+    const displayM = m < 10 ? `0${m}` : m;
+    return `${displayH}:${displayM} ${period}`;
+  };
+
+  return (
+    <div className="bg-gradient-to-br from-indigo-900 via-slate-900 to-sky-950 text-white rounded-2xl p-4 sm:p-5 md:p-6 space-y-6 shadow-xl border border-indigo-700/50 min-w-0 max-w-full overflow-x-hidden" id="ist_student_explainer">
+      {/* Title */}
+      <div className="flex items-center justify-between gap-3 border-b border-indigo-700/60 pb-3 min-w-0">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-9 h-9 bg-amber-400 text-slate-950 font-black rounded-xl flex items-center justify-center text-lg shadow-md shrink-0">
+            ⏱️
+          </div>
+          <div className="min-w-0 flex-1">
+            <span className="bg-amber-400/20 text-amber-300 text-[10px] font-black uppercase px-2 py-0.5 rounded border border-amber-400/30">
+              Student Master Guide
+            </span>
+            <h3 className="text-base md:text-lg font-black text-white break-words">
+              Longitude & Indian Standard Time (IST) Made Super Clear!
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      {/* 3 Step Visual Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 min-w-0">
+        {/* Step 1 */}
+        <div className="bg-indigo-950/80 border border-indigo-600/50 rounded-xl p-3.5 sm:p-4 space-y-2 min-w-0">
+          <div className="flex items-center gap-2 text-amber-300 text-xs font-black uppercase min-w-0">
+            <span className="w-5 h-5 bg-amber-400 text-slate-950 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0">1</span>
+            <span className="break-words">Why 1° = 4 Minutes?</span>
+          </div>
+          <p className="text-xs text-indigo-100/90 leading-relaxed break-words">
+            Earth takes <strong className="text-amber-300">24 hours</strong> (1,440 minutes) to spin <strong className="text-amber-300">360°</strong>.
+          </p>
+          <div className="bg-indigo-900/90 rounded-lg p-2 text-center text-xs font-mono font-bold text-amber-200 border border-indigo-500/30 break-words min-w-0">
+            1,440 mins ÷ 360° = 4 Mins/Degree
+          </div>
+        </div>
+
+        {/* Step 2 */}
+        <div className="bg-indigo-950/80 border border-indigo-600/50 rounded-xl p-3.5 sm:p-4 space-y-2 min-w-0">
+          <div className="flex items-center gap-2 text-amber-300 text-xs font-black uppercase min-w-0">
+            <span className="w-5 h-5 bg-amber-400 text-slate-950 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0">2</span>
+            <span className="break-words">Why India Chose 82°30' E?</span>
+          </div>
+          <p className="text-xs text-indigo-100/90 leading-relaxed break-words">
+            India is <strong>30° wide</strong> from Gujarat to Assam (a <strong>2-hour time gap</strong>!).
+          </p>
+          <div className="bg-indigo-900/90 rounded-lg p-2 text-center text-xs font-mono font-bold text-amber-200 border border-indigo-500/30 break-words min-w-0">
+            One Central Line: Mirzapur (82.5° E)
+          </div>
+        </div>
+
+        {/* Step 3 */}
+        <div className="bg-indigo-950/80 border border-indigo-600/50 rounded-xl p-3.5 sm:p-4 space-y-2 min-w-0">
+          <div className="flex items-center gap-2 text-amber-300 text-xs font-black uppercase min-w-0">
+            <span className="w-5 h-5 bg-amber-400 text-slate-950 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0">3</span>
+            <span className="break-words">Why IST is GMT + 5h 30m?</span>
+          </div>
+          <p className="text-xs text-indigo-100/90 leading-relaxed break-words">
+            82.5° East of London × 4 mins = <strong>330 mins</strong> = <strong>5 hours 30 mins ahead</strong>.
+          </p>
+          <div className="bg-indigo-900/90 rounded-lg p-2 text-center text-xs font-mono font-bold text-amber-200 border border-indigo-500/30 break-words min-w-0">
+            12:00 PM London ➔ 5:30 PM India
+          </div>
+        </div>
+      </div>
+
+      {/* Interactive Time Machine Tool */}
+      <div className="bg-slate-950/80 rounded-xl p-4 md:p-5 border border-sky-500/30 space-y-4">
+        <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
+          <span className="text-xs font-black uppercase text-sky-300 flex items-center gap-1.5">
+            🎮 Interactive Time Explorer: Try Different Longitudes!
+          </span>
+          <span className="text-[10px] bg-sky-950 text-sky-200 border border-sky-800 px-2 py-0.5 rounded font-mono">
+            Live Math Simulation
+          </span>
+        </div>
+
+        {/* Preset City Buttons */}
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-extrabold text-slate-300">Click a location to see how its time is calculated:</label>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { label: "🇮🇳 All India (82°30' E IST)", lng: 82.5 },
+              { label: "🇬🇧 London (0° Prime Meridian)", lng: 0 },
+              { label: "🌅 East India / Assam (90° E)", lng: 90 },
+              { label: "🏜️ West India / Gujarat (68° E)", lng: 68 },
+              { label: "🗼 Cairo, Egypt (30° E)", lng: 30 },
+              { label: "🇯🇵 Tokyo, Japan (135° E)", lng: 135 },
+            ].map(item => (
+              <button
+                key={item.label}
+                onClick={() => setSelectedLng(item.lng)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer active:scale-95 border ${
+                  selectedLng === item.lng
+                    ? "bg-amber-400 text-slate-950 border-amber-300 shadow-md font-extrabold"
+                    : "bg-slate-800/80 hover:bg-slate-700 text-slate-200 border-slate-700"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Sliders */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          {/* Longitude Slider */}
+          <div className="space-y-1 bg-slate-900/90 p-3 rounded-lg border border-slate-800">
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-slate-300 font-bold">Longitude Position:</span>
+              <span className="font-mono font-black text-amber-300">{selectedLng}° {selectedLng >= 0 ? "East" : "West"}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="180"
+              step="0.5"
+              value={selectedLng}
+              onChange={e => setSelectedLng(parseFloat(e.target.value))}
+              className="w-full accent-amber-400 cursor-pointer"
+            />
+          </div>
+
+          {/* London Time Selector */}
+          <div className="space-y-1 bg-slate-900/90 p-3 rounded-lg border border-slate-800">
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-slate-300 font-bold">London Time (Greenwich 0°):</span>
+              <span className="font-mono font-black text-sky-300">{formatTime(londonTimeHour, 0)}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="23"
+              step="1"
+              value={londonTimeHour}
+              onChange={e => setLondonTimeHour(parseInt(e.target.value))}
+              className="w-full accent-sky-400 cursor-pointer"
+            />
+          </div>
+        </div>
+
+        {/* Live Calculation Output Card */}
+        <div className="bg-gradient-to-r from-sky-950 to-indigo-950 border-2 border-amber-400/60 rounded-xl p-4 space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-black text-amber-300 uppercase tracking-wide">
+              📊 Step-by-Step Time Calculation Result:
+            </span>
+            <span className="bg-amber-400 text-slate-950 text-xs font-black px-3 py-1 rounded-full font-mono">
+              Calculated Time = {formatTime(localHour24, localMin)}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
+            <div className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60">
+              <span className="text-[10px] text-slate-400 block uppercase">Step 1: Multiply by 4 min</span>
+              <p className="font-extrabold text-amber-200 mt-0.5">{selectedLng}° × 4 min = {totalMins} minutes</p>
+            </div>
+            <div className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60">
+              <span className="text-[10px] text-slate-400 block uppercase">Step 2: Convert to Hours</span>
+              <p className="font-extrabold text-sky-200 mt-0.5">{hrs} hrs {mins > 0 ? `${mins} mins` : ""}</p>
+            </div>
+            <div className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60">
+              <span className="text-[10px] text-slate-400 block uppercase">Step 3: Add to London Time</span>
+              <p className="font-extrabold text-emerald-300 mt-0.5">{formatTime(londonTimeHour, 0)} + {hrs}h {mins}m = {formatTime(localHour24, localMin)}</p>
+            </div>
+          </div>
+
+          {selectedLng === 82.5 && (
+            <div className="bg-amber-500/20 border border-amber-400/40 p-2.5 rounded-lg text-xs text-amber-100 space-y-1">
+              <p className="font-bold flex items-center gap-1.5">
+                <span>🇮🇳</span> Notice Indian Standard Time (IST):
+              </p>
+              <p className="text-[11px] leading-relaxed text-amber-200/90">
+                82.5° × 4 minutes = 330 minutes = exactly <strong>5 hours and 30 minutes ahead of London</strong>! When it is {formatTime(londonTimeHour, 0)} in London, it is exactly <strong>{formatTime(localHour24, localMin)} in India</strong>!
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function LessonSection({
@@ -1248,9 +1452,9 @@ export default function LessonSection({
     const cfg = pageConfigs[selectedG9Topic];
 
     return (
-      <div className="w-full animate-fade-in" id="lesson_viewport">
+      <div className="w-full max-w-full min-w-0 overflow-x-hidden animate-fade-in" id="lesson_viewport">
         {/* Subpage Header */}
-        <div className={`p-5 text-white flex items-center gap-3 rounded-t-2xl ${cfg.headerBg}`}>
+        <div className={`p-4 sm:p-5 text-white flex items-center gap-3 rounded-t-2xl ${cfg.headerBg} min-w-0`}>
           <button
             onClick={() => {
               setSelectedG9Topic(null);
@@ -1260,13 +1464,13 @@ export default function LessonSection({
           >
             <ArrowLeft size={16} />
           </button>
-          <div>
-            <h2 className="text-base font-black tracking-tight">{cfg.title}</h2>
+          <div className="min-w-0 flex-1">
+            <h2 className="text-base font-black tracking-tight break-words">{cfg.title}</h2>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-5">
+        <div className="p-4 sm:p-5 min-w-0">
           {cfg.component}
         </div>
       </div>
@@ -1274,9 +1478,9 @@ export default function LessonSection({
   }
 
   return (
-    <div className="w-full" id="lesson_viewport">
+    <div className="w-full max-w-full min-w-0 overflow-x-hidden" id="lesson_viewport">
 
-      <div className="p-6 space-y-6">
+      <div className="p-3 sm:p-5 md:p-6 space-y-6 min-w-0">
         {/* Render Geometry Interactive Studio directly for Grade 6 Geometry */}
         {selectedChapter.id === "geometry" && (
           <div className="space-y-6">
@@ -1322,6 +1526,117 @@ export default function LessonSection({
               chapterId={selectedChapter.id}
               onActionComplete={onActionComplete}
             />
+          </div>
+        )}
+
+        {/* Textbook Lesson Overview & Definitions Card */}
+        {lesson && (lesson.introduction || (lesson.keyFormulas && lesson.keyFormulas.length > 0)) && (
+          <div className="bg-white border-2 border-slate-200/90 rounded-2xl p-4 sm:p-5 md:p-6 space-y-6 shadow-xs min-w-0 max-w-full overflow-x-hidden" id="lesson_definitions_container">
+            {/* Chapter Header Banner */}
+            <div className="bg-gradient-to-r from-sky-900 via-indigo-900 to-slate-900 text-white rounded-xl p-4 sm:p-5 shadow-inner space-y-2 min-w-0">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="bg-sky-400/20 text-sky-200 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-md border border-sky-300/30 tracking-wider">
+                  📖 NCERT Textbook Lesson Content
+                </span>
+                <button
+                  onClick={() => playSpeechWithLang(`${lesson.title}. ${lesson.introduction}`, "en-US")}
+                  className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-sky-100 font-bold px-3 py-1 rounded-lg text-xs transition cursor-pointer active:scale-95 border border-white/20"
+                >
+                  🔊 Listen
+                </button>
+              </div>
+              <h2 className="text-lg md:text-xl font-black text-white tracking-tight break-words">{lesson.title}</h2>
+              {lesson.introduction && (
+                <p className="text-xs md:text-sm text-sky-100/90 leading-relaxed font-medium break-words">
+                  {lesson.introduction}
+                </p>
+              )}
+            </div>
+
+            {/* Dedicated Interactive Student Guide for Longitude & IST */}
+            {selectedChapter.id === "g6_soc_locating_places" && (
+              <IstStudentExplainer />
+            )}
+
+            {/* Core Definitions & Key Concepts Section */}
+            {lesson.keyFormulas && lesson.keyFormulas.length > 0 && (
+              <div className="space-y-4 min-w-0">
+                <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                  <div className="w-2 h-5 bg-sky-600 rounded-full shrink-0" />
+                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-wide">
+                    📖 Key Definitions & Core Concepts ({lesson.keyFormulas.length})
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 min-w-0 w-full">
+                  {lesson.keyFormulas.map((kf, idx) => (
+                    <div key={idx} className="bg-slate-50/80 border border-slate-200 hover:border-sky-300 transition rounded-xl p-3.5 sm:p-4 space-y-3 flex flex-col justify-between shadow-2xs min-w-0 max-w-full">
+                      <div className="space-y-2 min-w-0">
+                        <div className="flex items-center justify-between gap-2 min-w-0">
+                          <h4 className="text-xs md:text-sm font-black text-slate-900 flex items-center gap-1.5 break-words min-w-0">
+                            <span className="w-1.5 h-1.5 bg-sky-500 rounded-full shrink-0" />
+                            {kf.name}
+                          </h4>
+                        </div>
+                        {kf.formula && (
+                          <div className="bg-sky-50 border border-sky-200/80 rounded-lg px-2.5 py-1 text-[11px] font-extrabold text-sky-900 font-mono break-words min-w-0">
+                            {kf.formula}
+                          </div>
+                        )}
+                        {/* Interactive or Illustrated Visual Diagram */}
+                        {kf.diagramType && (
+                          <div className="pt-1 max-w-full overflow-hidden">
+                            <DefinitionDiagram diagramType={kf.diagramType} title={kf.name} />
+                          </div>
+                        )}
+                        {kf.image && (
+                          <div className="pt-1 overflow-hidden rounded-xl border border-slate-200 max-w-full">
+                            <img src={kf.image} alt={kf.name} className="w-full h-auto object-cover max-h-48" referrerPolicy="no-referrer" />
+                          </div>
+                        )}
+                        <p className="text-xs text-slate-700 font-medium leading-relaxed pt-0.5 whitespace-pre-line break-words min-w-0">
+                          {kf.explanation}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step-by-Step Learning Topics */}
+            {lesson.steps && lesson.steps.length > 0 && (
+              <div className="space-y-4 pt-2 min-w-0">
+                <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                  <div className="w-2 h-5 bg-amber-500 rounded-full shrink-0" />
+                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-wide">
+                    💡 Key Topics & Examples
+                  </h3>
+                </div>
+
+                <div className="space-y-3 min-w-0">
+                  {lesson.steps.map((step, idx) => (
+                    <div key={idx} className="bg-amber-50/40 border border-amber-200/80 rounded-xl p-3.5 sm:p-4 space-y-2 min-w-0">
+                      <h4 className="text-xs md:text-sm font-extrabold text-amber-950 flex items-center gap-2 min-w-0 break-words">
+                        <span className="w-5 h-5 bg-amber-500 text-white rounded-full flex items-center justify-center text-[10px] font-black shrink-0">
+                          {idx + 1}
+                        </span>
+                        {step.title}
+                      </h4>
+                      <p className="text-xs text-slate-700 font-medium leading-relaxed whitespace-pre-line pl-2 sm:pl-7 break-words min-w-0">
+                        {step.desc}
+                      </p>
+                      {step.example && (
+                        <div className="ml-2 sm:ml-7 bg-white border border-amber-300/60 rounded-lg p-2.5 text-xs text-slate-800 font-semibold space-y-0.5 min-w-0">
+                          <span className="text-[10px] font-extrabold uppercase text-amber-800 block tracking-wider">💡 Real-World Example:</span>
+                          <p className="break-words">{step.example}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

@@ -2666,7 +2666,7 @@ Time = ${hour}:${minStr}!`
                     </h5>
                     <span className="text-[8px] text-indigo-400">Tap any cell to calculate!</span>
                   </div>
-                  <div className="min-w-[300px]">
+                  <div className="w-full min-w-[280px] overflow-x-auto">
                     <table className="w-full text-center text-[10px] sm:text-xs font-mono border-collapse">
                       <thead>
                         <tr className="border-b border-indigo-800 text-indigo-300 font-bold">
