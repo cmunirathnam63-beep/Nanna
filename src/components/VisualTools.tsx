@@ -6,6 +6,7 @@ import FractionOperationsExplorer from "./FractionOperationsExplorer";
 import Grade1InteractiveGame from "./Grade1Games";
 import Grade6TopicExplorer from "./Grade6TopicExplorer";
 import Grade6MathsPaper from "./Grade6MathsPaper";
+import G6TeluguGrammarExplorer from "./G6TeluguGrammarExplorer";
 
 interface VisualToolsProps {
   chapterId?: string;
@@ -35,6 +36,10 @@ const CHAPTER_TABS_MAP: Record<string, ("fraction" | "numberline" | "placevalue"
 
 export default function VisualTools({ chapterId, subject = "maths", grade, initialTool = "fraction", initialHighlightMode = "all", onActionComplete }: VisualToolsProps) {
   // Direct chapter routing for non-maths subjects or specialized math chapters
+  if (chapterId?.startsWith("g6_tel_")) {
+    return <G6TeluguGrammarExplorer activeChapterId={chapterId} />;
+  }
+
   if (chapterId?.startsWith("g6_soc_") || chapterId?.startsWith("g1_evs_")) {
     return <SocialScienceVisualLab chapterId={chapterId} />;
   }
@@ -904,7 +909,7 @@ export default function VisualTools({ chapterId, subject = "maths", grade, initi
 
                 <div className="bg-violet-50 border border-violet-200/50 rounded-xl p-4 text-xs text-violet-800 space-y-1.5 leading-relaxed">
                   <h4 className="font-bold flex items-center gap-1 uppercase mb-1">
-                    📖 Grade 6 CBSE Math Context
+                    📖 CBSE Math Context
                   </h4>
                   <p>
                     <strong>Fencing cost calculation:</strong>
@@ -2409,6 +2414,12 @@ export function ChemistryVisualLab({ chapterId }: { chapterId?: string }) {
 }
 
 export function SocialScienceVisualLab({ chapterId }: { chapterId?: string }) {
+  if (chapterId === "g6_soc_maps" || chapterId === "maps" || (chapterId?.includes("map") && !chapterId?.includes("g9"))) {
+    return <Grade6MapsVisualLab />;
+  }
+  if (chapterId === "g9_maps_location" || chapterId?.includes("maps_location") || (chapterId?.includes("map") && chapterId?.includes("g9"))) {
+    return <Grade9MapsVisualLab />;
+  }
   if (chapterId === "g6_soc_locating_places" || chapterId?.includes("locating")) {
     return <LocatingPlacesVisualLab />;
   }
@@ -2982,6 +2993,10 @@ export function LanguageVisualLab({ chapterId, subject }: { chapterId?: string; 
 }
 
 export function TeluguLanguageLab({ chapterId }: { chapterId?: string }) {
+  if (chapterId?.startsWith("g6_tel_")) {
+    return <G6TeluguGrammarExplorer activeChapterId={chapterId} />;
+  }
+
   const [activeTab, setActiveTab] = useState<"guninthalu" | "ottulu" | "builder">(
     chapterId === "g1_tel_guninthalu" ? "guninthalu" : chapterId === "g1_tel_ottulu" ? "ottulu" : "builder"
   );
@@ -3395,7 +3410,7 @@ export function LocatingPlacesVisualLab() {
       <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
         <div>
           <span className="text-[10px] font-black uppercase text-indigo-600 tracking-wider block">
-            Geography Lab • Grade 6 Social Science
+            Geography Lab • Social Science
           </span>
           <h3 className="font-extrabold text-base text-slate-800">🌍 Locating Places on Earth: Latitude & Longitude Navigator</h3>
           <p className="text-xs text-slate-500">Explore Parallels of Latitude, Meridians of Longitude, Hemispheres & Time Zones!</p>
@@ -3576,7 +3591,7 @@ export function TimelineSourcesVisualLab() {
       <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
         <div>
           <span className="text-[10px] font-black uppercase text-amber-600 tracking-wider block">
-            History Lab • Grade 6 Social Science
+            History Lab • Social Science
           </span>
           <h3 className="font-extrabold text-base text-slate-800">📜 Timeline & Sources of History</h3>
           <p className="text-xs text-slate-500">Explore Chronology (BCE/CE) and Detective Tools of Historians!</p>
@@ -3769,7 +3784,7 @@ export function ValueOfWorkVisualLab() {
       <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
         <div>
           <span className="text-[10px] font-black uppercase text-emerald-600 tracking-wider block">
-            Civics Lab • Grade 6 Social Science
+            Civics Lab • Social Science
           </span>
           <h3 className="font-extrabold text-base text-slate-800">🤝 The Value of Work & Dignity of Labor</h3>
           <p className="text-xs text-slate-500">Explore Economic Sectors, Interdependence, and Equal Respect for All Professions!</p>
@@ -3939,7 +3954,7 @@ export function MotionsEarthVisualLab() {
       <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
         <div>
           <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider block">
-            Geography Lab • Grade 6 Social Science
+            Geography Lab • Social Science
           </span>
           <h3 className="font-extrabold text-base text-slate-800">🌌 Motions of the Earth: Rotation & Revolution</h3>
           <p className="text-xs text-slate-500">Explore Day & Night, Earth's 23.5° Tilt, Solstices, Equinoxes & Leap Years!</p>
@@ -4026,7 +4041,7 @@ export function EarliestCitiesVisualLab() {
       <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
         <div>
           <span className="text-[10px] font-black uppercase text-orange-600 tracking-wider block">
-            History Lab • Grade 6 Social Science
+            History Lab • Social Science
           </span>
           <h3 className="font-extrabold text-base text-slate-800">🏛️ Earliest Cities: Harappan Civilization (~2500 BCE)</h3>
           <p className="text-xs text-slate-500">Explore Citadel, Great Bath, Interlocking Bricks, Drains, Seals & Lothal Dockyard!</p>
@@ -4125,7 +4140,7 @@ export function GovernmentDiversityVisualLab() {
       <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
         <div>
           <span className="text-[10px] font-black uppercase text-teal-600 tracking-wider block">
-            Civics Lab • Grade 6 Social Science
+            Civics Lab • Social Science
           </span>
           <h3 className="font-extrabold text-base text-slate-800">🗳️ Diversity & Local Self-Government</h3>
           <p className="text-xs text-slate-500">Explore Unity in Diversity, Panchayati Raj System & Municipal Corporations!</p>
@@ -4173,6 +4188,1331 @@ export function GovernmentDiversityVisualLab() {
           Coined by Jawaharlal Nehru in his book <i>'Discovery of India'</i>, Unity in Diversity reflects how India's multi-cultural society—with 22 official languages, diverse cuisines, traditional clothing, and religious festivals—remains united under one national Constitution.
         </p>
       </div>
+    </div>
+  );
+}
+
+export function InteractiveMapPointingLab({ defaultGrade = 6 }: { defaultGrade?: 6 | 9 }) {
+  const [mode, setMode] = useState<"explore" | "quiz">("explore");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [selectedPointId, setSelectedPointId] = useState<string>("tropic_cancer");
+  
+  // Quiz State
+  const [quizIndex, setQuizIndex] = useState<number>(0);
+  const [score, setScore] = useState<number>(0);
+  const [streak, setStreak] = useState<number>(0);
+  const [userFeedback, setUserFeedback] = useState<{ isCorrect: boolean; message: string } | null>(null);
+  const [quizAnswered, setQuizAnswered] = useState<boolean>(false);
+
+  interface MapPoint {
+    id: string;
+    name: string;
+    x: number;
+    y: number;
+    category: "physical" | "river" | "coordinate" | "political" | "water" | "neighbor";
+    type: string;
+    desc: string;
+    ncertFact: string;
+    hint: string;
+  }
+
+  const mapPoints: MapPoint[] = [
+    {
+      id: "tropic_cancer",
+      name: "Tropic of Cancer (23°30' N)",
+      x: 250,
+      y: 220,
+      category: "coordinate",
+      type: "Latitude Line",
+      desc: "Latitude line dividing India into northern subtropical and southern tropical zones.",
+      ncertFact: "Passes through 8 Indian states: Gujarat, Rajasthan, Madhya Pradesh, Chhattisgarh, Jharkhand, West Bengal, Tripura, and Mizoram.",
+      hint: "Look for the dashed orange horizontal latitude line crossing Central India."
+    },
+    {
+      id: "standard_meridian",
+      name: "Standard Meridian (82°30' E IST)",
+      x: 300,
+      y: 240,
+      category: "coordinate",
+      type: "Longitude Line",
+      desc: "Standard Meridian of India passing through Mirzapur (Uttar Pradesh) used to calculate Indian Standard Time (UTC +5:30).",
+      ncertFact: "Chosen to eliminate the 2-hour time difference between Gujarat (West) and Arunachal Pradesh (East).",
+      hint: "Look for the dashed indigo vertical meridian line passing near Central-East India."
+    },
+    {
+      id: "river_indus",
+      name: "River Indus",
+      x: 135,
+      y: 75,
+      category: "river",
+      type: "Himalayan River System",
+      desc: "Originates near Lake Mansarovar in Tibet, flows northwest through Ladakh and J&K before entering Pakistan.",
+      ncertFact: "One of the longest rivers in the world (~2,900 km). Major Indian tributaries: Jhelum, Chenab, Ravi, Beas, and Sutlej.",
+      hint: "Flows northwest through the northernmost region of Ladakh and Jammu & Kashmir."
+    },
+    {
+      id: "river_ganga",
+      name: "River Ganga",
+      x: 260,
+      y: 165,
+      category: "river",
+      type: "National River of India",
+      desc: "Originates at Bhagirathi (Gangotri Glacier) in Uttarakhand, flows over 2,525 km across northern plains into Bay of Bengal.",
+      ncertFact: "Forms the world's largest delta—the Sundarbans Delta—along with River Brahmaputra.",
+      hint: "Winding blue line flowing across the Northern Plains from Uttarakhand to West Bengal."
+    },
+    {
+      id: "river_yamuna",
+      name: "River Yamuna",
+      x: 215,
+      y: 170,
+      category: "river",
+      type: "Major Tributary of Ganga",
+      desc: "Originates at Yamunotri Glacier, flows parallel to Ganga passing New Delhi and Agra, joining Ganga at Prayagraj.",
+      ncertFact: "Largest right-bank tributary of River Ganga. Major tributaries: Chambal, Betwa, and Ken.",
+      hint: "Runs right past New Delhi and Agra, merging with Ganga at Prayagraj."
+    },
+    {
+      id: "river_brahmaputra",
+      name: "River Brahmaputra",
+      x: 385,
+      y: 155,
+      category: "river",
+      type: "International River System",
+      desc: "Known as Tsangpo in Tibet, enters Arunachal Pradesh as Dihang, flows through Assam valley into Bangladesh.",
+      ncertFact: "Forms Majuli—the world's largest riverine island—in Assam.",
+      hint: "Flows through Tibet, enters Arunachal Pradesh in the North-East, and flows through Assam."
+    },
+    {
+      id: "river_narmada",
+      name: "River Narmada",
+      x: 190,
+      y: 245,
+      category: "river",
+      type: "West-Flowing Peninsular River",
+      desc: "Originates in Amarkantak Hills (MP), flows west in a rift valley between Vindhya and Satpura ranges into Arabian Sea.",
+      ncertFact: "Creates famous Marble Rocks gorge near Jabalpur and Dhuandhar Waterfalls.",
+      hint: "Flows westward through Madhya Pradesh into the Gulf of Khambhat / Arabian Sea."
+    },
+    {
+      id: "river_tapi",
+      name: "River Tapi (Tapti)",
+      x: 185,
+      y: 265,
+      category: "river",
+      type: "West-Flowing Peninsular River",
+      desc: "Originates in Satpura range (MP), flows west parallel to Narmada through MP, Maharashtra, and Gujarat into Arabian Sea.",
+      ncertFact: "One of only three major West-flowing peninsular rivers in India along with Narmada and Mahi.",
+      hint: "Runs west parallel to Narmada, just south of the Satpura range."
+    },
+    {
+      id: "river_mahanadi",
+      name: "River Mahanadi",
+      x: 310,
+      y: 275,
+      category: "river",
+      type: "East-Flowing Peninsular River",
+      desc: "Originates in Chhattisgarh highlands, flows 858 km through Odisha into Bay of Bengal.",
+      ncertFact: "Hirakud Dam—one of the world's longest earthen dams—is built across River Mahanadi in Odisha.",
+      hint: "Flows eastward through Odisha state into the Bay of Bengal."
+    },
+    {
+      id: "river_godavari",
+      name: "River Godavari",
+      x: 240,
+      y: 310,
+      category: "river",
+      type: "Largest Peninsular River ('Dakshin Ganga')",
+      desc: "Originates at Trimbakeshwar near Nashik (MH), flows 1,465 km east across Deccan Plateau into Bay of Bengal.",
+      ncertFact: "Largest peninsular river basin in India covering Maharashtra, MP, Odisha, Telangana, and Andhra Pradesh.",
+      hint: "Originates near Nashik (Maharashtra) and flows southeast across the Deccan Plateau."
+    },
+    {
+      id: "river_krishna",
+      name: "River Krishna",
+      x: 230,
+      y: 360,
+      category: "river",
+      type: "East-Flowing Peninsular River",
+      desc: "Originates near Mahabaleshwar in Western Ghats, flows 1,400 km through Maharashtra, Karnataka, Telangana, and AP into Bay of Bengal.",
+      ncertFact: "Major tributaries include Tungabhadra, Koyna, Bhima, Ghataprabha, and Musi.",
+      hint: "Originates near Mahabaleshwar and flows across the central peninsular plateau into Bay of Bengal."
+    },
+    {
+      id: "river_kaveri",
+      name: "River Kaveri (Cauvery)",
+      x: 210,
+      y: 430,
+      category: "river",
+      type: "Southern Peninsular River",
+      desc: "Originates at Talakaveri in Brahmagiri hills (Karnataka), flows 800 km through Tamil Nadu into Bay of Bengal.",
+      ncertFact: "Creates Shivanasamudra Falls and forms an extraordinarily fertile agricultural delta in Tamil Nadu.",
+      hint: "Located in South India, flowing through Karnataka and Tamil Nadu into Bay of Bengal."
+    },
+    {
+      id: "himalayas",
+      name: "Himalayas (Mountain Range)",
+      x: 260,
+      y: 105,
+      category: "physical",
+      type: "Young Fold Mountains",
+      desc: "Highest mountain range in the world, stretching across Northern India from West to East.",
+      ncertFact: "Consists of 3 parallel ranges: Himadri (Greater Himalayas), Himachal (Lesser Himalayas), and Shiwaliks (Outer Himalayas).",
+      hint: "Located along the extreme northern arc boundary of India."
+    },
+    {
+      id: "thar_desert",
+      name: "Thar Desert (Great Indian Desert)",
+      x: 135,
+      y: 185,
+      category: "physical",
+      type: "Arid Desert",
+      desc: "Large arid sandy desert region located in Rajasthan.",
+      ncertFact: "Receives extremely low rainfall (<150 mm per year) and has sparse vegetation.",
+      hint: "Located in northwestern India near Rajasthan."
+    },
+    {
+      id: "deccan_plateau",
+      name: "Deccan Plateau",
+      x: 220,
+      y: 330,
+      category: "physical",
+      type: "Peninsular Plateau",
+      desc: "Large triangular plateau extending south of the Narmada River.",
+      ncertFact: "Composed of volcanic basalt rocks and rich in black Regur soil ideal for cotton.",
+      hint: "Located in the central heartland of Peninsular India."
+    },
+    {
+      id: "western_ghats",
+      name: "Western Ghats (Sahyadris)",
+      x: 165,
+      y: 360,
+      category: "physical",
+      type: "Mountain Range",
+      desc: "Continuous range of mountains running parallel to the Western Arabian Sea coast.",
+      ncertFact: "Higher than Eastern Ghats; highest peak is Anamudi (2,695 m) in Kerala.",
+      hint: "Runs continuously along the western edge of the Indian peninsula."
+    },
+    {
+      id: "eastern_ghats",
+      name: "Eastern Ghats",
+      x: 285,
+      y: 360,
+      category: "physical",
+      type: "Discontinuous Hills",
+      desc: "Discontinuous hill ranges along the Bay of Bengal coast.",
+      ncertFact: "Dissected and eroded by major peninsular rivers (Mahanadi, Godavari, Krishna, Kaveri).",
+      hint: "Located along the eastern coast facing the Bay of Bengal."
+    },
+    {
+      id: "delhi",
+      name: "New Delhi (National Capital)",
+      x: 200,
+      y: 160,
+      category: "political",
+      type: "Capital City",
+      desc: "Capital of India located in the northern plains on the Yamuna River.",
+      ncertFact: "Seat of the Executive, Legislative, and Judicial branches of the Government of India.",
+      hint: "Located in North India between Haryana and Uttar Pradesh."
+    },
+    {
+      id: "kanyakumari",
+      name: "Kanyakumari",
+      x: 215,
+      y: 470,
+      category: "political",
+      type: "Southernmost Tip",
+      desc: "Coastal town at the southernmost tip of mainland India.",
+      ncertFact: "Confluence point where the Arabian Sea, Bay of Bengal, and Indian Ocean meet.",
+      hint: "Located at the extreme southern point of mainland India."
+    },
+    {
+      id: "bay_of_bengal",
+      name: "Bay of Bengal",
+      x: 370,
+      y: 360,
+      category: "water",
+      type: "Sea / Gulf",
+      desc: "Water body forming the eastern boundary of the Indian Peninsula.",
+      ncertFact: "Receives major rivers like Ganga, Brahmaputra, Mahanadi, Godavari, and Krishna.",
+      hint: "Large blue sea located to the East of India."
+    },
+    {
+      id: "arabian_sea",
+      name: "Arabian Sea",
+      x: 85,
+      y: 360,
+      category: "water",
+      type: "Sea",
+      desc: "Water body forming the western boundary of the Indian Peninsula.",
+      ncertFact: "Contains the coral island group of Lakshadweep.",
+      hint: "Large blue sea located to the West of India."
+    },
+    {
+      id: "andaman",
+      name: "Andaman & Nicobar Islands",
+      x: 420,
+      y: 410,
+      category: "water",
+      type: "Union Territory / Islands",
+      desc: "Group of 572 islands in the Bay of Bengal.",
+      ncertFact: "Indira Point at 6°45' N latitude is the southernmost point of the Indian Union.",
+      hint: "Island chain located in the South-East in the Bay of Bengal."
+    },
+    {
+      id: "lakshadweep",
+      name: "Lakshadweep Islands",
+      x: 125,
+      y: 425,
+      category: "water",
+      type: "Union Territory / Coral Islands",
+      desc: "Small coral island group located in the Arabian Sea.",
+      ncertFact: "Capital is Kavaratti; covers a tiny land area of 32 sq km.",
+      hint: "Small island dots in the South-West in the Arabian Sea."
+    },
+    {
+      id: "pakistan",
+      name: "Pakistan (Neighboring Country)",
+      x: 80,
+      y: 140,
+      category: "neighbor",
+      type: "Land Neighbor",
+      desc: "Country sharing northwestern land border with India.",
+      ncertFact: "Shares land border of ~3,323 km along Gujarat, Rajasthan, Punjab, Jammu & Kashmir, and Ladakh.",
+      hint: "Located to the immediate West / North-West of India."
+    },
+    {
+      id: "bangladesh",
+      name: "Bangladesh (Neighboring Country)",
+      x: 350,
+      y: 220,
+      category: "neighbor",
+      type: "Land Neighbor",
+      desc: "Country surrounded by India on three sides in the East.",
+      ncertFact: "India shares its longest international land border (~4,096 km) with Bangladesh.",
+      hint: "Located in Eastern India surrounded by West Bengal, Assam, Meghalaya, and Tripura."
+    }
+  ];
+
+  const filteredPoints = mapPoints.filter((pt) => {
+    if (categoryFilter === "all") return true;
+    return pt.category === categoryFilter;
+  });
+
+  const quizQuestions = [
+    mapPoints.find((p) => p.id === "river_ganga")!,
+    mapPoints.find((p) => p.id === "tropic_cancer")!,
+    mapPoints.find((p) => p.id === "river_indus")!,
+    mapPoints.find((p) => p.id === "himalayas")!,
+    mapPoints.find((p) => p.id === "river_brahmaputra")!,
+    mapPoints.find((p) => p.id === "standard_meridian")!,
+    mapPoints.find((p) => p.id === "river_narmada")!,
+    mapPoints.find((p) => p.id === "thar_desert")!,
+    mapPoints.find((p) => p.id === "river_godavari")!,
+    mapPoints.find((p) => p.id === "delhi")!,
+    mapPoints.find((p) => p.id === "river_kaveri")!,
+    mapPoints.find((p) => p.id === "bay_of_bengal")!,
+    mapPoints.find((p) => p.id === "western_ghats")!,
+    mapPoints.find((p) => p.id === "river_mahanadi")!,
+    mapPoints.find((p) => p.id === "kanyakumari")!,
+    mapPoints.find((p) => p.id === "andaman")!
+  ].filter(Boolean);
+
+  const currentQuizTarget = quizQuestions[quizIndex % quizQuestions.length];
+
+  const handlePointClick = (point: MapPoint) => {
+    setSelectedPointId(point.id);
+
+    if (mode === "quiz" && !quizAnswered) {
+      if (point.id === currentQuizTarget.id) {
+        setScore((prev) => prev + 10);
+        setStreak((prev) => prev + 1);
+        setUserFeedback({
+          isCorrect: true,
+          message: `🎉 Correct! You accurately pointed to ${point.name}!`
+        });
+      } else {
+        setStreak(0);
+        setUserFeedback({
+          isCorrect: false,
+          message: `❌ Not quite! You selected ${point.name}. Target was: ${currentQuizTarget.name}.`
+        });
+      }
+      setQuizAnswered(true);
+    }
+  };
+
+  const nextQuizQuestion = () => {
+    setQuizIndex((prev) => prev + 1);
+    setUserFeedback(null);
+    setQuizAnswered(false);
+  };
+
+  const selectedPoint = mapPoints.find((p) => p.id === selectedPointId) || mapPoints[0];
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="map_pointing_lab">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-xl border border-slate-200 shadow-xs gap-3">
+        <div>
+          <span className="text-[10px] font-black uppercase text-teal-700 tracking-wider block">
+            NCERT Social Science Map Work
+          </span>
+          <h3 className="font-extrabold text-base text-slate-800 flex items-center gap-2">
+            <span>📍</span> Map Pointing & CBSE Identification Practice
+          </h3>
+          <p className="text-xs text-slate-500">
+            Click on pins on the outline map to identify physical features, coordinates, capitals, water bodies & borders!
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => { setMode("explore"); setUserFeedback(null); }}
+            className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer border ${
+              mode === "explore"
+                ? "bg-teal-700 text-white border-teal-800 shadow-xs"
+                : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+            }`}
+          >
+            🔍 Explore & Learn
+          </button>
+          <button
+            onClick={() => { setMode("quiz"); setUserFeedback(null); setQuizAnswered(false); }}
+            className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer border ${
+              mode === "quiz"
+                ? "bg-amber-600 text-white border-amber-700 shadow-xs"
+                : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+            }`}
+          >
+            🎯 Pointing Quiz Mode
+          </button>
+        </div>
+      </div>
+
+      {/* Quiz Banner if in Quiz Mode */}
+      {mode === "quiz" && (
+        <div className="bg-amber-500 text-white p-4 rounded-2xl border-2 border-amber-600 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in">
+          <div className="space-y-1 text-center sm:text-left">
+            <div className="flex items-center gap-2 justify-center sm:justify-start">
+              <span className="bg-amber-700 text-amber-100 font-mono text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
+                Question {quizIndex + 1} of {quizQuestions.length}
+              </span>
+              <span className="text-xs font-black text-amber-100">
+                Score: {score} pts | Streak: 🔥 {streak}
+              </span>
+            </div>
+            <h4 className="text-sm font-black tracking-wide text-white">
+              🎯 Point to & click on: <span className="underline decoration-amber-200 underline-offset-4 text-amber-100">{currentQuizTarget.name}</span>
+            </h4>
+            <p className="text-[11px] text-amber-100 font-medium">
+              💡 Hint: {currentQuizTarget.hint}
+            </p>
+          </div>
+
+          {quizAnswered && (
+            <button
+              onClick={nextQuizQuestion}
+              className="px-4 py-2 bg-white text-amber-900 font-black text-xs rounded-xl shadow-xs hover:bg-amber-50 transition cursor-pointer shrink-0"
+            >
+              Next Pointing Question ➔
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Category Filter Pills (if in Explore Mode) */}
+      {mode === "explore" && (
+        <div className="flex flex-wrap items-center gap-2 bg-white p-3 rounded-xl border border-slate-200">
+          <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider mr-1">
+            Filter Map Points:
+          </span>
+          {[
+            { id: "all", label: "All Locations" },
+            { id: "river", label: "🏞️ Indian Rivers" },
+            { id: "coordinate", label: "🌐 Lines & Coordinates" },
+            { id: "physical", label: "⛰️ Physical Features" },
+            { id: "political", label: "🏛️ Cities & Capitals" },
+            { id: "water", label: "🌊 Oceans & Islands" },
+            { id: "neighbor", label: "🗺️ Border Neighbors" }
+          ].map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setCategoryFilter(cat.id)}
+              className={`px-3 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer border ${
+                categoryFilter === cat.id
+                  ? "bg-slate-800 text-white border-slate-900 shadow-xs"
+                  : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Main Canvas + Detail Sidebar */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* SVG Outline Map Canvas */}
+        <div className="lg:col-span-7 bg-slate-900 p-4 rounded-2xl border-2 border-slate-800 shadow-lg relative overflow-hidden flex flex-col items-center">
+          <div className="w-full flex justify-between items-center mb-2 px-2 text-white">
+            <span className="text-[10px] font-mono font-bold text-slate-400">
+              NCERT OUTLINE MAP OF INDIA (500 × 520)
+            </span>
+            <span className="text-[10px] font-mono text-teal-400 font-bold">
+              Active Selection: {selectedPoint.name}
+            </span>
+          </div>
+
+          <svg viewBox="0 0 500 520" className="w-full max-w-[480px] h-auto drop-shadow-md">
+            <defs>
+              {/* Radial Glow Gradient */}
+              <radialGradient id="oceanGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#0f172a" />
+                <stop offset="100%" stopColor="#020617" />
+              </radialGradient>
+            </defs>
+
+            {/* Background Water Area */}
+            <rect x="0" y="0" width="500" height="520" fill="url(#oceanGlow)" rx="12" />
+
+            {/* Graticule Grid Lines */}
+            <line x1="50" y1="120" x2="450" y2="120" stroke="#334155" strokeWidth="1" strokeDasharray="2,2" />
+            <line x1="50" y1="220" x2="450" y2="220" stroke="#f97316" strokeWidth="1.5" strokeDasharray="4,3" /> {/* Tropic of Cancer */}
+            <line x1="50" y1="360" x2="450" y2="360" stroke="#334155" strokeWidth="1" strokeDasharray="2,2" />
+
+            <line x1="150" y1="40" x2="150" y2="480" stroke="#334155" strokeWidth="1" strokeDasharray="2,2" />
+            <line x1="300" y1="40" x2="300" y2="480" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4,3" /> {/* Standard Meridian */}
+            <line x1="420" y1="40" x2="420" y2="480" stroke="#334155" strokeWidth="1" strokeDasharray="2,2" />
+
+            {/* Coordinate Labels */}
+            <text x="55" y="215" fill="#fdba74" fontSize="10" fontWeight="bold" fontFamily="monospace">23°30' N (Tropic of Cancer)</text>
+            <text x="305" y="55" fill="#a5b4fc" fontSize="10" fontWeight="bold" fontFamily="monospace">82°30' E (IST)</text>
+
+            {/* India Mainland Vector Outline */}
+            <path
+              d="M 220 40 
+                 C 200 60, 180 80, 170 100 
+                 C 150 120, 120 150, 110 180 
+                 C 100 200, 120 220, 110 240 
+                 C 100 260, 130 280, 150 300 
+                 C 160 320, 170 350, 180 380 
+                 C 190 410, 210 440, 215 470 
+                 C 220 470, 230 450, 240 420 
+                 C 250 390, 270 360, 290 340 
+                 C 310 320, 340 290, 350 260 
+                 C 360 250, 380 240, 400 220 
+                 C 420 200, 440 170, 420 150 
+                 C 400 130, 360 130, 330 120 
+                 C 300 110, 270 80, 250 50 Z"
+              fill="#1e293b"
+              stroke="#38bdf8"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+            />
+
+            {/* Himalayas Mountain Arc */}
+            <path
+              d="M 165 95 Q 260 125 380 135"
+              fill="none"
+              stroke="#fbbf24"
+              strokeWidth="6"
+              strokeLinecap="round"
+              opacity="0.8"
+            />
+
+            {/* Thar Desert Shaded Area */}
+            <ellipse cx="135" cy="185" rx="22" ry="18" fill="#d97706" opacity="0.4" stroke="#f59e0b" strokeWidth="1" />
+
+            {/* Deccan Plateau Shaded Area */}
+            <polygon points="180,290 270,290 215,410" fill="#059669" opacity="0.3" stroke="#10b981" strokeWidth="1" />
+
+            {/* Western Ghats & Eastern Ghats */}
+            <path d="M 165 310 C 170 350, 185 400, 210 455" fill="none" stroke="#22c55e" strokeWidth="4" strokeLinecap="round" />
+            <path d="M 285 320 C 275 360, 260 400, 235 450" fill="none" stroke="#22c55e" strokeWidth="3" strokeDasharray="5,3" strokeLinecap="round" />
+
+            {/* Indian Major Rivers SVG Vector Paths */}
+            {/* River Indus */}
+            <path d="M 190 75 Q 160 60 135 75 T 90 110" fill="none" stroke={selectedPointId === "river_indus" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_indus" ? "3.5" : "2"} opacity="0.85" />
+
+            {/* River Ganga */}
+            <path d="M 220 120 Q 250 150 260 165 T 320 200 T 350 230" fill="none" stroke={selectedPointId === "river_ganga" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_ganga" ? "3.5" : "2.5"} opacity="0.9" />
+
+            {/* River Yamuna */}
+            <path d="M 210 125 Q 210 155 215 170 T 270 175" fill="none" stroke={selectedPointId === "river_yamuna" ? "#38bdf8" : "#38bdf8"} strokeWidth={selectedPointId === "river_yamuna" ? "3" : "1.8"} strokeDasharray="3,2" opacity="0.8" />
+
+            {/* River Brahmaputra */}
+            <path d="M 290 115 L 380 125 Q 420 135 410 150 T 385 155 T 350 220" fill="none" stroke={selectedPointId === "river_brahmaputra" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_brahmaputra" ? "3.5" : "2.5"} opacity="0.9" />
+
+            {/* River Narmada */}
+            <path d="M 250 248 Q 210 245 190 245 T 140 255" fill="none" stroke={selectedPointId === "river_narmada" ? "#38bdf8" : "#06b6d4"} strokeWidth={selectedPointId === "river_narmada" ? "3.5" : "2.2"} opacity="0.85" />
+
+            {/* River Tapi */}
+            <path d="M 240 265 Q 210 265 185 265 T 145 270" fill="none" stroke={selectedPointId === "river_tapi" ? "#38bdf8" : "#06b6d4"} strokeWidth={selectedPointId === "river_tapi" ? "3" : "1.8"} opacity="0.8" />
+
+            {/* River Mahanadi */}
+            <path d="M 270 255 Q 295 265 310 275 T 345 280" fill="none" stroke={selectedPointId === "river_mahanadi" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_mahanadi" ? "3.5" : "2"} opacity="0.85" />
+
+            {/* River Godavari */}
+            <path d="M 160 300 Q 200 305 240 310 T 295 340" fill="none" stroke={selectedPointId === "river_godavari" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_godavari" ? "3.5" : "2.5"} opacity="0.9" />
+
+            {/* River Krishna */}
+            <path d="M 165 350 Q 200 355 230 360 T 285 375" fill="none" stroke={selectedPointId === "river_krishna" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_krishna" ? "3.5" : "2.5"} opacity="0.9" />
+
+            {/* River Kaveri */}
+            <path d="M 175 415 Q 195 420 210 430 T 240 435" fill="none" stroke={selectedPointId === "river_kaveri" ? "#38bdf8" : "#0284c7"} strokeWidth={selectedPointId === "river_kaveri" ? "3.5" : "2.2"} opacity="0.9" />
+
+            {/* Lakshadweep Island Dots */}
+            <g fill="#38bdf8">
+              <circle cx="120" cy="420" r="3" />
+              <circle cx="125" cy="430" r="2.5" />
+              <circle cx="130" cy="425" r="3" />
+            </g>
+
+            {/* Andaman & Nicobar Island Dots */}
+            <g fill="#38bdf8">
+              <circle cx="415" cy="390" r="3.5" />
+              <circle cx="418" cy="405" r="3" />
+              <circle cx="422" cy="420" r="3.5" />
+              <circle cx="425" cy="435" r="2.5" />
+            </g>
+
+            {/* Sri Lanka Outline */}
+            <ellipse cx="240" cy="495" rx="8" ry="12" fill="#334155" stroke="#94a3b8" strokeWidth="1.5" />
+
+            {/* Render Interactive Map Pins */}
+            {filteredPoints.map((pt) => {
+              const isSelected = selectedPointId === pt.id;
+              const isQuizTarget = mode === "quiz" && currentQuizTarget.id === pt.id;
+
+              return (
+                <g
+                  key={pt.id}
+                  onClick={() => handlePointClick(pt)}
+                  className="cursor-pointer group"
+                >
+                  {/* Pulse Circle for Selected Point */}
+                  {isSelected && (
+                    <circle
+                      cx={pt.x}
+                      cy={pt.y}
+                      r="16"
+                      fill={mode === "quiz" ? "#f59e0b" : "#0284c7"}
+                      opacity="0.35"
+                      className="animate-ping"
+                    />
+                  )}
+
+                  {/* Outer Ring */}
+                  <circle
+                    cx={pt.x}
+                    cy={pt.y}
+                    r={isSelected ? "10" : "7"}
+                    fill={
+                      pt.category === "coordinate"
+                        ? "#f97316"
+                        : pt.category === "river"
+                        ? "#0284c7"
+                        : pt.category === "physical"
+                        ? "#eab308"
+                        : pt.category === "political"
+                        ? "#ef4444"
+                        : pt.category === "water"
+                        ? "#06b6d4"
+                        : "#a855f7"
+                    }
+                    stroke="#ffffff"
+                    strokeWidth={isSelected ? "2.5" : "1.5"}
+                    className="transition-all duration-200 group-hover:scale-125"
+                  />
+
+                  {/* Center Dot */}
+                  <circle cx={pt.x} cy={pt.y} r="3" fill="#ffffff" />
+
+                  {/* Text Label on Map */}
+                  <text
+                    x={pt.x + 12}
+                    y={pt.y + 4}
+                    fill={isSelected ? "#ffffff" : "#cbd5e1"}
+                    fontSize={isSelected ? "11" : "9"}
+                    fontWeight={isSelected ? "900" : "600"}
+                    className="drop-shadow-sm transition-all font-sans pointer-events-none"
+                  >
+                    {pt.name.split(" ")[0]}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+
+        {/* Sidebar: Details or Quiz Result */}
+        <div className="lg:col-span-5 space-y-4">
+          {/* Feedback Card if Quiz Answered */}
+          {userFeedback && (
+            <div
+              className={`p-4 rounded-2xl border-2 shadow-xs transition-all ${
+                userFeedback.isCorrect
+                  ? "bg-emerald-50 border-emerald-300 text-emerald-950"
+                  : "bg-rose-50 border-rose-300 text-rose-950"
+              }`}
+            >
+              <div className="flex items-center gap-2 font-black text-sm">
+                <span>{userFeedback.isCorrect ? "✅" : "❌"}</span>
+                <span>{userFeedback.message}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Selected Point Detail Card */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+            <div className="flex justify-between items-start border-b pb-3">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-teal-700 block">
+                  Map Pointing Inspection
+                </span>
+                <h4 className="font-extrabold text-base text-slate-900">
+                  {selectedPoint.name}
+                </h4>
+              </div>
+              <span
+                className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase font-mono border ${
+                  selectedPoint.category === "coordinate"
+                    ? "bg-orange-50 text-orange-800 border-orange-200"
+                    : selectedPoint.category === "river"
+                    ? "bg-cyan-50 text-cyan-900 border-cyan-200 font-black"
+                    : selectedPoint.category === "physical"
+                    ? "bg-amber-50 text-amber-800 border-amber-200"
+                    : selectedPoint.category === "political"
+                    ? "bg-rose-50 text-rose-800 border-rose-200"
+                    : selectedPoint.category === "water"
+                    ? "bg-sky-50 text-sky-800 border-sky-200"
+                    : "bg-purple-50 text-purple-800 border-purple-200"
+                }`}
+              >
+                {selectedPoint.type}
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div>
+                <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px] block mb-0.5">
+                  Geographic Description:
+                </span>
+                <p className="text-slate-800 leading-relaxed font-medium">
+                  {selectedPoint.desc}
+                </p>
+              </div>
+
+              <div className="bg-teal-50 border border-teal-200 rounded-xl p-3 space-y-1">
+                <span className="font-black text-teal-950 text-[10px] uppercase block">
+                  💡 NCERT Exam Significance Fact:
+                </span>
+                <p className="text-teal-900 leading-relaxed font-medium">
+                  {selectedPoint.ncertFact}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* List of All Map Points for Quick Direct Selection */}
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+            <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 block">
+              Quick Selection List ({filteredPoints.length} Points):
+            </span>
+            <div className="max-h-[220px] overflow-y-auto space-y-1.5 pr-1">
+              {filteredPoints.map((pt) => (
+                <button
+                  key={pt.id}
+                  onClick={() => handlePointClick(pt)}
+                  className={`w-full text-left p-2 rounded-xl text-xs font-bold transition flex items-center justify-between border cursor-pointer ${
+                    selectedPointId === pt.id
+                      ? "bg-teal-700 text-white border-teal-800 shadow-xs"
+                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                  }`}
+                >
+                  <span className="truncate">{pt.name}</span>
+                  <span
+                    className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded ${
+                      selectedPointId === pt.id
+                        ? "bg-teal-900 text-teal-100"
+                        : "bg-slate-200 text-slate-700"
+                    }`}
+                  >
+                    {pt.type}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function Grade6MapsVisualLab() {
+  const [mapType, setMapType] = useState<"physical" | "political" | "thematic">("physical");
+  const [scaleCm, setScaleCm] = useState<number>(4);
+  const [scalePreset, setScalePreset] = useState<number>(50);
+  const [activeDirection, setActiveDirection] = useState<string>("N");
+  const [selectedSymbol, setSelectedSymbol] = useState<string>("railway");
+
+  const directionsMap: Record<string, { label: string; angle: string; desc: string; example: string }> = {
+    N: { label: "North (N)", angle: "0°", desc: "Cardinal Direction pointing towards the North Pole.", example: "Himalayas & Kashmir lie in the NORTH of India." },
+    NE: { label: "North-East (NE)", angle: "45°", desc: "Intermediate Direction between North & East.", example: "Assam, Sikkim & Seven Sister states are in the NORTH-EAST." },
+    E: { label: "East (E)", angle: "90°", desc: "Cardinal Direction where the Sun rises.", example: "Bay of Bengal and Odisha lie in the EAST of India." },
+    SE: { label: "South-East (SE)", angle: "135°", desc: "Intermediate Direction between South & East.", example: "Andaman & Nicobar Islands lie in the SOUTH-EAST." },
+    S: { label: "South (S)", angle: "180°", desc: "Cardinal Direction pointing towards Southern Ocean.", example: "Indian Ocean & Kanyakumari lie in the SOUTH of India." },
+    SW: { label: "South-West (SW)", angle: "225°", desc: "Intermediate Direction between South & West.", example: "Lakshadweep Islands & Kerala lie in the SOUTH-WEST." },
+    W: { label: "West (W)", angle: "270°", desc: "Cardinal Direction where the Sun sets.", example: "Arabian Sea & Gujarat lie in the WEST of India." },
+    NW: { label: "North-West (NW)", angle: "315°", desc: "Intermediate Direction between North & West.", example: "Thar Desert & Punjab lie in the NORTH-WEST." }
+  };
+
+  const mapSymbolsList = [
+    { id: "railway", name: "Broad Gauge Railway", symbol: "🛤️ [==|==|==]", desc: "Parallel black tracks with crossbars representing train railways." },
+    { id: "road_metalled", name: "Metalled Road (Pucca)", symbol: "🛣️ ========", desc: "Two parallel solid red or black lines representing tar/paved roads." },
+    { id: "road_unmetalled", name: "Unmetalled Road (Kutcha)", symbol: "🛣️ - - - - - -", desc: "Parallel dashed lines representing dirt or mud village roads." },
+    { id: "boundary_int", name: "International Boundary", symbol: "🛑 — . — . —", desc: "Thick dash and dot lines marking country borders." },
+    { id: "river", name: "River & Stream", symbol: "🌊 ~~~~~~~~", desc: "Blue winding water line flowing towards seas or lakes." },
+    { id: "temple", name: "Temple", symbol: "🛕 Temple", desc: "Red dome with flag indicating religious temple site." },
+    { id: "post_office", name: "Post Office (P.O.)", symbol: "📮 P.O.", desc: "Lettering P.O. marking government postal centers." },
+    { id: "police_station", name: "Police Station (P.S.)", symbol: "👮 P.S.", desc: "Lettering P.S. marking local police station office." },
+    { id: "settlement", name: "Human Settlement", symbol: "🏠 🏠 🏠 🏠", desc: "Grouped red square blocks representing town/village housing." },
+    { id: "forest", name: "Forest / Vegetation", symbol: "🌲 🌳 🌲 🌳", desc: "Green tree icons marking protected reserve or tropical forests." }
+  ];
+
+  const actualKm = scaleCm * scalePreset;
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="grade6_maps_lab">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-xl border border-slate-200 shadow-xs gap-3">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800 flex items-center gap-2">
+            <span>🗺️</span> NCERT Grade 6 Geography Lab: Maps & Map Reading
+          </h3>
+          <p className="text-xs text-slate-500">
+            Master Physical, Political & Thematic Maps, Map Scale calculations, Compass Rose & Conventional Symbols!
+          </p>
+        </div>
+        <span className="text-[10px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-3 py-1 rounded-full uppercase font-mono shrink-0">
+          Class 6 Geography Ch 4
+        </span>
+      </div>
+
+      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b pb-3">
+          <h4 className="text-xs font-black uppercase tracking-wider text-slate-600">
+            1. Types of Maps (Physical vs. Political vs. Thematic)
+          </h4>
+          <span className="text-[10px] font-bold bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full">
+            Select a map view below
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          {[
+            { id: "physical", label: "⛰️ Physical Map", desc: "Natural landforms: Mountains, Rivers & Plains" },
+            { id: "political", label: "🏛️ Political Map", desc: "Boundaries: States, Capitals, Cities & Nations" },
+            { id: "thematic", label: "🌧️ Thematic Map", desc: "Specific themes: Rainfall, Forests & Highways" }
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setMapType(item.id as any)}
+              className={`p-3 rounded-xl border transition cursor-pointer text-left ${
+                mapType === item.id
+                  ? "bg-sky-600 border-sky-700 text-white shadow-md font-bold"
+                  : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-sky-50 hover:border-sky-200"
+              }`}
+            >
+              <span className="block text-xs font-black">{item.label}</span>
+              <span className={`block text-[10px] mt-0.5 ${mapType === item.id ? "text-sky-100" : "text-slate-500"}`}>
+                {item.desc}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <div className="p-5 rounded-2xl border-2 border-slate-300 relative overflow-hidden transition-all duration-300 min-h-[220px] bg-slate-900 text-white flex flex-col justify-between">
+          {mapType === "physical" && (
+            <div className="space-y-3 bg-emerald-950/80 p-4 rounded-xl border border-emerald-700/60">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-black text-amber-300 uppercase tracking-widest">
+                  🏔️ PHYSICAL MAP OF INDIA & CONTINENTS
+                </span>
+                <span className="text-[10px] font-bold bg-emerald-800 text-emerald-100 px-2 py-0.5 rounded-md">
+                  Relief & Elevation
+                </span>
+              </div>
+              <p className="text-xs text-emerald-100 leading-relaxed font-medium">
+                Shows natural physical features of the Earth: <b>Mountains</b> (brown), <b>Plateaus</b> (yellow), <b>Plains & Valleys</b> (green), and <b>Rivers & Oceans</b> (blue).
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 text-[10px] font-mono">
+                <div className="bg-amber-900/60 p-2 rounded border border-amber-600 text-amber-200">
+                  🤎 Mountains: Himalayas
+                </div>
+                <div className="bg-yellow-900/60 p-2 rounded border border-yellow-600 text-yellow-200">
+                  💛 Plateau: Deccan Plateau
+                </div>
+                <div className="bg-emerald-900/60 p-2 rounded border border-emerald-500 text-emerald-200">
+                  💚 Plains: Northern Gangetic Plain
+                </div>
+                <div className="bg-blue-900/60 p-2 rounded border border-blue-500 text-blue-200">
+                  💙 Oceans: Bay of Bengal & Arabian Sea
+                </div>
+              </div>
+            </div>
+          )}
+
+          {mapType === "political" && (
+            <div className="space-y-3 bg-indigo-950/80 p-4 rounded-xl border border-indigo-700/60">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-black text-sky-300 uppercase tracking-widest">
+                  🏛️ POLITICAL MAP OF INDIA
+                </span>
+                <span className="text-[10px] font-bold bg-indigo-800 text-indigo-100 px-2 py-0.5 rounded-md">
+                  Administrative Boundaries
+                </span>
+              </div>
+              <p className="text-xs text-indigo-100 leading-relaxed font-medium">
+                Shows political divisions, country borders, 28 States, 8 Union Territories, state capitals (like New Delhi, Amaravati, Hyderabad, Bengaluru), towns & villages.
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 text-[10px] font-mono">
+                <div className="bg-red-950 p-2 rounded border border-red-500 text-red-200">
+                  🛑 International Borders
+                </div>
+                <div className="bg-indigo-900 p-2 rounded border border-indigo-400 text-indigo-200">
+                  📍 State Capital (New Delhi)
+                </div>
+                <div className="bg-slate-800 p-2 rounded border border-slate-500 text-slate-200">
+                  🏙️ District Headquarters
+                </div>
+              </div>
+            </div>
+          )}
+
+          {mapType === "thematic" && (
+            <div className="space-y-3 bg-cyan-950/80 p-4 rounded-xl border border-cyan-700/60">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-black text-cyan-300 uppercase tracking-widest">
+                  🌧️ THEMATIC MAP: RAINFALL & FORESTS
+                </span>
+                <span className="text-[10px] font-bold bg-cyan-800 text-cyan-100 px-2 py-0.5 rounded-md">
+                  Specific Information
+                </span>
+              </div>
+              <p className="text-xs text-cyan-100 leading-relaxed font-medium">
+                Focuses on specific themes such as rainfall distribution, road networks, railways, mineral distribution, and forest density.
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 text-[10px] font-mono">
+                <div className="bg-blue-900 p-2 rounded border border-blue-400 text-blue-200">
+                  🌧️ High Rainfall (&gt;200 cm)
+                </div>
+                <div className="bg-emerald-900 p-2 rounded border border-emerald-400 text-emerald-200">
+                  🌲 Tropical Evergreen Forests
+                </div>
+                <div className="bg-orange-900 p-2 rounded border border-orange-400 text-orange-200">
+                  🛣️ National Highway 44
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div className="flex justify-between items-center border-b pb-3">
+            <h4 className="text-xs font-black uppercase tracking-wider text-slate-600">
+              2. Map Scale Calculator (Distance)
+            </h4>
+            <span className="text-[10px] font-mono font-bold bg-sky-100 text-sky-900 px-2.5 py-0.5 rounded-full">
+              Ratio = Map : Ground
+            </span>
+          </div>
+
+          <div className="space-y-3 text-xs">
+            <div>
+              <label className="font-bold text-slate-700 block mb-1">Select Scale Setting:</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { value: 10, label: "1 cm = 10 km" },
+                  { value: 50, label: "1 cm = 50 km" },
+                  { value: 250, label: "1 cm = 250 km" }
+                ].map((s) => (
+                  <button
+                    key={s.value}
+                    onClick={() => setScalePreset(s.value)}
+                    className={`p-2 rounded-xl border text-[11px] font-extrabold transition cursor-pointer ${
+                      scalePreset === s.value
+                        ? "bg-sky-600 text-white border-sky-700"
+                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between font-extrabold text-slate-800 mb-1">
+                <span>Measured Distance on Map:</span>
+                <span className="text-sky-600 font-mono text-sm">{scaleCm} cm</span>
+              </div>
+              <input
+                type="range"
+                min={1}
+                max={15}
+                value={scaleCm}
+                onChange={(e) => setScaleCm(Number(e.target.value))}
+                className="w-full accent-sky-600 cursor-pointer"
+              />
+            </div>
+
+            <div className="bg-sky-50 border-2 border-sky-200 rounded-xl p-3.5 space-y-2">
+              <span className="text-[10px] font-black uppercase text-sky-800">Actual Ground Distance Calculation</span>
+              <div className="text-sm font-black text-sky-950 font-mono">
+                {scaleCm} cm × {scalePreset} km/cm = <span className="text-emerald-600 font-extrabold text-base">{actualKm} km</span>
+              </div>
+              <p className="text-[11px] text-slate-600 leading-snug">
+                This means a distance of {scaleCm} cm measured with a ruler on the map represents an actual real-world distance of <b>{actualKm} kilometers</b> on the ground!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div className="flex justify-between items-center border-b pb-3">
+            <h4 className="text-xs font-black uppercase tracking-wider text-slate-600">
+              3. Compass Rose & Directions
+            </h4>
+            <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">
+              4 Cardinal + 4 Intermediate
+            </span>
+          </div>
+
+          <div className="grid grid-cols-4 gap-2 text-center">
+            {Object.keys(directionsMap).map((dirKey) => (
+              <button
+                key={dirKey}
+                onClick={() => setActiveDirection(dirKey)}
+                className={`p-2 rounded-xl border text-xs font-black transition cursor-pointer ${
+                  activeDirection === dirKey
+                    ? "bg-amber-500 border-amber-600 text-white shadow-xs"
+                    : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-amber-50"
+                }`}
+              >
+                {dirKey}
+              </button>
+            ))}
+          </div>
+
+          {directionsMap[activeDirection] && (
+            <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-3.5 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-black text-amber-950">
+                  🧭 Direction: {directionsMap[activeDirection].label}
+                </span>
+                <span className="text-[10px] font-mono font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded">
+                  Angle: {directionsMap[activeDirection].angle}
+                </span>
+              </div>
+              <p className="text-xs text-slate-700">{directionsMap[activeDirection].desc}</p>
+              <div className="bg-white p-2 rounded-lg border border-amber-200 text-[11px] text-amber-900 font-bold">
+                💡 Geographic Example: {directionsMap[activeDirection].example}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b pb-3">
+          <h4 className="text-xs font-black uppercase tracking-wider text-slate-600">
+            4. Conventional Map Symbols & Signs (Cartographic Universal Signs)
+          </h4>
+          <span className="text-[10px] font-bold text-slate-500">Click a symbol to inspect</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+          {mapSymbolsList.map((sym) => (
+            <button
+              key={sym.id}
+              onClick={() => setSelectedSymbol(sym.id)}
+              className={`p-3 rounded-xl border transition cursor-pointer text-left space-y-1 ${
+                selectedSymbol === sym.id
+                  ? "bg-indigo-600 border-indigo-700 text-white shadow-xs font-bold"
+                  : "bg-slate-50 border-slate-200 text-slate-800 hover:bg-indigo-50"
+              }`}
+            >
+              <div className="text-sm font-black">{sym.symbol}</div>
+              <span className="block text-xs font-extrabold truncate">{sym.name}</span>
+            </button>
+          ))}
+        </div>
+
+        {mapSymbolsList.find((s) => s.id === selectedSymbol) && (
+          <div className="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-3.5 space-y-1 text-xs">
+            <span className="text-[10px] font-black uppercase text-indigo-800">
+              Symbol Description & Standard Usage
+            </span>
+            <h5 className="font-extrabold text-indigo-950 text-sm">
+              {mapSymbolsList.find((s) => s.id === selectedSymbol)?.name} ({mapSymbolsList.find((s) => s.id === selectedSymbol)?.symbol})
+            </h5>
+            <p className="text-slate-700 leading-relaxed font-medium">
+              {mapSymbolsList.find((s) => s.id === selectedSymbol)?.desc}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Section 5: Interactive Map Pointing & CBSE Identification Practice */}
+      <div className="pt-2">
+        <InteractiveMapPointingLab defaultGrade={6} />
+      </div>
+    </div>
+  );
+}
+
+export function Grade9MapsVisualLab() {
+  const [activeTab, setActiveTab] = useState<"extent" | "tropic" | "meridian" | "neighbors" | "pointing">("extent");
+  const [selectedState, setSelectedState] = useState<string>("MP");
+
+  const tropicStates = [
+    { code: "GJ", name: "Gujarat", capital: "Gandhinagar", fact: "Western entry state for Tropic of Cancer." },
+    { code: "RJ", name: "Rajasthan", capital: "Jaipur", fact: "Passes through southern districts of Banswara & Dungarpur." },
+    { code: "MP", name: "Madhya Pradesh", capital: "Bhopal", fact: "Passes through 14 districts in Central India." },
+    { code: "CG", name: "Chhattisgarh", capital: "Raipur", fact: "Crosses Koriya, Surajpur & Balrampur districts." },
+    { code: "JH", name: "Jharkhand", capital: "Ranchi", fact: "Ranchi is the only state capital located directly near Tropic of Cancer!" },
+    { code: "WB", name: "West Bengal", capital: "Kolkata", fact: "Passes through Purulia, Bankura, Bardhaman & Nadia." },
+    { code: "TR", name: "Tripura", capital: "Agartala", fact: "Passes through Udaipur in Tripura." },
+    { code: "MZ", name: "Mizoram", capital: "Aizawl", fact: "Easternmost state crossed by Tropic of Cancer." }
+  ];
+
+  const neighborsList = [
+    { country: "Bangladesh 🇧🇩", borderKm: "4,096 km", direction: "East", fact: "Shares India's longest international land border." },
+    { country: "China (Tibet) 🇨🇳", borderKm: "3,488 km", direction: "North", fact: "Divided by McMahon Line in North-East." },
+    { country: "Pakistan 🇵🇰", borderKm: "3,323 km", direction: "North-West", fact: "Divided by Radcliffe Line." },
+    { country: "Nepal 🇳🇵", borderKm: "1,751 km", direction: "North", fact: "Open international border with 5 Indian states." },
+    { country: "Myanmar 🇲🇲", borderKm: "1,643 km", direction: "East", fact: "Shares borders with Arunachal, Nagaland, Manipur, Mizoram." },
+    { country: "Bhutan 🇧🇹", borderKm: "699 km", direction: "North", fact: "Peaceful Himalayan neighboring nation." },
+    { country: "Afghanistan 🇦🇫", borderKm: "106 km", direction: "North-West", fact: "Shortest land border in Wakhan corridor." },
+    { country: "Sri Lanka 🇱🇰", borderKm: "Maritime Neighbor", direction: "South", fact: "Separated by Palk Strait and Gulf of Mannar." }
+  ];
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="grade9_maps_lab">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-xl border border-slate-200 shadow-xs gap-3">
+        <div>
+          <h3 className="font-extrabold text-base text-slate-800 flex items-center gap-2">
+            <span>🗺️</span> NCERT Grade 9 Geography Lab: India - Size, Location & Map Skills
+          </h3>
+          <p className="text-xs text-slate-500">
+            Explore India's Latitudinal/Longitudinal Extent, Tropic of Cancer, Standard Meridian (82°30'E IST) & Neighbors!
+          </p>
+        </div>
+        <span className="text-[10px] font-bold text-teal-800 bg-teal-50 border border-teal-200 px-3 py-1 rounded-full uppercase font-mono shrink-0">
+          Class 9 Social Science Ch 1
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 bg-slate-200 p-1.5 rounded-2xl">
+        {[
+          { id: "extent", label: "🌐 Extent & Coordinates" },
+          { id: "tropic", label: "☀️ Tropic of Cancer (23°30'N)" },
+          { id: "meridian", label: "⏰ Standard Meridian (IST)" },
+          { id: "neighbors", label: "🗺️ Land Borders & Neighbors" },
+          { id: "pointing", label: "📍 Map Pointing Practice" }
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`py-2 px-3 rounded-xl text-xs font-black transition cursor-pointer ${
+              activeTab === tab.id
+                ? "bg-teal-700 text-white shadow-xs"
+                : "text-slate-700 hover:bg-slate-100"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === "extent" && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h4 className="text-xs font-black uppercase tracking-wider text-teal-900">
+                1. Geographical Coordinates of India
+              </h4>
+              <span className="text-[10px] font-bold bg-teal-100 text-teal-900 px-2.5 py-0.5 rounded-full">
+                Entirely in Northern & Eastern Hemispheres
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-teal-50 border-2 border-teal-200 rounded-xl p-4 space-y-2">
+                <span className="text-xs font-black text-teal-950 uppercase">Latitudinal Span (North - South)</span>
+                <div className="text-base font-extrabold text-teal-900 font-mono">
+                  8°4' N to 37°6' N Latitude
+                </div>
+                <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                  • Northernmost Point: <b>Indira Col (37°6' N)</b> in Ladakh.<br />
+                  • Southernmost Mainland Point: <b>Kanyakumari (8°4' N)</b> in Tamil Nadu.<br />
+                  • Total N-S Distance: <b className="text-teal-800 font-mono">3,214 kilometers</b>.
+                </p>
+              </div>
+
+              <div className="bg-sky-50 border-2 border-sky-200 rounded-xl p-4 space-y-2">
+                <span className="text-xs font-black text-sky-950 uppercase">Longitudinal Span (West - East)</span>
+                <div className="text-base font-extrabold text-sky-900 font-mono">
+                  68°7' E to 97°25' E Longitude
+                </div>
+                <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                  • Westernmost Point: <b>Guhar Moti / Rann of Kutch (68°7' E)</b> in Gujarat.<br />
+                  • Easternmost Point: <b>Kibithu (97°25' E)</b> in Arunachal Pradesh.<br />
+                  • Total E-W Distance: <b className="text-sky-800 font-mono">2,933 kilometers</b>.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 text-xs text-amber-950 font-medium space-y-1">
+              <span className="font-extrabold block">💡 Size & World Ranking Fact:</span>
+              <p>
+                India has a total land area of <b>3.28 Million square km</b> (2.4% of total world geographical area), making India the <b>7th largest country in the world</b> after Russia, Canada, USA, China, Brazil, and Australia!
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "tropic" && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h4 className="text-xs font-black uppercase tracking-wider text-amber-900">
+                2. Tropic of Cancer (23°30' N Latitude)
+              </h4>
+              <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">
+                Passes through 8 States
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-700 leading-relaxed">
+              The Tropic of Cancer (23°30' N) divides India into almost two equal thermal zones: Tropical zone in the south and Subtropical zone in the north.
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {tropicStates.map((st) => (
+                <button
+                  key={st.code}
+                  onClick={() => setSelectedState(st.code)}
+                  className={`p-3 rounded-xl border transition cursor-pointer text-left ${
+                    selectedState === st.code
+                      ? "bg-amber-600 border-amber-700 text-white font-bold shadow-xs"
+                      : "bg-slate-50 border-slate-200 text-slate-800 hover:bg-amber-50"
+                  }`}
+                >
+                  <span className="text-xs font-black block">{st.name}</span>
+                  <span className={`text-[10px] block ${selectedState === st.code ? "text-amber-100" : "text-slate-500"}`}>
+                    Capital: {st.capital}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {tropicStates.find((s) => s.code === selectedState) && (
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 text-xs space-y-1">
+                <span className="text-[10px] font-black uppercase text-amber-800">State Map Detail</span>
+                <h5 className="font-extrabold text-amber-950 text-sm">
+                  {tropicStates.find((s) => s.code === selectedState)?.name} (Capital: {tropicStates.find((s) => s.code === selectedState)?.capital})
+                </h5>
+                <p className="text-slate-700 font-medium">
+                  {tropicStates.find((s) => s.code === selectedState)?.fact}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === "meridian" && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h4 className="text-xs font-black uppercase tracking-wider text-indigo-900">
+                3. Standard Meridian of India (82°30' E) & Indian Standard Time (IST)
+              </h4>
+              <span className="text-[10px] font-mono font-bold bg-indigo-100 text-indigo-900 px-2.5 py-0.5 rounded-full">
+                UTC +5:30
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-4 space-y-2 text-xs">
+                <span className="font-black text-indigo-950 block text-sm">Why 82°30' E is chosen?</span>
+                <p className="text-slate-700 leading-relaxed font-medium">
+                  The longitudinal extent of India is ~30° (from 68°7'E to 97°25'E). Since Earth rotates 15° per hour, a 30° span causes a <b>2-hour time gap</b> between Gujarat in the West and Arunachal Pradesh in the East!
+                </p>
+                <div className="bg-white p-2.5 rounded-lg border border-indigo-200 font-mono text-indigo-950 font-bold">
+                  30° Longitude Difference × 4 min/degree = 120 minutes = 2 Hours!
+                </div>
+              </div>
+
+              <div className="bg-teal-50 border-2 border-teal-200 rounded-xl p-4 space-y-2 text-xs">
+                <span className="font-black text-teal-950 block text-sm">Location & Standard Time Line</span>
+                <p className="text-slate-700 leading-relaxed font-medium">
+                  To avoid confusion of local times, <b>82°30' E</b> passing through <b>Mirzapur (Uttar Pradesh)</b> was selected as the Standard Meridian for the whole country.
+                </p>
+                <div className="bg-white p-2.5 rounded-lg border border-teal-200 font-bold text-teal-950">
+                  📍 States crossed by 82°30'E: UP, MP, Chhattisgarh, Odisha, Andhra Pradesh.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "neighbors" && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h4 className="text-xs font-black uppercase tracking-wider text-slate-700">
+                4. India's Land Boundaries & Neighboring Countries
+              </h4>
+              <span className="text-[10px] font-bold bg-slate-100 text-slate-800 px-2.5 py-0.5 rounded-full">
+                Land Border: ~15,200 km
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {neighborsList.map((nb, idx) => (
+                <div key={idx} className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1 shadow-2xs hover:border-teal-300 transition">
+                  <div className="flex justify-between items-center">
+                    <span className="font-black text-xs text-slate-900">{nb.country}</span>
+                    <span className="text-[9px] font-bold bg-teal-100 text-teal-900 px-1.5 py-0.5 rounded font-mono">
+                      {nb.direction}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-teal-700 block">
+                    Border: {nb.borderKm}
+                  </span>
+                  <p className="text-[11px] text-slate-600 leading-snug font-medium">
+                    {nb.fact}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "pointing" && (
+        <div className="space-y-4 animate-fade-in">
+          <InteractiveMapPointingLab defaultGrade={9} />
+        </div>
+      )}
     </div>
   );
 }

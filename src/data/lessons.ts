@@ -446,7 +446,7 @@ export const GRADE_6_TELUGU_CHAPTERS: Chapter[] = [
     title: "📖 10. తెలుగు వెలుగు & భాషాంశాలు (Grammar)",
     iconName: "BookOpen",
     badge: "Chapter 10",
-    topicSummary: "తెలుగు భాషా ప్రాశస్త్యం, వర్ణమాల, సంధులు, సమాసాలు మరియు సాధన అభ్యాసాలు.",
+    topicSummary: "తెలుగు భాషా ప్రాశస్త్యం, వర్ణమాల, లేఖారచన (లేఖలు), సంధులు, సమాసాలు మరియు సాధన అభ్యాసాలు.",
     colorClass: "bg-indigo-50 hover:bg-indigo-100 border-indigo-200",
     textColorClass: "text-indigo-700",
     progress: 65,
@@ -538,6 +538,16 @@ export const GRADE_6_HINDI_CHAPTERS: Chapter[] = [
 
 export const GRADE_6_SOCIALSCIENCE_CHAPTERS: Chapter[] = [
   {
+    id: "g6_soc_maps",
+    title: "🗺️ Maps: Reading, Scale & Symbols",
+    iconName: "Compass",
+    badge: "Geography",
+    topicSummary: "Types of maps (Physical, Political, Thematic), 3 components (Distance & Scale, Direction & Compass, Symbols), and Plan vs. Sketch.",
+    colorClass: "bg-sky-50 hover:bg-sky-100 border-sky-200",
+    textColorClass: "text-sky-700",
+    progress: 70,
+  },
+  {
     id: "g6_soc_locating_places",
     title: "🌍 Locating Places on Earth",
     iconName: "Compass",
@@ -599,6 +609,59 @@ export const GRADE_6_SOCIALSCIENCE_CHAPTERS: Chapter[] = [
   }
 ];
 
+export const GRADE_6_ENGLISH_CHAPTERS: Chapter[] = [
+  {
+    id: "g6_eng_who_did_patricks_homework",
+    title: "📚 1. Who Did Patrick's Homework?",
+    iconName: "BookOpen",
+    badge: "Honeysuckle Ch 1",
+    topicSummary: "A magical tale about Patrick meeting a tiny elf who helps him do homework, teaching self-reliance, hard work, and reading habits.",
+    colorClass: "bg-blue-50 hover:bg-blue-100 border-blue-200",
+    textColorClass: "text-blue-700",
+    progress: 85,
+  },
+  {
+    id: "g6_eng_how_the_dog_found_himself",
+    title: "🐕 2. How the Dog Found Himself a New Master!",
+    iconName: "Sparkles",
+    badge: "Honeysuckle Ch 2",
+    topicSummary: "Story of how dogs evolved from wild animals to man's most loyal companion by choosing the strongest master on Earth.",
+    colorClass: "bg-indigo-50 hover:bg-indigo-100 border-indigo-200",
+    textColorClass: "text-indigo-700",
+    progress: 75,
+  },
+  {
+    id: "g6_eng_taros_reward",
+    title: "🪵 3. Taro's Reward",
+    iconName: "Sparkles",
+    badge: "Honeysuckle Ch 3",
+    topicSummary: "A heartwarming Japanese folktale about Taro, a thoughtful and dutiful son whose filial devotion is rewarded by magic sake.",
+    colorClass: "bg-teal-50 hover:bg-teal-100 border-teal-200",
+    textColorClass: "text-teal-700",
+    progress: 70,
+  },
+  {
+    id: "g6_eng_an_indian_american_woman",
+    title: "🚀 4. An Indian-American Woman in Space: Kalpana Chawla",
+    iconName: "BookOpen",
+    badge: "Honeysuckle Ch 4",
+    topicSummary: "Inspiring biography of Kalpana Chawla, the first Indian-American astronaut who reached the stars through dedication.",
+    colorClass: "bg-sky-50 hover:bg-sky-100 border-sky-200",
+    textColorClass: "text-sky-700",
+    progress: 80,
+  },
+  {
+    id: "g6_eng_a_different_kind_of_school",
+    title: "🏫 5. A Different Kind of School",
+    iconName: "Sparkles",
+    badge: "Honeysuckle Ch 5",
+    topicSummary: "Miss Beam's unique school teaching empathy, kindness, and understanding by experiencing disabilities first-hand.",
+    colorClass: "bg-emerald-50 hover:bg-emerald-100 border-emerald-200",
+    textColorClass: "text-emerald-700",
+    progress: 90,
+  }
+];
+
 export const GRADE_9_CHAPTERS: Chapter[] = [
   {
     id: "g9_numbersystems",
@@ -643,6 +706,16 @@ export const GRADE_9_CHAPTERS: Chapter[] = [
 ];
 
 export const GRADE_9_SOCIALSCIENCE_CHAPTERS: Chapter[] = [
+  {
+    id: "g9_maps_location",
+    title: "🗺️ India: Size, Location & Map Skills",
+    iconName: "Compass",
+    badge: "Geography",
+    topicSummary: "India's location (8°4'N to 37°6'N, 68°7'E to 97°25'E), Tropic of Cancer (23°30'N), Standard Meridian (82°30'E IST), neighbors & spatial map reading skills.",
+    colorClass: "bg-teal-50 hover:bg-teal-100 border-teal-200",
+    textColorClass: "text-teal-700",
+    progress: 65,
+  },
   {
     id: "g9_french_revolution",
     title: "🏰 The French Revolution",
@@ -724,6 +797,103 @@ export const GRADE_9_CHEMISTRY_CHAPTERS: Chapter[] = [
 export const CHAPTERS_DATA: Chapter[] = GRADE_6_CHAPTERS;
 
 export const LESSONS_DATA: Record<string, LessonContent> = {
+  g6_soc_maps: {
+    chapterId: "g6_soc_maps",
+    title: "🗺️ Grade 6 Social Science: Maps - Reading, Scale & Symbols",
+    introduction: "A map is a representation or a drawing of the Earth's surface or a part of it drawn on a flat surface according to a scale. In this chapter, we explore physical, political, and thematic maps, cardinal directions, compass rose, map scale calculations, conventional symbols, and sketches versus plans.",
+    keyFormulas: [
+      {
+        name: "Types of Maps",
+        formula: "Physical Maps + Political Maps + Thematic Maps",
+        explanation: "Physical: Natural features (mountains, rivers, plains). Political: Boundaries of countries, states, cities & villages. Thematic: Specific information (rainfall, road maps, forests, industries)."
+      },
+      {
+        name: "3 Components of a Map",
+        formula: "Distance (Scale) + Direction (Compass) + Symbols",
+        explanation: "1. Distance: Scale is the ratio between actual distance on ground and distance shown on map. 2. Distance: Cardinal points (North N, South S, East E, West W) & Intermediate directions (NE, NW, SE, SW). 3. Symbols: Standard conventional colors & signs universally accepted."
+      },
+      {
+        name: "Map Scale Calculation",
+        formula: "Map Distance : Actual Ground Distance",
+        explanation: "Large Scale Map: Shows small area in detail (e.g. 1 cm = 500 m for a town/village). Small Scale Map: Shows large area with less detail (e.g. 1 cm = 500 km for continents/countries)."
+      },
+      {
+        name: "Map Pointing & Identification",
+        formula: "Location Pinpoint + Geographic Reference",
+        explanation: "Locating physical features (Himalayas, Thar Desert, Deccan Plateau), key coordinates (Tropic of Cancer, 82°30'E IST), capital cities (New Delhi), and oceans on an outline map."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Understanding Map Scale",
+        desc: "If distance between school and home is 10 km, and you show it as 2 cm on map, scale is 1 cm = 5 km.",
+        example: "Distance on map = 4 cm. Actual distance = 4 × 5 km = 20 km."
+      },
+      {
+        title: "2. Cardinal Points & Compass Rose",
+        desc: "North (N) is always at the top of a standard map. Compass needle always points North-South.",
+        example: "Northeast (NE) lies between North and East; Southwest (SW) lies between South and West."
+      },
+      {
+        title: "3. Sketch vs. Plan",
+        desc: "Sketch: Rough drawing based on memory without scale. Plan: Detailed drawing of a small area on a large scale (e.g. room dimensions).",
+        example: "An architect's building blueprint is a Plan; directions drawn on paper to guide a friend to your house is a Sketch."
+      },
+      {
+        title: "4. Map Pointing & Map Work Practice",
+        desc: "Map pointing involves marking and identifying locations on an outline map accurately using standard symbols and geographic references.",
+        example: "Pointing to Tropic of Cancer (23°30' N) across Central India and Standard Meridian (82°30' E) through Mirzapur."
+      }
+    ],
+    didYouKnow: "The science of map-making is called Cartography, and a collection of maps bound together in a book is called an Atlas!",
+    visualContext: "numberline"
+  },
+  g9_maps_location: {
+    chapterId: "g9_maps_location",
+    title: "🗺️ Grade 9 Social Science: India - Size, Location & Map Skills",
+    introduction: "India is one of the ancient civilizations in the world with vast geographical expanse. Located entirely in the Northern & Eastern Hemispheres, India spans from 8°4'N to 37°6'N latitude and 68°7'E to 97°25'E longitude. In this chapter, we master spatial representation, map skills, latitude/longitude grid, Tropic of Cancer, Standard Meridian of India (82°30'E), land boundaries, and neighboring nations.",
+    keyFormulas: [
+      {
+        name: "Latitudinal & Longitudinal Extent",
+        formula: "Latitude: 8°4'N to 37°6'N | Longitude: 68°7'E to 97°25'E",
+        explanation: "Mainland spans ~30° both north-south and east-west. Southernmost point of Indian Union was Indira Point (6°45'N, submerged in 2004 tsunami)."
+      },
+      {
+        name: "Tropic of Cancer (23°30' N)",
+        formula: "Divides India into almost two equal thermal halves",
+        explanation: "Passes through 8 Indian States: Gujarat, Rajasthan, Madhya Pradesh, Chhattisgarh, Jharkhand, West Bengal, Tripura, and Mizoram."
+      },
+      {
+        name: "Indian Standard Time (IST - 82°30' E)",
+        formula: "Standard Meridian passing through Mirzapur (Uttar Pradesh)",
+        explanation: "IST is 5 hours 30 minutes ahead of GMT (UTC+5:30). Time difference between Gujarat (west) and Arunachal Pradesh (east) is 2 hours due to 30° longitude span."
+      },
+      {
+        name: "Size & Land Boundary",
+        formula: "Total Area: 3.28 Million sq km (2.4% of world's area) - 7th largest country",
+        explanation: "Land Boundary: ~15,200 km. Coastline (including Andaman & Nicobar, Lakshadweep): 7,516.6 km."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Locating India on World & Regional Maps",
+        desc: "India occupies a strategic central position at the head of the Indian Ocean, connecting East Asia with Europe and Africa via sea routes.",
+        example: "Suez Canal opening in 1869 reduced distance between India and Europe by 7,000 km."
+      },
+      {
+        title: "2. Identifying Neighboring Nations on Maps",
+        desc: "North-West: Pakistan, Afghanistan | North: China (Tibet), Nepal, Bhutan | East: Myanmar, Bangladesh | South (Island neighbors): Sri Lanka (separated by Palk Strait) & Maldives.",
+        example: "India shares its longest land border with Bangladesh (~4,096 km)."
+      },
+      {
+        title: "3. Map Reading & Coordinate Plotting",
+        desc: "Using degree coordinates to mark major physical features, ports, state capitals, and physical barriers on a blank political map.",
+        example: "Standard Meridian 82°30'E passes near Mirzapur in UP and through MP, Chhattisgarh, Odisha, and Andhra Pradesh."
+      }
+    ],
+    didYouKnow: "Before 1947, there were two types of provinces in India — British Provinces (ruled directly by British officials) and Princely States (ruled by local hereditary rulers under British suzerainty)!",
+    visualContext: "numberline"
+  },
   numbersystem: {
     chapterId: "numbersystem",
     title: "🔢 Chapter 1: Knowing Our Numbers (Number System)",
@@ -921,7 +1091,7 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
       }
     ],
     didYouKnow: "Ancient Indian mathematician Aryabhata used letters of the alphabet to express numbers and write algebraic identities in poetry form!",
-    visualContext: "perimeter" // We will contextually trigger tools
+    visualContext: "perimeter"
   },
   integers: {
     chapterId: "integers",
@@ -976,18 +1146,13 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
       },
       {
         name: "Curves & Polygons",
-        formula: "Simple Curve (no self-intersection) | Polygon (closed line segments)",
-        explanation: "Curves can be open or closed. A Polygon is a simple closed curve made entirely of line segments (minimum 3 sides)."
+        formula: "Simple Curve (No self-crossing) | Polygon (Simple closed curve with straight line segments)",
+        explanation: "Closed curves divide space into Interior, Boundary, and Exterior regions. 3-sided polygon = Triangle; 4-sided = Quadrilateral."
       },
       {
-        name: "Angles & Vertices",
-        formula: "Angle ∠AOB = Ray OA + Ray OB (Vertex O)",
-        explanation: "An angle is formed by two rays meeting at a common vertex point O. The rays are called arms or sides."
-      },
-      {
-        name: "Circle Dimensions & Parts",
-        formula: "Diameter (d) = 2 × Radius (r) | Circumference = 2 × π × r",
-        explanation: "Radius connects center to boundary. Diameter connects 2 boundary points through the center. Sector is a pie slice; Segment is bounded by a chord."
+        name: "Circle Terms",
+        formula: "Radius (r) | Diameter (d = 2r) | Chord | Arc | Sector | Segment",
+        explanation: "Radius is distance from center to boundary. Diameter is double radius passing through center. Chord connects any 2 boundary points."
       }
     ],
     steps: [
@@ -1335,24 +1500,19 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     introduction: "Polynomials are algebraic expressions consisting of variables, exponents, and coefficients. In Grade 9, we master standard algebraic identities, degree of polynomials, Remainder Theorem, and Factor Theorem.",
     keyFormulas: [
       {
-        name: "Square Identities (1, 2, 3)",
-        formula: "(x + y)² = x² + 2xy + y²  |  (x - y)² = x² - 2xy + y²  |  (x + y)(x - y) = x² - y²",
-        explanation: "Fundamental algebraic identities for expanding binomial squares and difference of squares."
+        name: "Standard Identities",
+        formula: "(x + y)² = x² + 2xy + y²  |  (x - y)² = x² - 2xy + y²  |  x² - y² = (x + y)(x - y)  |  (x + a)(x + b) = x² + (a + b)x + ab",
+        explanation: "Fundamental binomial square, difference of squares, and linear product expansion identities."
       },
       {
-        name: "Binomial Product & Trinomial Square",
-        formula: "(x + a)(x + b) = x² + (a + b)x + ab  |  (x + y + z)² = x² + y² + z² + 2xy + 2yz + 2zx",
-        explanation: "Product of binomials with a common term and square of a trinomial expression."
+        name: "Expanded Trinomial & Cubic Identities",
+        formula: "(x + y + z)² = x² + y² + z² + 2xy + 2yz + 2zx  |  (x + y)³ = x³ + y³ + 3xy(x + y) = x³ + 3x²y + 3xy² + y³  |  (x - y)³ = x³ - y³ - 3xy(x - y) = x³ - 3x²y + 3xy² - y³",
+        explanation: "Square of a trinomial and expanded cubes of sum and difference."
       },
       {
-        name: "Cubic Identities",
-        formula: "(x + y)³ = x³ + y³ + 3xy(x + y)  |  (x - y)³ = x³ - y³ - 3xy(x - y)",
-        explanation: "Expansion formulas for perfect cubes of sum and difference."
-      },
-      {
-        name: "Special Sum of Cubes Identity",
-        formula: "x³ + y³ + z³ - 3xyz = (x + y + z)(x² + y² + z² - xy - yz - zx)",
-        explanation: "When x + y + z = 0, then x³ + y³ + z³ = 3xyz."
+        name: "Factorization Identities",
+        formula: "x³ + y³ = (x + y)(x² - xy + y²)  |  x³ - y³ = (x - y)(x² + xy + y²)  |  x³ + y³ + z³ - 3xyz = (x + y + z)(x² + y² + z² - xy - yz - zx)",
+        explanation: "Sum & difference of cubes, and special 3-variable cubic identity (If x + y + z = 0, then x³ + y³ + z³ = 3xyz)."
       }
     ],
     steps: [
@@ -1848,586 +2008,85 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     keyFormulas: [
       {
         name: "Phonics Sounds",
-        formula: "A says /æ/ (Apple) 🍎 | B says /b/ (Ball) 🎈 | C says /k/ (Cat) 🐱",
-        explanation: "Phonics helps us read big words by joining letter sounds together!"
+        formula: "A for Apple /æ/, B for Ball /b/, C for Cat /k/",
+        explanation: "Vowels: A, E, I, O, U (5 letters). Consonants: Remaining 21 letters."
       }
     ],
     steps: [
       {
-        title: "Step 1: Capital and Small Letters",
-        desc: "Each letter has a big brother (Capital) and a baby brother (Small)!",
-        example: "Big 'A' and baby 'a'. They both say /æ/!"
+        title: "Recognizing Uppercase & Lowercase",
+        desc: "Match capital letters with small letters.",
+        example: "A -> a, B -> b, C -> c"
       }
     ],
-    didYouKnow: "The sentence 'The quick brown fox jumps over the lazy dog' uses every single letter of the English alphabet!",
-    visualContext: "placevalue"
-  },
-  g1_eng_nouns: {
-    chapterId: "g1_eng_nouns",
-    title: "📝 Chapter 2: Naming Words (Nouns)",
-    introduction: "Everything has a name! Naming words are also called Nouns. They tell us names of people, places, animals, and things.",
-    keyFormulas: [
-      {
-        name: "Four Types of Nouns",
-        formula: "Person (Boy/Teacher) | Place (School/Park) | Animal (Dog/Lion) | Thing (Book/Toy)",
-        explanation: "If you can see it or touch it, it probably has a naming word!"
-      }
-    ],
-    steps: [
-      {
-        title: "Step 1: Look Around Your Room",
-        desc: "Point to objects and call out their naming words!",
-        example: "Chair, Table, Pencil, Bag are all Naming Words."
-      }
-    ],
-    didYouKnow: "Our names are also special naming words (Proper Nouns) and they always start with a Capital Letter!",
-    visualContext: "placevalue"
-  },
-  g1_eng_verbs: {
-    chapterId: "g1_eng_verbs",
-    title: "🦁 Chapter 3: Action Words & Stories",
-    introduction: "What are you doing? Reading! Reading is an action! Let's learn action words (verbs) that show movement and play.",
-    keyFormulas: [
-      {
-        name: "Action Words",
-        formula: "Run 🏃 | Jump 🦘 | Sing 🎤 | Smile 😊 | Sleep 💤",
-        explanation: "Action words tell us what people or animals are doing."
-      }
-    ],
-    steps: [
-      {
-        title: "Step 1: Play Simon Says",
-        desc: "Do the actions when Simon says! Run, jump, and laugh!",
-        example: "When I say 'Jump', you leap high into the air."
-      }
-    ],
-    didYouKnow: "Even sleeping is an action! 'Sleep' is an action word because it tells us what someone is doing.",
-    visualContext: "placevalue"
-  },
-  g1_eng_spelling: {
-    chapterId: "g1_eng_spelling",
-    title: "✨ Chapter 4: Safety Vocabulary & Sight Words",
-    introduction: "Welcome to Grade 1 Vocabulary & Safety Words! Let's learn to read, spell, pronounce, and use 10 essential vocabulary words: injury, careful, danger, store, burning, away, shock, candles, stay, and should!",
-    keyFormulas: [
-      {
-        name: "10 Essential Safety Vocabulary Words",
-        formula: "injury 🩹 | careful ⚠️ | danger 🚨 | store 🏬 | burning 🔥 | away 🏃 | shock ⚡ | candles 🕯️ | stay 🛑 | should ✅",
-        explanation: "Mastering these 10 vocabulary words keeps you safe, confident, and articulate!"
-      },
-      {
-        name: "Word Meanings & Safety Rules",
-        formula: "injury (hurt) | careful (cautious) | danger (risk) | store (keep/shop) | burning (on fire) | away (far) | shock (electric surge) | candles (wax light) | stay (remain) | should (advice)",
-        explanation: "Learn how each word is spelled and used in real everyday sentences!"
-      }
-    ],
-    steps: [
-      {
-        title: "Step 1: 'injury' & 'careful' (Avoiding Harm)",
-        desc: "An 'injury' (i-n-j-u-r-y) is any physical hurt or cut. Being 'careful' (c-a-r-e-f-u-l) means taking care to prevent accidents and injuries!",
-        example: "Sentence: 'Be careful while running so you do not get a knee injury!' 🩹"
-      },
-      {
-        title: "Step 2: 'danger' & 'stay' & 'away' (Safety Boundaries)",
-        desc: "'danger' (d-a-n-g-e-r) means high risk of getting hurt. 'stay' (s-t-a-y) means to remain, and 'away' (a-w-a-y) means at a safe distance.",
-        example: "Sentence: 'There is danger near hot stoves, so stay far away from the kitchen flame!' 🚨"
-      },
-      {
-        title: "Step 3: 'burning', 'candles', & 'shock' (Fire & Electrical Safety)",
-        desc: "'burning' (b-u-r-n-i-n-g) means producing heat or flame. 'candles' (c-a-n-d-l-e-s) give light when lit. 'shock' (s-h-o-c-k) comes from unsafe electrical wires.",
-        example: "Sentence: 'Do not touch burning candles or open sockets to prevent an electric shock!' 🕯️⚡"
-      },
-      {
-        title: "Step 4: 'store' & 'should' (Good Habits & Rules)",
-        desc: "'store' (s-t-o-r-e) means keeping things safely in place (or a shop). 'should' (s-h-o-u-l-d) expresses good rules we ought to follow.",
-        example: "Sentence: 'You should store your sharp scissors safely inside your pencil box!' 🏬"
-      }
-    ],
-    didYouKnow: "Learning safety vocabulary like 'careful', 'danger', 'shock', and 'injury' empowers Grade 1 kids to express their feelings clearly and avoid home hazards!",
-    visualContext: "placevalue"
-  },
-  g9_french_revolution: {
-    chapterId: "g9_french_revolution",
-    title: "🏰 The French Revolution",
-    introduction: "In 1789, France erupted in revolution, ending absolute monarchy and establishing human rights, liberty, and democratic ideals that shook the entire world.",
-    keyFormulas: [
-      {
-        name: "Three Estates",
-        formula: "Clergy (1st), Nobility (2nd), Commoners (3rd)",
-        explanation: "The 3rd Estate (97% of population) paid all taxes while the first two estates held privileges."
-      },
-      {
-        name: "Declaration of Rights",
-        formula: "Liberty, Equality, Fraternity",
-        explanation: "The core slogan asserting all citizens are born free and equal in rights."
-      }
-    ],
-    steps: [
-      {
-        title: "July 14, 1789: Storming of the Bastille",
-        desc: "Angry crowds stormed the royal prison fortress 'Bastille', a symbol of the king's absolute power, marking the start of the revolution.",
-        example: "This day is now celebrated as France's National Day (Bastille Day)."
-      },
-      {
-        title: "Abolition of Feudalism & Monarchy",
-        desc: "The National Assembly abolished feudal privileges, drafted a constitution, and eventually executed King Louis XVI, declaring France a Republic.",
-        example: "Maximilian Robespierre led the radical Reign of Terror during this period."
-      }
-    ],
-    didYouKnow: "The French Revolution introduced the metric system (meters, kilograms, liters) to replace a chaotic mess of regional units!",
-    visualContext: "typesofnumbers"
-  },
-  g9_physical_features: {
-    chapterId: "g9_physical_features",
-    title: "🏔️ Physical Features of India",
-    introduction: "India is a land of vast geographical diversity. From the snow-capped Himalayan mountains to the golden sands of the Thar desert, we explore the country's six major physiographic divisions.",
-    keyFormulas: [
-      {
-        name: "The Great Himalayas",
-        formula: "Himadri (Inner), Himachal (Lesser), Shiwaliks (Outer)",
-        explanation: "The three parallel ranges of the Himalayas, stretching from west to east."
-      },
-      {
-        name: "Tectonic Plates",
-        formula: "Convergent, Divergent, and Transform boundaries",
-        explanation: "Movement of tectonic plates that shapes the landforms of the Earth over millions of years."
-      }
-    ],
-    steps: [
-      {
-        title: "The Himalayan Mountains & Northern Plains",
-        desc: "Young fold mountains formed by the collision of Indo-Australian and Eurasian plates. The alluvial deposits from Himalayan rivers formed the highly fertile Northern Plains.",
-        example: "Mount Everest (8,848m) is the highest peak in the Himadri range."
-      },
-      {
-        title: "The Peninsular Plateau & Coastal Plains",
-        desc: "An ancient tableland made of old crystalline, igneous, and metamorphic rocks, flanked by the Western and Eastern Ghats along the coastlines.",
-        example: "The Deccan Trap is famous for fertile black cotton soil (regur soil)."
-      }
-    ],
-    didYouKnow: "The Himalayas are still rising at a rate of about 1 to 2 centimeters per year because the Indian tectonic plate continues to push northward into Asia!",
-    visualContext: "perimeter"
-  },
-  g9_democracy: {
-    chapterId: "g9_democracy",
-    title: "🗳️ What is Democracy? Why Democracy?",
-    introduction: "Democracy is a form of government in which the rulers are elected by the people. We study the essential traits that distinguish democracy from non-democratic regimes, and why it is the most preferred system.",
-    keyFormulas: [
-      {
-        name: "Key Pillar 1",
-        formula: "Major decisions by elected leaders",
-        explanation: "Only those representatives chosen by citizens must have the final authority to govern."
-      },
-      {
-        name: "Key Pillar 2",
-        formula: "Free and fair electoral competition",
-        explanation: "Elections must offer a real choice with a fair chance for the current ruling party to lose."
-      },
-      {
-        name: "Key Pillar 3",
-        formula: "One person, one vote, one value",
-        explanation: "Every adult citizen must have one vote and each vote must hold equal weight."
-      }
-    ],
-    steps: [
-      {
-        title: "Step 1: Define Democratic Governance",
-        desc: "Rulers are elected through regular intervals, laws protect individual rights, and an independent judiciary resolves disputes.",
-        example: "India's independent Election Commission ensures free and fair voting."
-      },
-      {
-        title: "Step 2: Argue For Democracy",
-        desc: "Democracy improves the quality of decision-making, provides a method to deal with differences, and enhances citizen dignity.",
-        example: "Unlike non-democratic regimes, a democratic government is highly accountable to its people."
-      }
-    ],
-    didYouKnow: "The word democracy comes from two Greek words: 'demos' meaning people, and 'kratos' meaning power or rule!",
-    visualContext: "placevalue"
-  },
-  g6_soc_locating_places: {
-    chapterId: "g6_soc_locating_places",
-    title: "🌍 Locating Places on Earth",
-    introduction: "The Earth is a spherical planet. To pinpoint any location on its vast surface, geographers designed an imaginary grid system of horizontal parallels (Latitudes) and vertical meridians (Longitudes).",
-    keyFormulas: [
-      {
-        name: "Equator (0° Latitude)",
-        formula: "Divides Earth into Northern & Southern Hemispheres",
-        explanation: "The central imaginary circle around Earth, midway between North and South Poles."
-      },
-      {
-        name: "Prime Meridian (0° Longitude)",
-        formula: "Passes through Royal Observatory at Greenwich, London",
-        explanation: "Divides Earth into Eastern and Western Hemispheres; starting line for longitudes."
-      },
-      {
-        name: "Time Zone Calculation",
-        formula: "15° Longitude = 1 Hour time difference (360° / 24 hrs)",
-        explanation: "India's Standard Meridian (IST) is 82.5° E (82°30' E), located +5 hrs 30 mins ahead of GMT/UTC."
-      }
-    ],
-    steps: [
-      {
-        title: "1. Understanding Latitudes (Parallels)",
-        desc: "Imaginary parallel circles running east-west from 0° at the Equator to 90° N at the North Pole and 90° S at the South Pole. Important parallels include Tropic of Cancer (23.5° N) and Tropic of Capricorn (23.5° S).",
-        example: "New Delhi lies at ~28.6° N Latitude, while Sydney lies at ~33.8° S Latitude."
-      },
-      {
-        title: "2. Longitudes (Meridians) & Standard Time",
-        desc: "Imaginary semi-circles running from North Pole to South Pole. Longitudes measure east or west of the Prime Meridian up to 180°. Every 15° shift in longitude changes local time by 1 hour.",
-        example: "When it is 12:00 PM (Noon) in Greenwich (0°), it is 5:30 PM in India (82.5° E)."
-      }
-    ],
-    didYouKnow: "The International Date Line roughly follows 180° Longitude in the Pacific Ocean. Crossing it from East to West makes you lose a day, while crossing West to East gains a day!",
-    visualContext: "perimeter"
-  },
-  g6_soc_motions_earth: {
-    chapterId: "g6_soc_motions_earth",
-    title: "🌌 Motions of the Earth",
-    introduction: "The Earth exhibits two primary movements: Rotation (spinning on its tilted axis every 24 hours) and Revolution (orbiting around the Sun every 365¼ days). Together, these motions create day and night, changing seasons, and solstices.",
-    keyFormulas: [
-      {
-        name: "Rotation (భ్రమణం)",
-        formula: "24 Hours (1 Earth Day) on 66.5° tilted axis",
-        explanation: "Causes day and night. The Circle of Illumination separates the lit half from the dark half."
-      },
-      {
-        name: "Revolution (పరిభ్రమణం)",
-        formula: "365¼ Days (1 Year) around Sun in elliptical orbit",
-        explanation: "The extra ¼ day (6 hours) accumulates over 4 years to add 1 extra day (Feb 29) in a Leap Year (366 days)."
-      },
-      {
-        name: "Solstices & Equinoxes",
-        formula: "June 21 (Summer Solstice), Dec 22 (Winter Solstice), March 21 & Sept 23 (Equinoxes)",
-        explanation: "On Solstices, day lengths are unequal. On Equinoxes, direct rays strike Equator causing equal day and night worldwide."
-      }
-    ],
-    steps: [
-      {
-        title: "1. Rotation & Day/Night Cycle",
-        desc: "Earth rotates from West to East. As it spins, the hemisphere facing the Sun experiences daylight, while the opposite hemisphere experiences night.",
-        example: "When it is morning in India, it is night in America due to Earth's West-to-East rotation."
-      },
-      {
-        title: "2. Revolution & Seasons",
-        desc: "Earth's tilted axis remains inclined in the same direction throughout its orbit around the Sun. When Northern Hemisphere tilts toward the Sun (June), it experiences Summer; when tilted away (December), it experiences Winter.",
-        example: "On June 21, the Tropic of Cancer receives direct sunlight, resulting in the longest day of the year in the Northern Hemisphere."
-      }
-    ],
-    didYouKnow: "In Norway and parts of Alaska near the Arctic Circle, the Sun never sets for almost six months during summer, earning them the name 'Land of the Midnight Sun'!",
-    visualContext: "perimeter"
-  },
-  g6_soc_timeline_sources: {
-    chapterId: "g6_soc_timeline_sources",
-    title: "📜 Timeline and Sources of History",
-    introduction: "History is the systematic study of past human lives, events, and civilizations. Historians function like detectives, piecing together history using physical sources, old manuscripts, inscriptions, and timelines.",
-    keyFormulas: [
-      {
-        name: "Chronology Systems",
-        formula: "BCE (Before Common Era) vs CE (Common Era)",
-        explanation: "BCE dates count backwards to 1 BCE, while CE dates count forward starting from 1 CE."
-      },
-      {
-        name: "Historical Sources",
-        formula: "Literary Sources + Archaeological Sources",
-        explanation: "Literary (Manuscripts, Religious & Secular books) and Archaeological (Inscriptions, Artifacts, Coins, Monuments)."
-      }
-    ],
-    steps: [
-      {
-        title: "1. Literary Sources & Manuscripts",
-        desc: "Ancient scholars wrote manuscripts by hand on dried palm leaves (Taalapatra) or birch bark (Bhurjapatra). They recorded Vedas, epics (Ramayana, Mahabharata), treaties, and court chronicles.",
-        example: "Kautilya's Arthashastra and Kalidasa's plays are famous ancient literary sources."
-      },
-      {
-        title: "2. Archaeological Sources & Inscriptions",
-        desc: "Inscriptions are writings carved on hard surfaces like stone pillars, copper plates, or temple walls. Archaeology digs up buried pottery, seals, weapons, coins, and human remains.",
-        example: "Ashoka's Pillar Edicts at Sarnath spread messages of Ahimsa (non-violence) and Dhamma."
-      }
-    ],
-    didYouKnow: "Scientific Radiocarbon (Carbon-14) dating measures the radioactive decay of carbon in ancient organic items like wood, bones, and seeds to calculate their exact age!",
-    visualContext: "typesofnumbers"
-  },
-  g6_soc_earliest_cities: {
-    chapterId: "g6_soc_earliest_cities",
-    title: "🏛️ Earliest Cities & Harappan Civilization",
-    introduction: "Around 4,700 years ago (2500 BCE), flourishing urban settlements arose in the Indus River Valley. Known as the Harappan Civilization, these were India's earliest planned cities with advanced brickwork, drainage, and trade.",
-    keyFormulas: [
-      {
-        name: "City Layout",
-        formula: "Citadel (West/High) + Lower Town (East/Broad)",
-        explanation: "Citadel housed public monuments (Great Bath, Granaries), while Lower Town contained residential houses."
-      },
-      {
-        name: "Urban Engineering",
-        formula: "Interlocking Baked Bricks + Covered Drainage Grid",
-        explanation: "House drains connected directly to covered street drains with inspection holes for regular cleaning."
-      },
-      {
-        name: "Harappan Artifacts",
-        formula: "Steatite Seals + Terracotta Toys + Bronze Statues",
-        explanation: "Seals featured animal motifs (unicorn, humped bull) and undeciphered Harappan script."
-      }
-    ],
-    steps: [
-      {
-        title: "1. Harappan Town Planning & Engineering",
-        desc: "Cities like Harappa, Mohenjo-daro, Dholavira, and Lothal featured straight streets laid out in a grid. Baked clay bricks were fitted in interlocking patterns for strength.",
-        example: "The 'Great Bath' in Mohenjo-daro was a waterproof brick pool lined with bitumen (natural tar) used for ritual bathing."
-      },
-      {
-        title: "2. Occupations, Crafts & Maritime Trade",
-        desc: "Harappans were skilled potters, bead-makers, metalworkers (copper, bronze, gold), and traders. Lothal in Gujarat had a tidal dockyard for sea trade with Mesopotamia.",
-        example: "Bead-making workshops in Chanhudaro produced carnelians and lapis lazuli beads exported overseas."
-      }
-    ],
-    didYouKnow: "Harappan drains were so advanced that every home had its own bathroom with sloping brick floors leading to main street sewers—a sanitary standard unmatched in the ancient world!",
-    visualContext: "placevalue"
-  },
-  g6_soc_value_of_work: {
-    chapterId: "g6_soc_value_of_work",
-    title: "🤝 The Value of Work",
-    introduction: "Every vibrant society depends on people doing diverse kinds of work. Whether producing food, building homes, teaching children, or keeping streets clean, all honest work holds dignity and deserves equal respect.",
-    keyFormulas: [
-      {
-        name: "Three Main Economic Sectors",
-        formula: "Primary ➡️ Secondary ➡️ Tertiary",
-        explanation: "Primary (Raw nature/Farming) ➡️ Secondary (Manufacturing/Crafts) ➡️ Tertiary (Services & Care)."
-      },
-      {
-        name: "Dignity of Labor (Shramdaan)",
-        formula: "Equal respect for all honest human effort",
-        explanation: "No occupation is high or low; every worker contributes to community well-being."
-      }
-    ],
-    steps: [
-      {
-        title: "1. Occupations in Our Community",
-        desc: "Farmers grow crops (Primary), factory workers and artisans turn cotton into cloth or clay into pottery (Secondary), while doctors, teachers, drivers, and shopkeepers provide services (Tertiary).",
-        example: "A cotton shirt requires farmers, truckers, mill workers, tailors, and shopkeepers."
-      },
-      {
-        title: "2. Interdependence & Mutual Respect",
-        desc: "We cannot survive alone without depending on others. Recognizing this mutual reliance fosters gratitude, fair wages, safety, and warm social respect for every worker.",
-        example: "A school relies on sanitation staff for cleanliness, teachers for education, and guards for safety."
-      }
-    ],
-    didYouKnow: "Mahatma Gandhi championed 'Dignity of Labor' by spinning cotton yarn on his Charkha every day and performing his own cleaning tasks to prove all work is honorable!",
-    visualContext: "placevalue"
-  },
-  g6_soc_government_diversity: {
-    chapterId: "g6_soc_government_diversity",
-    title: "🗳️ Diversity & Local Government",
-    introduction: "India is a land of rich cultural, linguistic, and geographic diversity united under a democratic constitutional system. Democracy functions at three levels: Local (Panchayat/Municipality), State, and National.",
-    keyFormulas: [
-      {
-        name: "Gram Panchayat Structure",
-        formula: "Gram Sabha (All Voters) ➡️ Ward Members + Sarpanch",
-        explanation: "Gram Sabha meets regularly to make village decisions, approve budgets, and hold elected leaders accountable."
-      },
-      {
-        name: "Urban Local Bodies",
-        formula: "Municipal Corporation / Municipality ➡️ Ward Councillors + Mayor",
-        explanation: "Manages city water supply, street lighting, garbage collection, parks, and public health."
-      },
-      {
-        name: "Democratic Principles",
-        formula: "Universal Adult Suffrage + Equality + Rule of Law",
-        explanation: "Every adult citizen (18+ years) has 1 vote of equal value regardless of gender, wealth, or caste."
-      }
-    ],
-    steps: [
-      {
-        title: "1. Unity in Diversity",
-        desc: "Jawaharlal Nehru coined 'Unity in Diversity' to describe how people speaking different languages (Telugu, Hindi, Tamil), eating varied food, and celebrating diverse festivals live peacefully together.",
-        example: "Harvest festivals like Sankranti, Baisakhi, Pongal, and Onam are celebrated across different states under unique names."
-      },
-      {
-        title: "2. Panchayati Raj & Village Self-Governance",
-        desc: "Panchayati Raj is the 3-tier local self-government system in rural areas: Gram Panchayat (Village), Panchayat Samiti (Block), and Zilla Parishad (District).",
-        example: "The Gram Panchayat builds drinking water wells, maintains village roads, and runs local primary health centres."
-      }
-    ],
-    didYouKnow: "India is the world's largest democracy! Over 900 million citizens are eligible to vote in national elections using Electronic Voting Machines (EVMs)!",
-    visualContext: "placevalue"
-  },
-  g9_physics_motion: {
-    chapterId: "g9_physics_motion",
-    title: "🌌 Motion",
-    introduction: "Motion is a change of position of an object over time. It can be described in terms of distance, displacement, speed, velocity, and acceleration.",
-    keyFormulas: [
-      {
-        name: "Average Speed",
-        formula: "Speed = Total Distance / Total Time",
-        explanation: "The scalar measure of how fast an object moves without regard to its direction."
-      },
-      {
-        name: "First Equation of Motion",
-        formula: "v = u + at",
-        explanation: "Where v is final velocity, u is initial velocity, a is acceleration, and t is time."
-      },
-      {
-        name: "Second Equation of Motion",
-        formula: "s = ut + (1/2)at²",
-        explanation: "Where s is the distance covered under uniform acceleration."
-      }
-    ],
-    steps: [
-      {
-        title: "Understand Distance vs. Displacement",
-        desc: "Distance is the total path length traveled, whereas displacement is the shortest straight-line distance from the start to the end point.",
-        example: "If you run 400m around a circular track and finish where you started, your distance is 400m, but your displacement is 0m!"
-      },
-      {
-        title: "Analyze Uniform and Non-Uniform Motion",
-        desc: "An object moving equal distances in equal intervals of time has uniform motion; otherwise, it is non-uniform.",
-        example: "A car moving through heavy city traffic is in non-uniform motion."
-      }
-    ],
-    didYouKnow: "The fastest animal on earth is the Peregrine Falcon, reaching diving speeds of over 320 km/h (89 m/s)!",
+    didYouKnow: "The letter 'E' is the most commonly used letter in the English language!",
     visualContext: "numberline"
-  },
-  g9_physics_force: {
-    chapterId: "g9_physics_force",
-    title: "🧲 Force and Laws of Motion",
-    introduction: "Why do things move or stop? Force is a push or pull that changes or tends to change the state of rest or uniform motion of an object. Newton's laws govern how these forces behave.",
-    keyFormulas: [
-      {
-        name: "Newton's Second Law",
-        formula: "F = m * a",
-        explanation: "Force equals mass times acceleration. Unit of Force is the Newton (N)."
-      },
-      {
-        name: "Conservation of Momentum",
-        formula: "m₁u₁ + m₂u₂ = m₁v₁ + m₂v₂",
-        explanation: "The total momentum of two objects before collision is equal to the total momentum after collision, in the absence of external forces."
-      }
-    ],
-    steps: [
-      {
-        title: "Newton's First Law (Law of Inertia)",
-        desc: "An object continues to be in a state of rest or uniform motion unless compelled by an external unbalanced force.",
-        example: "You fall forward when a moving bus brakes suddenly because your lower body stops but your upper body tends to keep moving (Inertia of motion)."
-      },
-      {
-        title: "Newton's Third Law (Action and Reaction)",
-        desc: "To every action, there is an equal and opposite reaction.",
-        example: "When a gun fires a bullet, the gun recoils backwards with an equal force."
-      }
-    ],
-    didYouKnow: "Sir Isaac Newton formulated these legendary laws of motion in 1687, which laid the foundation for classical mechanics!",
-    visualContext: "placevalue"
-  },
-  g9_chem_matter: {
-    chapterId: "g9_chem_matter",
-    title: "🧪 Matter in Our Surroundings",
-    introduction: "Everything around us is matter! Matter is anything that occupies space and has mass. It exists in three primary physical states: Solid, Liquid, and Gas.",
-    keyFormulas: [
-      {
-        name: "Latent Heat",
-        formula: "Q = m * L",
-        explanation: "Heat energy absorbed or released during a phase change without changing the temperature."
-      },
-      {
-        name: "Temperature Conversion",
-        formula: "K = °C + 273.15",
-        explanation: "Converting Celsius to Kelvin scale, the SI unit of temperature."
-      }
-    ],
-    steps: [
-      {
-        title: "Explore States of Matter",
-        desc: "Solids have definite shape and volume. Liquids have a definite volume but take the shape of their container. Gases have neither definite shape nor definite volume.",
-        example: "Ice (solid), water (liquid), and steam (gas) are the three states of H₂O."
-      },
-      {
-        title: "Observe Diffusion and Evaporation",
-        desc: "Diffusion is the intermixing of particles of different matter on their own. Evaporation is the surface phenomenon where liquid turns to vapor below its boiling point.",
-        example: "The smell of hot cooking food reaches us several meters away due to high diffusion rates at high temperatures."
-      }
-    ],
-    didYouKnow: "There are actually two additional exotic states of matter beyond Solid, Liquid, and Gas: Plasma and Bose-Einstein Condensates (BEC)!",
-    visualContext: "typesofnumbers"
-  },
-  g9_chem_atoms: {
-    chapterId: "g9_chem_atoms",
-    title: "⚛️ Atoms and Molecules",
-    introduction: "Atoms are the building blocks of all matter. Molecules are groups of two or more atoms chemically bonded together. Together, they form the compounds that make up our universe.",
-    keyFormulas: [
-      {
-        name: "Law of Conservation of Mass",
-        formula: "Mass of Reactants = Mass of Products",
-        explanation: "Mass can neither be created nor destroyed in a chemical reaction."
-      },
-      {
-        name: "The Mole Concept",
-        formula: "1 Mole = 6.022 * 10²³ Particles",
-        explanation: "Avogadro's number represents the number of atoms, molecules, or ions in one mole of a substance."
-      }
-    ],
-    steps: [
-      {
-        title: "Learn Dalton's Atomic Theory",
-        desc: "All matter is made of indivisible particles called atoms. Atoms of a given element are identical in mass and chemical properties.",
-        example: "An atom of hydrogen is different in mass and chemical behavior from an atom of oxygen."
-      },
-      {
-        title: "Write Chemical Formulas",
-        desc: "Formulas represent the composition of molecules. They are written based on valencies or combining capacities of elements.",
-        example: "Sodium chloride is represented as NaCl, and Water is represented as H₂O."
-      }
-    ],
-    didYouKnow: "An atom is so incredibly tiny that a single sheet of paper is about one million atoms thick!",
-    visualContext: "placevalue"
   },
   g6_tel_ammaodi: {
     chapterId: "g6_tel_ammaodi",
-    title: "🌸 పాఠం 1: అమ్మఒడి (Amma Odi)",
-    introduction: "ఈ పాఠంలో తల్లి ప్రేమ యొక్క గొప్పదనాన్ని, అమ్మఒడి యొక్క పవిత్రతను తెలుసుకుంటాము. అమ్మ నేర్పే మొదటి చదువు, చూపే అమృతమయమైన ప్రేమ మన జీవితానికి మార్గదర్శకం.",
+    title: "🤱 పాఠం 1: అమ్మఒడి (Amma Odi)",
+    introduction: "బాడిగ వెంకట నరసింహారావు గారు రచించిన మధురమైన గేయ పాఠం. ప్రతీ బిడ్డకూ అమ్మ ఒడే మొదటి బడి, అమ్మ మాటలే వేద మంత్రాలు. అమ్మ ప్రేమ అమూల్యమైనది.",
     keyFormulas: [
       {
-        name: "నామవాచకం (Noun)",
-        formula: "పేర్లను తెలిపే పదాలు = నామవాచకాలు",
-        explanation: "మనుషులు, జంతువులు, స్థలాలు, లేదా వస్తువుల పేర్లు. ఉదాహరణ: అమ్మ, సీత, హైదరాబాద్, పుస్తకం."
+        name: "అర్థాలు (Meanings)",
+        formula: "పదాలకు సరైన నిఘంటు అర్థాలు",
+        explanation: "తొలి = మొదటి | అమృతుడు = దేవత, సుధాకరుడు | వేల్పులు = దేవతలు | కాపాడు = రక్షించు | ఒడి = అంకము | అమూల్యం = వెలకట్టలేనిది."
       },
       {
-        name: "సర్వనామం (Pronoun)",
-        formula: "పేరుకు బదులుగా వాడే పదం = సర్వనామం",
-        explanation: "నామవాచకానికి పునరావృత్తి లేకుండా బదులుగా వాడేవి. ఉదాహరణ: అతను, ఆమె, అది, వారు, నేను."
+        name: "పర్యాయపదాలు (Synonyms)",
+        formula: "ఒకే అర్థాన్ని ఇచ్చే విభిన్న పదాలు",
+        explanation: "అమ్మ = తల్లి, మాత, జనని | బడి = పాఠశాల, విద్యాలయము | కన్ను = నయనము, నేత్రము, అక్షి | వెలుగు = కాంతి, ప్రకాశము."
+      },
+      {
+        name: "నానార్థాలు (Multiple Meanings)",
+        formula: "ఒకే పదానికి వేర్వేరు సందర్భాలలో వచ్చే విభిన్న అర్థాలు",
+        explanation: "బడి = పాఠశాల, వరుస | గురువు = ఉపాధ్యాయుడు, బరువు, పూజ్యుడు | అమ్మ = తల్లి, పార్వతీదేవి, లక్ష్మీదేవి."
+      },
+      {
+        name: "ప్రకృతి - వికృతి (Prakruthi - Vikruthi)",
+        formula: "సంస్కృత/ప్రాకృత సమ తద్భవ పదబంధాలు",
+        explanation: "అంబ (ప్రకృతి) - అమ్మ (วิకృతి) | విద్య (ప్రకృతి) - విద్దె (వికృతి) | అక్షరము (ప్రకృతి) - అక్కరము (వికృతి)."
       }
     ],
     steps: [
       {
-        title: "గేయ భావ గ్రహణం",
-        desc: "అమ్మఒడి గుడి కంటే పవిత్రమైనది. అమ్మ చెప్పే తియ్యని మాటలు మనకు జ్ఞానాన్ని ప్రసాదిస్తాయి.",
-        example: "అమ్మ నవ్వు అమృతమయము, అమ్మ చేతి తిండి ఆరోగ్యదాయకము."
+        title: "అమ్మఒడి ప్రాశస్త్యం",
+        desc: "అమ్మ ఒడి మొదటి బడి, అమ్మ చూపులు శుభం కలిగించే కాంతులు.",
+        example: "అమ్మ ఒడిలో చదివే చదువు జీవితాంతం నిలిచిపోతుంది."
       },
       {
-        title: "కవి / పాఠ్య భాగ విశేషాలు",
-        desc: "తల్లి పట్ల భక్తి ప్రపత్తులను, మాతృభావనను పెంపొందించుకోవడమే ఈ గేయం యొక్క ముఖ్య ఉద్దేశం.",
-        example: "పాఠంలోని క్లిష్ట పదాల అర్థాలు: ఒడి = అంకము, అమృతం = పీయూషం, వెలుగు = కాంతి."
-      },
-      {
-        title: "వ్యాకరణ అభ్యాసాలు",
-        desc: "ఇచ్చిన వాక్యాలలో నామవాచకాలను, సర్వనామాలను గుర్తించి వేరుచేయడం.",
-        example: "'రాముడు బడికి వెళ్ళాడు. అతను బాగా చదువుతాడు.' (రాముడు = నామవాచకం, అతను = సర్వనామం)."
+        title: "పదజాలం & అర్థాలు సాధన",
+        desc: "పాఠంలోని ముఖ్యమైన అర్థాలు, పర్యాయపదాలు, నానార్థాలు మరియు ప్రకృతి-వికృతులు నేర్చుకోవడం.",
+        example: "'అమ్మ' = తల్లి, మాత, జనని | 'తొలి' = మొదటి."
       }
     ],
-    didYouKnow: "తెలుగు సాహిత్యంలో తల్లిని ప్రాచీన కాలం నుండి 'పావన మూర్తి'గా, 'మొదటి గురువు'గా అత్యంత ఎత్తైన స్థానంలో గౌరవించారు!",
-    visualContext: "numberline"
+    didYouKnow: "కవి బాడిగ వెంకట నరసింహారావు గారిని 'బాలబంధు' అని పిలుస్తారు. ఆయన పిల్లల కోసం అనేక సుందరమైన గేయాలు రచించారు!",
+    visualContext: "perimeter"
   },
   g6_tel_snehabandham: {
     chapterId: "g6_tel_snehabandham",
     title: "🤝 పాఠం 2: స్నేహబంధం (Sneha Bandham)",
-    introduction: "విష్ణుశర్మ రచించిన పంచతంత్ర కథల ఆధారంగా తీర్చిదిద్దబడిన పాఠం. జింక, కాకి, ఎలుక మరియు తాబేలు అనే నాలుగు వేర్వేరు ప్రాణులు నిస్వార్థ స్నేహంతో ఆపదను ఎలా జయించాయో ఈ కథ వివరిస్తుంది.",
+    introduction: "విష్ణుశర్మ రచించిన పంచతంత్ర കഥల ఆధారంగా తీర్చిదిద్దబడిన పాఠం. జింక, కాకి, ఎలుక మరియు తాబేలు అనే నాలుగు వేర్వేరు ప్రాణులు నిస్వార్థ స్నేహంతో ఆపదను ఎలా జయించాయో ఈ కథ వివరిస్తుంది.",
     keyFormulas: [
       {
-        name: "విశేషణం (Adjective)",
-        formula: "గుణము లేదా స్వభావాన్ని తెలిపే పదం = విశేషణం",
-        explanation: "నామవాచకం యొక్క రంగు, రూపం, పరిమాణం లేదా గుణాన్ని వర్ణించేది. ఉదాహరణ: మంచి, వేగమైన, ఎర్రని, చిన్న."
+        name: "అర్థాలు (Meanings)",
+        formula: "పాఠంలోని పదాలకు అర్థాలు",
+        explanation: "మిత్రుడు = స్నేహితుడు, నెచ్చెలి | ఆపద = కష్టం, ముప్పు | ఉపాయం = యుక్తి | నెచ్చెలి = ఆప్తమిత్రుడు | బిలము = కలుగు."
       },
       {
-        name: "క్రియ (Verb)",
-        formula: "పనిని తెలిపే పదం = క్రియ",
-        explanation: "పూర్తయిన లేదా జరుగుతున్న పనిని తెలిపేది. ఉదాహరణ: పరిగెత్తెను, కాపాడెను, చదివేను, తినెను."
+        name: "పర్యాయపదాలు (Synonyms)",
+        formula: "ఒకే అర్థాన్ని ఇచ్చే విభిన్న పదాలు",
+        explanation: "మిత్రుడు = స్నేహితుడు, నెచ్చెలి, సహచరుడు | కాకి = వాయసము, ఆత్మఘోష | ఎలుక = మూషికము | జింక = హరిణము, మృగము, కురంగము."
+      },
+      {
+        name: "వ్యతిరేక పదాలు (Antonyms / Opposites)",
+        formula: "వ్యతిరేక అర్థాన్ని ఇచ్చే పదాలు",
+        explanation: "స్నేహం × పగ/శత్రుత్వం | మిత్రుడు × శత్రువు | ఆపద × సంపద | వేగము × మందము."
+      },
+      {
+        name: "జాతీయాలు (Idioms)",
+        formula: "భాషా చమత్కారం కలిగిన పదబంధాలు",
+        explanation: "'ఉడుత భక్తి' = శక్తిమేరకు సహాయం | 'ఐకమత్యమే మహాబలం' = కలసికట్టుగా పనిచేయడం."
       }
     ],
     steps: [
@@ -2442,13 +2101,27 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         example: "ప్రాణుల పరిమాణం కాకుండా, సమయానికి సహాయపడే గుణమే నిజమైన మైత్రి!"
       },
       {
-        title: "వ్యాకరణ అభ్యాసాలు",
-        desc: "వాక్యాలలోని విశేషణాలను మరియు క్రియలను వేరుచేయడం.",
-        example: "'వేగవంతమైన జింక పరిగెత్తింది.' (వేగవంతమైన = విశేషణం, పరిగెత్తింది = క్రియ)."
+        title: "పదజాల అభ్యాసాలు",
+        desc: "పాఠంలోని అర్థాలు, పర్యాయపదాలు మరియు వ్యతిరేక పదాల సాధన.",
+        example: "'మిత్రుడు' = స్నేహితుడు | 'ఆపద' × 'సంపద'."
       }
     ],
     didYouKnow: "పంచతంత్ర కథలు క్రీ.పూ. 3వ శతాబ్దంలో రాయబడ్డాయి. ఇవి ప్రపంచవ్యాప్తంగా 50కి పైగా భాషల్లోకి అనువదించబడిన ఆణిముత్యాలు!",
-    visualContext: "numberline"
+    visualContext: "numberline",
+    sandharbaVakyalu: [
+      {
+        vakyam: "మిత్రమా! ఎంతటి వారికైనా ఆపదలు రాక మానవు.",
+        kavi: "ఈ వాక్యం విష్ణుశర్మ రచించిన పంచతంత్ర కథల ఆధారంగా తీర్చిదిద్దబడిన 'స్నేహబంధం' కథలోనిది.",
+        sandharbam: "వలలో పడిన జింకను ఓదార్చుతూ కాకి మరియు ఎలుక పలికిన సందర్భం.",
+        bhavam: "కష్టాలు ఎవరికైనా వస్తాయి, అధైర్యపడకుండా ఆపదలో ఉపాయంతో ధైర్యంగా ఆలోచించి బయటపడాలని మైత్రి భావనను చాటిచెప్పారు."
+      },
+      {
+        vakyam: "మిత్రులారా! ఐకమత్యమే మనకు గొప్ప బలం.",
+        kavi: "ఈ వాక్యం 'స్నేహబంధం' పాఠంలోనిది.",
+        sandharbam: "తాబేలు వేటగాడికి చిక్కినప్పుడు, మిగిలిన మిత్రులందరూ కలసి ఉపాయంతో తాబేలును రక్షించుకున్న సందర్భం.",
+        bhavam: "చిన్న ప్రాణులైనా ఐకమత్యంతో శ్రమిస్తే ఎంతటి భయంకర ఆపదనైనా సులువుగా దాటవచ్చని కథ చెబుతుంది."
+      }
+    ]
   },
   g6_tel_varsham: {
     chapterId: "g6_tel_varsham",
@@ -2456,14 +2129,24 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     introduction: "వర్షాకాలంలో ప్రకృతిలో వచ్చే మార్పులు, మేఘాల ఉరుములు, పచ్చని చెట్లు, నదుల పరవళ్ళు మరియు రైతుల ఆనందాన్ని వర్ణించే సుందర కవితా పాఠం.",
     keyFormulas: [
       {
-        name: "అవ్యయం (Indeclinable)",
-        formula: "లింగ, వచన, విభక్తులు లేని పదాలు = అవ్యయాలు",
-        explanation: "ఎటువంటి మార్పు చెందని పదాలు. ఉదాహరణ: ఆహా!, అయ్యో!, అక్కడ, ఇక్కడ, భళా!."
+        name: "అర్థాలు (Meanings)",
+        formula: "పదాలకు సరైన అర్థాలు",
+        explanation: "నింగి = ఆకాశం | ధార = ప్రవాహం | నిచ్చెన = పైకి ఎక్కే సాధనం | పసిడి = బంగారం | నేల = భూమి | తుంపర = చిన్న నీటిబొట్టు."
       },
       {
         name: "పర్యాయపదాలు (Synonyms)",
         formula: "ఒకే అర్థాన్ని ఇచ్చే విభిన్న పదాలు",
-        explanation: "ఉదాహరణ: వర్షము = వాన, మబ్బు = మేఘము, జలము = నీరు, భూమి = నేల."
+        explanation: "వర్షము = వాన, మబ్బు = మేఘము, జలము = నీరు, భూమి = నేల, ధరణి | పసిడి = బంగారం, కనకం, స్వర్ణం."
+      },
+      {
+        name: "వ్యతిరేక పదాలు (Antonyms / Opposites)",
+        formula: "వ్యతిరేక అర్థాన్ని ఇచ్చే పదాలు",
+        explanation: "వర్షం × అనావృష్టి | ఆకాశం × భూమి | ఆనందం × విచారం | పసిడి × ఇనుము."
+      },
+      {
+        name: "ప్రకృతి - వికృతి (Prakruthi - Vikruthi)",
+        formula: "తత్సమ - తద్భవ పదాలు",
+        explanation: "మేఘము (ప్రకృతి) - మొగులు (వికృతి) | ఆకాశము (ప్రకృతి) - ఆసమంతము (వికృతి) | నిద్ర (ప్రకృతి) - నిదుర (వికృతి)."
       }
     ],
     steps: [
@@ -2478,13 +2161,27 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         example: "వానాకాలం సమస్త జీవకోటికి ప్రాణధార!"
       },
       {
-        title: "భాషాంశాల సాధన",
-        desc: "అవ్యయ పదాలను గుర్తించడం & పర్యాయపదాలను సొంత వాక్యాలలో ఉపయోగించడం.",
-        example: "'ఆహా! ఈ ప్రకృతి ఎంత అందంగా ఉంది!' (ఆహా = అవ్యయం)."
+        title: "పదజాలం & పర్యాయపదాలు సాధన",
+        desc: "పాఠంలోని అర్థాలు, పర్యాయపదాలు మరియు ప్రకృతి-వికృతుల సాధన.",
+        example: "'వర్షము' = వాన, మేఘము | 'నింగి' = ఆకాశం."
       }
     ],
     didYouKnow: "తెలుగు సాహిత్యంలో వర్షాకాలాన్ని 'ఋతువుల రాణి'గా, జీవకోటికి ఆనంద ప్రదాయినిగా కవులు కీర్తించారు!",
-    visualContext: "numberline"
+    visualContext: "numberline",
+    sandharbaVakyalu: [
+      {
+        vakyam: "నింగికి నేలకు నీటి నిచ్చెనలు వేసినట్లుంది",
+        kavi: "ఈ వాక్యం డా. పల్లదుర్గయ్య గారు రచించిన 'వర్షం' అనే కవితలోనిది.",
+        sandharbam: "ఆకాశం నుండి నేల వరకు ధారగా పడుతున్న వర్షపు చుక్కలను కవి వర్ణించిన సందర్భం.",
+        bhavam: "వర్షధారలు నింగి నుండి నేలకు వరుసగా పడుతుంటే, ఆకాశానికి భూమికి మధ్య నీటితో నిచ్చెన కట్టినట్లు అద్భుతంగా ఉందనేది భావం."
+      },
+      {
+        vakyam: "నేల తల్లి తడిసి మురిసింది, రైతన్నల గుండెల్లో ఆనందం నిండింది.",
+        kavi: "ఈ వాక్యం డా. పల్లదుర్గయ్య గారు రచించిన 'వర్షం' పాఠంలోనిది.",
+        sandharbam: "ఎండిపోయిన భూమిపై వర్షం కురిసి పంటలు పండే వేళ రైతులలో ఉప్పొంగిన ఆనందాన్ని తెల్పు సందర్భం.",
+        bhavam: "వానాకాలం రాగానే ఎండిన నేల సేద్యానికి అనువుగా మారి, లోకానికంతటికీ అన్నం పెట్టే రైతుల ముఖాల్లో సంతోషం నింపుతుంది."
+      }
+    ]
   },
   g6_tel_samayasphurthi: {
     chapterId: "g6_tel_samayasphurthi",
@@ -2492,14 +2189,24 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     introduction: "సమయానికి తగిన ఆలోచన (సమయస్ఫూర్తి) ఉంటే ఎంతటి పెద్ద ఆపదనైనా సులువుగా దాటవచ్చని తెలిపే కథ. వేటగాడి వలలో పడిన పిల్లి, పైన డేగను చూసిన ఎలుక పరస్పర ఒప్పందంతో ప్రాణాలు కాపాడుకున్న వైనం.",
     keyFormulas: [
       {
-        name: "వచనాలు (Numbers)",
-        formula: "ఏకవచనం (1) vs బహువచనం (>1)",
-        explanation: "ఒక వస్తువు ఉంటే ఏకవచనం (ఉదా: ఎలుక), ఒకానికంటే ఎక్కువ ఉంటే బహువచనం (ఉదా: ఎలుకలు)."
+        name: "అర్థాలు (Meanings)",
+        formula: "పదాలకు సరియైన నిఘంటు అర్థాలు",
+        explanation: "సమయస్ఫూర్తి = సమయానికి తట్టే తెలివైన ఆలోచన | ఉపాయం = యుక్తి | వైరి = శత్రువు | కారాగారం = బంధనం, జైలు | విముక్తి = విడుదల."
       },
       {
-        name: "విరామ చిహ్నాలు (Punctuation)",
-        formula: "వాక్య నిర్మాణంలో విరామ గుర్తులు",
-        explanation: "పుల్‌స్టాప్ (.) = వాక్యాంతం, కామా (,) = స్వల్ప విరామం, ప్రశ్నార్థకం (?) = ప్రశ్న."
+        name: "పర్యాయపదాలు (Synonyms)",
+        formula: "సమానార్థక పదాలు",
+        explanation: "పిల్లి = మార్జాలము | ఎలుక = మూషికము | పక్షి = ఖగము, విహంగము, పులుగు | శత్రువు = వైరి, అరి, ప్రత్యర్థి."
+      },
+      {
+        name: "వ్యతిరేక పదాలు (Antonyms)",
+        formula: "విలోమ పదాలు",
+        explanation: "సమయస్ఫూర్తి × నిష్క్రియాత్మకత | మిత్రుడు × శత్రువు | బంధనం × విముక్తి | విశ్వాసం × అవిశ్వాసం."
+      },
+      {
+        name: "సామెతలు & జాతీయాలు (Idioms & Proverbs)",
+        formula: "సందర్భోచితంగా వాడే పదబంధాలు",
+        explanation: "'సమయస్ఫూర్తి కలిగి ఉండడం' = ఆపదలో కంగారు పడకుండా ఉపాయం ఆలోచించడం | 'ఉపాయంతో అపాయం దాటడం'."
       }
     ],
     steps: [
@@ -2514,13 +2221,27 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         example: "అవసరం తీరిన తర్వాత శత్రువుతో అతిగా చనువు తీసుకోకూడదనే వివేకం కూడా ఎలుక చూపింది!"
       },
       {
-        title: "వ్యాకరణ సాధన",
-        desc: "ఏకవచన పదాలను బహువచనాలుగా మార్చడం మరియు వాక్యాలలో సరియైన విరామ చిహ్నాలు ఉంచడం.",
-        example: "పిల్లి ➔ పిల్లులు | ఎలుక ➔ ఎలుకలు | చెట్టు ➔ చెట్లు."
+        title: "పదజాల సాధన",
+        desc: "సమానార్థాలు, విలోమ పదాలు మరియు సామెతలను వ్యాసరూపంలో సాధన చేయడం.",
+        example: "పిల్లి (మార్జాలము) | ఎలుక (మూషికము)."
       }
     ],
     didYouKnow: "'సమయస్ఫూర్తి' అంటే కేవలం తెలివితేటలు మాత్రమే కాదు; ఆపదలో ధైర్యం కోల్పోకుండా ఉపాయం ఆలోచించడమే!",
-    visualContext: "numberline"
+    visualContext: "numberline",
+    sandharbaVakyalu: [
+      {
+        vakyam: "ఆపద వచ్చినప్పుడు ధైర్యం వీడక ఉపాయం ఆలోచించాలి.",
+        kavi: "ఈ వాక్యం పంచతంత్ర కథల ఆధారంగా రచించబడిన 'సమయస్ఫూర్తి' పాఠంలోనిది.",
+        sandharbam: "వేటగాడి వలలో పడిన పిల్లి, పైన డేగను చూసిన ఎలుక ప్రాణాలు కాపాడుకోవడానికి ఉపాయం ఆలోచించిన సందర్భం.",
+        bhavam: "ఎంతటి భయంకరమైన చిక్కుల్లో పడినా కంగారు పడకుండా సమయానికి తగిన తెలివైన ఉపాయం ఆలోచిస్తే ప్రాణరక్షణ పొందుతాము."
+      },
+      {
+        vakyam: "అవసరం తీరిన తర్వాత శత్రువుతో అతిగా చనువు తీసుకోవడం ప్రమాదకరం.",
+        kavi: "ఈ వాక్యం 'సమయస్ఫూర్తి' కథలోనిది.",
+        sandharbam: "వల కొరికి పిల్లిని రక్షించిన తర్వాత ఎలుక తక్షణమే తన బిలంలోకి దాక్కున్న సందర్భం.",
+        bhavam: "ఆపద కాలంలో శత్రువుతో ఒప్పందం చేసుకున్నా, అవసరం తీరిపోగానే దూరంగా ఉండటమే వివేకమని ఎలుక నిరూపించింది."
+      }
+    ]
   },
   g6_tel_subhashithalu: {
     chapterId: "g6_tel_subhashithalu",
@@ -2528,14 +2249,24 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     introduction: "సుభాషితాలు అంటే మంచి మాటలు. వేమన, బద్దెన (సుమతీ శతకం) వంటి ప్రముఖ శతక కవులు చెప్పిన నీతి పద్యాలు మన ప్రవర్తనను, నైతిక విలువలను తీర్చిదిద్దుతాయి.",
     keyFormulas: [
       {
-        name: "శతకం & మకుటం",
-        formula: "100 పద్యాల కావ్యము = శతకము, చివర ఉండే పదం = మకుటం",
-        explanation: "ఉదాహరణ: 'విశ్వదాభిరామ వినుర వేమ' (వేమన శతక మకుటం), 'సుమతీ' (సుమతీ శతక మకుటం)."
+        name: "అర్థాలు (Meanings)",
+        formula: "పద్యాలలోని పదాల నిఘంటు అర్థాలు",
+        explanation: "అల్పుడు = తక్కువ గుణం కలవాడు, నీచుడు | ఆడంబరం = గొప్పలు చెప్పుకోవడం | సజ్జనుడు = మంచివాడు | శాంతం = ఓర్పు | మేలు = ఉపకారం."
+      },
+      {
+        name: "పర్యాయపదాలు (Synonyms)",
+        formula: "సమానార్థాలు",
+        explanation: "ధనం = ద్రవ్యం, విత్తం, పైకం | శత్రువు = వైరి, అరి | సత్యం = నిజం, యథార్థం | కీర్తి = యశస్సు, ప్రశస్తి."
       },
       {
         name: "నానార్థాలు (Multiple Meanings)",
         formula: "ఒకే పదానికి ఉన్న విభిన్న అర్థాలు",
-        explanation: "ఉదాహరణ: గురువు = ఉపాధ్యాయుడు, బరువు, పూజ్యుడు."
+        explanation: "గురువు = ఉపాధ్యాయుడు, బరువు, పూజ్యుడు | కులము = వంశం, జాతి, ఇల్లు | ఆశ = కోరిక, దిక్కు."
+      },
+      {
+        name: "ప్రకృతి - వికృతి (Prakruthi - Vikruthi)",
+        formula: "ప్రాకృత తద్భవ రూపాంతరాలు",
+        explanation: "సత్యము (ప్రకృతి) - సత్తియము (వికృతి) | ధర్మము (ప్రకృతి) - దమ్మము (వికృతి) | గుణము (ప్రకృతి) - గుణము/గొనము (వికృతి)."
       }
     ],
     steps: [
@@ -2550,9 +2281,9 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         example: "శాంతం ఉన్న చోట ఆనందం, కీర్తి లభిస్తాయి."
       },
       {
-        title: "పద్య భావాలు & అభ్యాసాలు",
-        desc: "పద్యాల తాత్పర్యం రాయడం, ప్రతిపదార్థాలు నేర్చుకోవడం, నానార్థాలను గుర్తించడం.",
-        example: "సత్యం = నిజం, నిత్యం."
+        title: "పదజాల అభ్యాసాలు",
+        desc: "పద్యాల తాత్పర్యం రాయడం, ప్రతిపదార్థాలు నేర్చుకోవడం, పదజాలం సాధన చేయడం.",
+        example: "'సత్యం' = నిజం, యథార్థం | 'ధనం' = ద్రవ్యం."
       }
     ],
     didYouKnow: "శతక సాహిత్యం తెలుగు రత్నహారం! ఆటవెలది, తేటగీతి పద్యాలు పాడుకోవడానికి అనువుగా, సులభంగా గుర్తున్నేలా ఉంటాయి.",
@@ -2564,9 +2295,24 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     introduction: "శ్రీమదాంధ్ర భాగవతాన్ని తెలుగులోకి మధురంగా అనువదించిన సహజకవి బమ్మెర పోతన చిన్ననాటి గుణాలు, ఆటలు, భక్తి విశేషాలు మరియు విద్యాభ్యాస వర్ణన.",
     keyFormulas: [
       {
-        name: "కాలాలు (Tenses)",
-        formula: "భూతకాలం | వర్తమానకాలం | భవిష్యత్ కాలం",
-        explanation: "భూతకాలం (జరిగినది: చదివెను) | వర్తమానకాలం (జరుగుతున్నది: చదువుతున్నాడు) | భవిష్యత్ కాలం (జరగబోయేది: చదవగలడు)."
+        name: "అర్థాలు (Meanings)",
+        formula: "పాఠంలోని క్లిష్ట పదాలకు అర్థాలు",
+        explanation: "ఏకసంధాగ్రహి = ఒక్కసారి వింటే గుర్తుంచుకునేవాడు | సాత్వికుడు = మంచి స్వభావం గలవాడు | భాగవతం = పరమ పవిత్రమైన పురాణం | నిరాడంబరత = గొప్పలకు పోకపోవడం."
+      },
+      {
+        name: "పర్యాయపదాలు (Synonyms)",
+        formula: "సమానార్థక పదాలు",
+        explanation: "కవి = పండితుడు, విద్వాంసుడు | బాల్యము = చిన్నతనం, శైశవము | మిత్రుడు = స్నేహితుడు, నెచ్చెలి | విద్య = చదువు, జ్ఞానము."
+      },
+      {
+        name: "వ్యతిరేక పదాలు (Antonyms)",
+        formula: "విలోమ పదాలు",
+        explanation: "సాధువు × దుర్జనుడు | పండితుడు × పామరుడు | వినయం × అహంకారం | పుణ్యం × పాపం."
+      },
+      {
+        name: "ప్రకృతి - వికృతి (Prakruthi - Vikruthi)",
+        formula: "తత్సమ - తద్భవ పదబంధాలు",
+        explanation: "కవి (ప్రకృతి) - కయి (వికృతి) | పుస్తకము (ప్రకృతి) - పొత్తము (వికృతి) | భక్తి (ప్రకృతి) - బత్తి (వికృతి)."
       }
     ],
     steps: [
@@ -2581,9 +2327,9 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         example: "రాజభోగాలను కాదని వ్యవసాయం చేస్తూ నిరాడంబర జీవితం గడిపిన సహజ కవి!"
       },
       {
-        title: "కాలాల సాధన",
-        desc: "ఇచ్చిన వాక్యాలను భూత, వర్తమాన, భవిష్యత్ కాలాల్లోకి మార్చి రాయడం.",
-        example: "'పోతన భాగవతం రాశాడు' (భూతకాలం) ➔ 'పోతన భాగవతం రాస్తున్నాడు' (వర్తమానకాలం)."
+        title: "పదజాల సాధన",
+        desc: "పాఠంలోని పదాల అర్థాలు, వ్యతిరేక పదాలు మరియు ప్రకృతి-వికృతుల సాధన.",
+        example: "'పుస్తకము' (ప్రకృతి) ➔ 'పొత్తము' (వికృతి)."
       }
     ],
     didYouKnow: "పోతన తన భాగవతాన్ని ఏ రాజుకూ అంకితం ఇవ్వకుండా శ్రీరామచంద్రునికే అంకితమిచ్చి 'రామభద్రుని దయ' పొందాడు!",
@@ -2592,17 +2338,27 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
   g6_tel_udutasahayam: {
     chapterId: "g6_tel_udutasahayam",
     title: "🐿️ పాఠం 7: ఉడుత సహాయం (Uduta Sahayam)",
-    introduction: "రామాయణంలోని సుందర ఘట్టం. శ్రీరాముని కోసం వానరులు సముద్రంపై వారధి కడుతుంటే, చిన్న ఉడుత తన శక్తిమేరకు చేసిన నిస్వార్థ భక్తి సేవను తెలిపే పాఠం.",
+    introduction: "రామాయణంలోని సుందర ఘట్టం. శ్రీరాముని కోసం వానరులు సముద్రంపై వారధి కడుతుంటే, చిన్న ఉడుత తన शक्तिమేరకు చేసిన నిస్వార్థ భక్తి సేవను తెలిపే పాఠం.",
     keyFormulas: [
       {
-        name: "విలోమ పదాలు (Antonyms / Opposites)",
-        formula: "వ్యతిరేక అర్థాన్ని ఇచ్చే పదాలు",
-        explanation: "ఉదాహరణ: సహాయం × అపకారం, భక్తి × అభక్తి, చిన్న × పెద్ద, పుణ్యం × పాపం."
+        name: "అర్థాలు (Meanings)",
+        formula: "పదాలకు సరైన అర్థాలు",
+        explanation: "వారధి = వంతెన | అంబరము = ఆకాశం | కరకమలములు = చేతులనే పద్మాలు | సంతుష్టుడు = ఆనందించినవాడు | విదిల్చు = రాల్చు."
+      },
+      {
+        name: "పర్యాయపదాలు (Synonyms)",
+        formula: "సమానార్థాలు",
+        explanation: "సముద్రము = సాగరము, జలధి, రత్నాకరము | కరము = చెయ్యి, హస్తము | భక్తి = ప్రపత్తి, సేవ | వారధి = వంతెన, సేతువు."
+      },
+      {
+        name: "వ్యతిరేక పదాలు (Antonyms)",
+        formula: "విలోమ పదాలు",
+        explanation: "సహాయం × అపకారం | భక్తి × అభక్తి | చిన్న × పెద్ద | పుణ్యం × పాపం | నిస్వార్థం × స్వార్థం."
       },
       {
         name: "జాతీయం (Idiom)",
         formula: "భాషా చమత్కారం కలిగిన పదబంధం",
-        explanation: "ఉదాహరణ: 'ఉడుత భక్తి' = శక్తిమేరకు చేసే నిస్వార్థ సేవ."
+        explanation: "'ఉడుత భక్తి' = తన శక్తిమేరకు చేసే నిస్వార్థ సేవ లేదా సహాయం."
       }
     ],
     steps: [
@@ -2617,13 +2373,27 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         example: "రాముడు ఉడుత ప్రేమకు కరిగిపోయి, దాని వీపుపై ప్రేమతో నిమిరాడు (ఉడుత వీపుపై మూడు చారలు ఏర్పడ్డాయి)."
       },
       {
-        title: "నీతి & భాషా వికాసం",
-        desc: "సహాయం చిన్నదా పెద్దదా అనేది ముఖ్యం కాదు; చేసే మనస్సు నిస్వార్థమైనదా కాదా అనేదే ముఖ్యం!",
-        example: "విలోమ పదాలు నేర్చుకోవడం & జాతీయాలను సొంత వాక్యాలలో రాయడం."
+        title: "పదజాలం & భాషా వికాసం",
+        desc: "అర్థాలు, విలోమ పదాలు నేర్చుకోవడం & 'ఉడుత భక్తి' జాతీయాన్ని సొంత వాక్యాలలో రాయడం.",
+        example: "'సహాయం' × 'అపకారం' | 'ఉడుత భక్తిగా విరాళం ఇచ్చాను'."
       }
     ],
     didYouKnow: "తెలుగులో 'ఉడుత భక్తిగా సహాయం చేశాను' అనే సామెత ఈ రామాయణ ఘట్టం నుండే ప్రసిద్ధి చెందింది!",
-    visualContext: "numberline"
+    visualContext: "numberline",
+    sandharbaVakyalu: [
+      {
+        vakyam: "భక్తితో చేసిన సేవ పరిమాణంలో చిన్నదైనా గుణంలో గొప్పదే.",
+        kavi: "ఈ వాక్యం గోన బుద్ధారెడ్డి గారు రచించిన 'రంగనాథ రామాయణం'లోని 'ఉడుత సహాయం' ఘట్టంలోనిది.",
+        sandharbam: "సముద్రముపై వారధి నిర్మాణంలో చిన్న ఉడుత చేసిన సహాయాన్ని చూసి శ్రీరాముడు మెచ్చుకున్న సందర్భం.",
+        bhavam: "సేవ లేదా సహాయం పరిమాణంలో చిన్నదా పెద్దదా అనేది ముఖ్యం కాదు; సహాయం చేసే మనస్సులో ఉండే నిస్వార్థ భక్తే ప్రధానం."
+      },
+      {
+        vakyam: "శ్రీరాముడు ఆనందబాష్పాలతో ఉడుతను కరకమలములతో నిమిరాడు.",
+        kavi: "ఈ వాక్యం రంగనాథ రామాయణంలోని 'ఉడుత సహాయం' పాఠంలోనిది.",
+        sandharbam: "ఉడుత ఇసుకను విదిల్చి వారధికి సహాయపడిన భక్తికి కరిగిపోయిన రాముని వాత్సల్యాన్ని తెల్పు సందర్భం.",
+        bhavam: "ఉడుత నిస్వార్థ భక్తికి సంతుష్టుడై శ్రీరాముడు తన మూడు వేళ్ళతో ప్రేమగా ఉడుత వీపుపై నిమిరాడు, దానితో ఉడుతకు వీపుపై మూడు చారలు ఏర్పడ్డాయి."
+      }
+    ]
   },
   g6_tel_cheemalabaaru: {
     chapterId: "g6_tel_cheemalabaaru",
@@ -2631,14 +2401,24 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     introduction: "ప్రసిద్ధ భావకవి దేవులపల్లి కృష్ణశాస్త్రి రాసిన గేయం. చీమల క్రమశిక్షణ, నిరంతర శ్రమ, ఐకమత్యం మరియు భావికాలం కోసం పొదుపు చేసే గుణాన్ని ఈ పాఠం నేర్పుతుంది.",
     keyFormulas: [
       {
-        name: "ద్విత్వాక్షరం (Geminate Consonant)",
-        formula: "హల్లు + అదే హల్లు ఒత్తు = ద్విత్వము",
-        explanation: "ఉదాహరణ: అమ్మ (మ్ + మ), అక్క (క్ + క), చెట్టు (ట్ + ట)."
+        name: "అర్థాలు (Meanings)",
+        formula: "పదాలకు సరైన అర్థాలు",
+        explanation: "బారు = వరుస | బిలము = కలుగు, గుహ | నిరంతరం = ఎల్లప్పుడు | పొదుపు = సమకూర్చి దాచడం | క్రమశిక్షణ = పద్ధతి ప్రకారం నడుచుకోవడం."
       },
       {
-        name: "సంయుక్తాక్షరం (Conjunct Consonant)",
-        formula: "హల్లు + వేరొక హల్లు ఒత్తు = సంయుక్తము",
-        explanation: "ఉదాహరణ: శ్రమ (శ్ + ర), భక్తి (క్ + తి), పుస్తకం (స్ + త)."
+        name: "పర్యాయపదాలు (Synonyms)",
+        formula: "సమానార్థక పదాలు",
+        explanation: "చీమ = పిపీలికము | దారి = మార్గము, బాట | ఆహారము = తిండి, కూడు | వెలుగు = కాంతి, ప్రకాశము."
+      },
+      {
+        name: "వ్యతిరేక పదాలు (Antonyms)",
+        formula: "విలోమ పదాలు",
+        explanation: "శ్రమ × సోమరితనం | క్రమశిక్షణ × అక్రమశిక్షణ | పొదుపు × దుబారా | ఐకమత్యం × విభేదం."
+      },
+      {
+        name: "సామెతలు & సొంత వాక్యాలు (Proverbs & Own Sentences)",
+        formula: "పదాల వినియోగ సాధన",
+        explanation: "'చీమల వలె శ్రమించడం' = నిరంతరం కష్టపడి పనిచేయడం | 'పొదుపు జీవితానికి రక్షణ'."
       }
     ],
     steps: [
@@ -2653,13 +2433,27 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         example: "శ్రమ నీ జీవితానికి శోభనిస్తుంది!"
       },
       {
-        title: "అక్షర రకాల గుర్తింపు",
-        desc: "ద్విత్వాక్షరాలు మరియు సంయుక్తాక్షరాలను వేరుచేయడం.",
-        example: "చీమ్మ (ద్విత్వ) | శ్రమ (సంయుక్త)."
+        title: "పదజాల అభ్యాసం",
+        desc: "పాఠంలోని పర్యాయపదాలు, విలోమ పదాలు మరియు సొంత వాక్యాల సాధన.",
+        example: "'శ్రమ' × 'సోమరితనం' | 'చీమ' = పిపీలికము."
       }
     ],
     didYouKnow: "చీమలు తమ బరువు కంటే 20 రెట్లు ఎక్కువ బరువును మోయగలవు! వాటి క్రమశిక్షణ శాస్త్రవేత్తలను కూడా ఆశ్చర్యపరుస్తుంది.",
-    visualContext: "numberline"
+    visualContext: "numberline",
+    sandharbaVakyalu: [
+      {
+        vakyam: "ఓహో! ఎంతటి క్రమశిక్షణ మీ నడవడికలో!",
+        kavi: "ఈ వాక్యం ప్రముఖ భావకవి దేవులపల్లి కృష్ణశాస్త్రి గారు రచించిన 'చీమల బారు' గేయంలోనిది.",
+        sandharbam: "ఒకదాని వెనుక ఒకటి క్రమబద్ధంగా నడుస్తున్న చీమల వరుసను కవి ఆశ్చర్యంతో తిలకించిన సందర్భం.",
+        bhavam: "చిన్న జీవులైన చీమలు ఎంతో వినయం, క్రమశిక్షణతో ఒకే మార్గంలో సాగిపోవడం మానవులకు గొప్ప పాఠమని భావం."
+      },
+      {
+        vakyam: "సోమరితనం వీడి భావికాలానికి ఆహారం సమకూర్చుకోండి.",
+        kavi: "ఈ వాక్యం దేవులపల్లి కృష్ణశాస్త్రి గారు రచించిన 'చీమల బారు' పాఠంలోనిది.",
+        sandharbam: "వర్షాకాలం రాకముందే ఎండకాలంలోనే ఆహారాన్ని నిల్వ చేసుకునే చీమల శ్రమజీవనాన్ని వర్ణించిన సందర్భం.",
+        bhavam: "మానవులు సోమరితనంతో కాలాన్ని వృథా చేయకుండా, ముందస్తు ప్రణాళికతో కష్టపడి పొదుపు చేయాలని కవి నేర్పిన సందేశం."
+      }
+    ]
   },
   g6_tel_manaooru: {
     chapterId: "g6_tel_manaooru",
@@ -2667,14 +2461,24 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     introduction: "తెలుగు పల్లెటూరి ప్రకృతి అందాలు, స్వచ్ఛమైన చెరువులు, పచ్చని పంట పొలాలు, కష్టపడే వృత్తుల ప్రజలు మరియు పల్లె ఆత్మీయతల ప్రతిరూపమైన సుందర పాఠం.",
     keyFormulas: [
       {
-        name: "సామెతలు (Proverbs)",
-        formula: "అనుభవంతో వచ్చిన లోకోక్తులు = సామెతలు",
-        explanation: "ఉదాహరణ: 'చేతులు కాలక ఆకులు పట్టుకున్నట్లు', 'మొక్కై వంగనిది మానై వంగునా?'"
+        name: "అర్థాలు (Meanings)",
+        formula: "పదాలకు సరైన నిఘంటు అర్థాలు",
+        explanation: "పల్లె = గ్రామం, ఊరు | పైరు = పంట | సేద్యం = వ్యవసాయం | ఆయువుపట్టు = ప్రాణాధారం | సంబరం = పండుగ, ఆనందం."
       },
       {
-        name: "విభక్తులు (Case Endings)",
-        formula: "వాక్యంలోని పదాల మధ్య సంబంధాన్ని తెలిపే ప్రత్యయాలు",
-        explanation: "ప్రథమా విభక్తి: డు, ము, వు, లు | ద్వితీయా విభక్తి: నిన్, నున్, లన్, కూర్చి, గురింబి."
+        name: "పర్యాయపదాలు (Synonyms)",
+        formula: "సమానార్థక పదాలు",
+        explanation: "ఊరు = గ్రామము, పల్లె, వసతి | నీరు = జలము, ఉదకము, తోయము | రైతు = కర్షకుడు, హాలికుడు | చెరువు = తటాకము, కొలను, కాసారము."
+      },
+      {
+        name: "వ్యతిరేక పదాలు (Antonyms)",
+        formula: "విలోమ పదాలు",
+        explanation: "పల్లె × పట్నం/నగరం | స్వచ్ఛం × కాలుష్యం | పచ్చదనం × ఎడారి | కలయిక × వియోగం."
+      },
+      {
+        name: "సామెతలు (Proverbs)",
+        formula: "అనుభవంతో వచ్చిన లోకోక్తులు = సామెతలు",
+        explanation: "ఉదాహరణ: 'చేతులు కాలక ఆకులు పట్టుకున్నట్లు', 'మొక్కై వంగనిది మానై వంగునా?', 'పల్లెలే దేశానికి పట్టుకొమ్మలు'."
       }
     ],
     steps: [
@@ -2689,28 +2493,57 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         example: "చెరువు నిండితే ఊరంతా పండుగ వాతావరణం నెలకొంటుంది."
       },
       {
-        title: "విభక్తులు సాధన",
-        desc: "వాక్యాలలోని విభక్తి ప్రత్యయాలను (చేత, తో, కొరకు, యొక్క, లోన్) గుర్తించడం.",
-        example: "'రాముని యొక్క బాణము' (యొక్క = షష్ఠీ విభక్తి)."
+        title: "సామెతలు & పదజాల సాధన",
+        desc: "పల్లె జీవితంలో ప్రసిద్ధి చెందిన సామెతలను, పర్యాయపదాలను అర్థం చేసుకోవడం.",
+        example: "'పల్లెలు దేశానికి పట్టుకొమ్మలు' | 'చెరువు' = తటాకము, కొలను."
       }
     ],
     didYouKnow: "'పల్లెలు దేశానికి పట్టుకొమ్మలు' అని మహాత్మా గాంధీ అన్నారు. ప్రతి తెలుగు పల్లెలోనూ సంస్కృతి, జీవకళ ఉట్టిపడతాయి!",
-    visualContext: "numberline"
+    visualContext: "numberline",
+    sandharbaVakyalu: [
+      {
+        vakyam: "పల్లెలే దేశానికి ఆయువుపట్టు, పట్టుకొమ్మలు.",
+        kavi: "ఈ వాక్యం 'మా ఊరు' పాఠం నుండి గ్రహించబడినది.",
+        sandharbam: "గ్రామీణ సౌందర్యాన్ని, వ్యవసాయ ఆధారిత పల్లెజీవిత ప్రాధాన్యాన్ని వర్ణించిన సందర్భం.",
+        bhavam: "దేశానికి అన్నం పెట్టే రైతన్నలు, విభిన్న వృత్తుల ప్రజలు కలసిమెలసి ఉండే పల్లెటూర్లే మన భారతదేశపు సంస్కృతికి మూలస్తంభాలు."
+      },
+      {
+        vakyam: "చెరువు నిండితే ఊరంతా పండుగ సంబరం నెలకొంటుంది.",
+        kavi: "ఈ వాక్యం 'మా ఊరు' పాఠంలోనిది.",
+        sandharbam: "వానాలు పడి ఊరి చెరువు అలుగు పారినప్పుడు గ్రామ ప్రజల ఉత్సాహాన్ని తెల్పు సందర్భం.",
+        bhavam: "చెరువు నీరు నిండితే పంటలు బాగా పండుతాయి, కాబట్టి గ్రామంలోని ఆబాలగోపాలం ఆనందోత్సాహాలతో పండుగ జరుపుకుంటారు."
+      }
+    ]
   },
   g6_tel_vyakaranam: {
     chapterId: "g6_tel_vyakaranam",
-    title: "📖 పాఠం 10: తెలుగు వెలుగు & భాషాంశాలు (Grammar)",
-    introduction: "తెలుగు భాష యొక్క తీపిని, అమృతమయ వర్ణమాలను, ద్విత్వ-సంయుక్త-సంశ్లేషాక్షరాలను, సంధులను, సమాసాలను సమగ్రంగా సాధన చేసే ప్రత్యేక వ్యాకరణ అధ్యాయం.",
+    title: "📖 పాఠం 10: తెలుగు వెలుగు & భాషాంశాలు (Grammar & Letter Writing)",
+    introduction: "తెలుగు భాష యొక్క తీపిని, వర్ణమాలను, లేఖారచన (లేఖలు రాసే విధానం), భాషాభాగాలను, విభక్తులను, సంధులను, సమాసాలను సమగ్రంగా సాధన చేసే అధ్యాయం.",
     keyFormulas: [
       {
-        name: "తెలుగు సంధులు (Sandhi Rules)",
-        formula: "పూర్వ పర స్వరంబులకు పరస్వరంబేకాదేశంబగుట సంధి",
-        explanation: "అకార సంధి: రాముడు + అతడు = రాముడతడు | ఇకార సంధి: ఏమి + అది = ఏమది | ఉకార సంధి: మనము + ఉంటిమి = మనముంటిమి."
+        name: "భాషాభాగాలు (Parts of Speech)",
+        formula: "నామవాచకం | సర్వనామం | విశేషణం | క్రియ | అవ్యయం",
+        explanation: "నామవాచకం: పేర్లను తెలిపేది (ఉదా: రాముడు) | సర్వనామం: బదులుగా వాడేది (ఉదా: అతను) | విశేషణం: గుణం (ఉదా: తీపి) | క్రియ: పని (ఉదా: చదివెను) | అవ్యయం: లింగ వచన రహితం (ఉదా: ఆహా!)."
       },
       {
-        name: "తెలుగు సమాసాలు (Compound Words)",
-        formula: "సమర్థంబులైన పదంబులొకటిగా నగుట సమాసము",
-        explanation: "ద్వంద్వ సమాసం (రెండు పదాలకూ ప్రాధాన్యం: తండ్రీకొడుకులు) | ద్విగు సమాసం (సంఖ్యా పూర్వకం: ముల్లోకాలు)."
+        name: "లేఖారచన (Letter Writing Rules)",
+        formula: "స్థలం & తేదీ + సంబోధన + విషయం + ముగింపు/విశ్వసనీయుడు + చిరునామా",
+        explanation: "లేఖలు 2 రకాలు: 1. వ్యక్తిగత లేఖలు (మిత్రునికి/తల్లిదండ్రులకు), 2. అధికారిక లేఖలు (ఉపాధ్యాయునికి సెలవు లేఖ/అధికారులకు విన్నపం)."
+      },
+      {
+        name: "అక్షర రకాలు (Alphabet & Clusters)",
+        formula: "వర్ణమాల + ద్విత్వము + సంయుక్తము + సంశ్లేషము",
+        explanation: "ద్విత్వము: హల్లు + అదే హల్లు ఒత్తు (అమ్మ) | సంయుక్తము: హల్లు + వేరొక హల్లు ఒత్తు (శ్రమ) | సంశ్లేషము: ఒక హల్లుకు ఒకటి కంటే ఎక్కువ ఒత్తులు (స్త్ర)."
+      },
+      {
+        name: "విభక్తులు (Case Endings)",
+        formula: "పదాల సంబంధాన్ని తెలిపే प्रत्यయాలు",
+        explanation: "ప్రథమా: డు, ము, వు, లు | ద్వితీయా: నిన్, నున్, లన్, కూర్చి, గురింబి | తృతీయ: చేతన్, చేన్, తోడన్, తోన్."
+      },
+      {
+        name: "తెలుగు సంధులు & సమాసాలు (Sandhi & Samasam)",
+        formula: "సంధి సూత్రాలు & సమాస రకాలు",
+        explanation: "అకార/ఇకార/ఉకార సంధులు | ద్వంద్వ సమాసం (తండ్రీకొడుకులు) | ద్విగు సమాసం (ముల్లోకాలు)."
       }
     ],
     steps: [
@@ -2718,6 +2551,11 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         title: "భాషా ప్రాశస్త్యం",
         desc: "'దేశభాషలందు తెలుగు లెస్స' అని శ్రీకృష్ణదేవరాయలు కొనియాడారు. తెలుగు అజంత భాష (పదాల చివర అచ్చులు ఉండే భాష).",
         example: "ఇటాలియన్ ఆఫ్ ది ఈస్ట్ అని పాశ్చాత్యులు తెలుగును ప్రశంసించారు."
+      },
+      {
+        title: "లేఖారచన విధానం (Letter Writing Format)",
+        desc: "లేఖ కుడివైపున ఊరు పేరు, తేదీ రాయాలి. ఎడమవైపున సంబోధన (గౌరవనీయులైన/ప్రియమైన), మధ్యలో విషయం, చివరన ఇట్లు వినమ్రతతో రాయాలి.",
+        example: "ఉపాధ్యాయునికి సెలవు లేఖ: 'గౌరవనీయులైన తరగతి ఉపాధ్యాయునికి... నా జ్వరం వల్ల 2 రోజులు సెలవు ఇవ్వగలరు'."
       },
       {
         title: "సంధి విడదీయుట & కలపుట",
@@ -2730,7 +2568,7 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         example: "అక్కచెల్లెళ్ళు ➔ అక్కయును అక్క చెల్లెలును (ద్వంద్వ సమాసం) | నలుగురు అన్నదమ్ములు (ద్విగు సమాసం)."
       }
     ],
-    didYouKnow: "తెలుగు పదాల చివర స్వరాలు (అచ్చులు) వస్తాయి కాబట్టి దీనిని 'అజంత భాష' అంటారు. ఇది వినడానికి సంగీతంలా మధురంగా ఉంటుంది!",
+    didYouKnow: "లేఖల వల్ల మనసులోని ఆలోచనలు, భావవ్యక్తీకరణ మరియు వ్యాకరణ నైపుణ్యాలు అద్భుతంగా పెంపొందుతాయి!",
     visualContext: "numberline"
   },
   g6_hin_chidiya: {

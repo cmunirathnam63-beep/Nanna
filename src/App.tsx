@@ -18,6 +18,7 @@ import {
   GRADE_1_TELUGU_CHAPTERS,
   GRADE_6_TELUGU_CHAPTERS,
   GRADE_6_HINDI_CHAPTERS,
+  GRADE_6_ENGLISH_CHAPTERS,
   GRADE_6_SOCIALSCIENCE_CHAPTERS,
   GRADE_1_HINDI_CHAPTERS,
   GRADE_1_ENGLISH_CHAPTERS
@@ -54,8 +55,33 @@ export default function App() {
     // grade === 6
     if (selectedSubject === "telugu") return GRADE_6_TELUGU_CHAPTERS;
     if (selectedSubject === "hindi") return GRADE_6_HINDI_CHAPTERS;
+    if (selectedSubject === "english") return GRADE_6_ENGLISH_CHAPTERS;
     if (selectedSubject === "social_science") return GRADE_6_SOCIALSCIENCE_CHAPTERS;
     if (selectedSubject === "maths") return GRADE_6_CHAPTERS;
+    return GRADE_6_CHAPTERS;
+  };
+
+  const getSubjectChapters = (grade: 1 | 6 | 9, subj: string): Chapter[] => {
+    if (grade === 1) {
+      if (subj === "evs") return GRADE_1_EVS_CHAPTERS;
+      if (subj === "telugu") return GRADE_1_TELUGU_CHAPTERS;
+      if (subj === "hindi") return GRADE_1_HINDI_CHAPTERS;
+      if (subj === "english") return GRADE_1_ENGLISH_CHAPTERS;
+      return GRADE_1_MATHS_CHAPTERS;
+    }
+    if (grade === 9) {
+      if (subj === "maths") return GRADE_9_CHAPTERS;
+      if (subj === "social_science") return GRADE_9_SOCIALSCIENCE_CHAPTERS;
+      if (subj === "physics") return GRADE_9_PHYSICS_CHAPTERS;
+      if (subj === "chemistry") return GRADE_9_CHEMISTRY_CHAPTERS;
+      return [];
+    }
+    // grade === 6
+    if (subj === "telugu") return GRADE_6_TELUGU_CHAPTERS;
+    if (subj === "hindi") return GRADE_6_HINDI_CHAPTERS;
+    if (subj === "english") return GRADE_6_ENGLISH_CHAPTERS;
+    if (subj === "social_science") return GRADE_6_SOCIALSCIENCE_CHAPTERS;
+    if (subj === "maths") return GRADE_6_CHAPTERS;
     return GRADE_6_CHAPTERS;
   };
 
@@ -421,15 +447,33 @@ export default function App() {
                                     <p className="text-[10px] text-natural-sage leading-normal">{item.desc}</p>
                                   </div>
                                 </div>
-                                <div className="pt-3 border-t border-natural-beige-dark/30">
+                                <div className="pt-3 border-t border-natural-beige-dark/30 grid grid-cols-2 gap-2">
                                   <button
                                     onClick={() => {
                                       setSelectedSubject(item.s);
+                                      const chapters = getSubjectChapters(1, item.s);
+                                      if (chapters && chapters.length > 0) {
+                                        setSelectedChapter(chapters[0]);
+                                      }
                                       setShowGrade1Topics(true);
                                     }}
-                                    className="w-full text-[10px] font-bold text-natural-primary bg-natural-beige-light hover:bg-natural-primary hover:text-white px-2 py-1.5 rounded-full border border-natural-beige-dark/50 transition duration-150 flex items-center justify-center gap-1 cursor-pointer"
+                                    className="text-[10px] font-bold text-natural-primary bg-natural-beige-light hover:bg-natural-primary hover:text-white px-2 py-1.5 rounded-full border border-natural-beige-dark/50 transition duration-150 flex items-center justify-center gap-1 cursor-pointer"
                                   >
                                     📖 Lessons
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setSelectedSubject(item.s);
+                                      const chapters = getSubjectChapters(1, item.s);
+                                      if (chapters && chapters.length > 0) {
+                                        setSelectedChapter(chapters[0]);
+                                      }
+                                      setActiveSection("visualtools");
+                                      setActiveTool("fraction");
+                                    }}
+                                    className="text-[10px] font-black text-white bg-natural-terracotta hover:bg-natural-terracotta-dark px-2 py-1.5 rounded-full shadow-xs hover:scale-[1.02] transition duration-150 flex items-center justify-center gap-1 cursor-pointer animate-pulse"
+                                  >
+                                    🔬 Visual Tool
                                   </button>
                                 </div>
                               </div>
@@ -465,6 +509,7 @@ export default function App() {
                                       {chapter.id === "g1_comparison" && <Ruler size={18} className="text-natural-primary" />}
                                       {chapter.id === "g1_clock" && <Clock size={18} className="text-natural-primary animate-pulse" />}
                                       {chapter.id === "g1_compare" && <Hash size={18} className="text-natural-terracotta" />}
+                                      {chapter.id === "g1_tables" && <Hash size={18} className="text-teal-600 animate-pulse" />}
                                       {chapter.id === "g1_evs_family" && <User size={18} className="text-natural-primary" />}
                                       {chapter.id === "g1_evs_animals" && <Sparkles size={18} className="text-natural-primary animate-pulse" />}
                                       {chapter.id === "g1_evs_seasons" && <Compass size={18} className="text-natural-terracotta" />}
@@ -483,6 +528,7 @@ export default function App() {
                                       {chapter.id === "g1_eng_nouns" && <Ruler size={18} className="text-natural-primary" />}
                                       {chapter.id === "g1_eng_verbs" && <Sparkles size={18} className="text-natural-primary animate-pulse" />}
                                       {chapter.id === "g1_eng_spelling" && <Sparkles size={18} className="text-amber-600 animate-pulse" />}
+                                      {chapter.id === "g6_soc_maps" && <Compass size={18} className="text-sky-600 animate-pulse" />}
                                       {chapter.id === "g6_soc_locating_places" && <Compass size={18} className="text-indigo-600 animate-pulse" />}
                                       {chapter.id === "g6_soc_timeline_sources" && <BookOpen size={18} className="text-amber-600" />}
                                       {chapter.id === "g6_soc_value_of_work" && <Sparkles size={18} className="text-emerald-600 animate-pulse" />}
@@ -559,25 +605,19 @@ export default function App() {
                                     <p className="text-[10px] text-natural-sage leading-normal">{item.desc}</p>
                                   </div>
                                 </div>
-                                <div className="pt-3 border-t border-natural-beige-dark/30 grid grid-cols-2 gap-2">
+                                <div className="pt-3 border-t border-natural-beige-dark/30">
                                   <button
                                     onClick={() => {
                                       setSelectedSubject(item.s);
+                                      const chapters = getSubjectChapters(selectedGrade, item.s);
+                                      if (chapters && chapters.length > 0) {
+                                        setSelectedChapter(chapters[0]);
+                                      }
                                       setShowGrade6And9Topics(true);
                                     }}
-                                    className="text-[10px] font-bold text-natural-primary bg-natural-beige-light hover:bg-natural-primary hover:text-white px-2 py-1.5 rounded-full border border-natural-beige-dark/50 transition duration-150 flex items-center justify-center gap-1 cursor-pointer"
+                                    className="w-full text-[10px] font-bold text-natural-primary bg-natural-beige-light hover:bg-natural-primary hover:text-white px-2 py-1.5 rounded-full border border-natural-beige-dark/50 transition duration-150 flex items-center justify-center gap-1 cursor-pointer"
                                   >
                                     📖 Study Chapters
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      setSelectedSubject(item.s);
-                                      setActiveSection("visualtools");
-                                      setActiveTool(item.s === "physics" ? "motion" as any : item.s === "chemistry" ? "atombuilder" as any : "fraction");
-                                    }}
-                                    className="text-[10px] font-black text-white bg-natural-terracotta hover:bg-natural-terracotta-dark px-2 py-1.5 rounded-full shadow-xs hover:scale-[1.02] transition duration-150 flex items-center justify-center gap-1 cursor-pointer animate-pulse"
-                                  >
-                                    🔬 Visual Tool
                                   </button>
                                 </div>
                               </div>
@@ -615,6 +655,7 @@ export default function App() {
                                         {chapter.id === "g9_physics_force" && <Ruler size={18} className="text-violet-600" />}
                                         {chapter.id === "g9_chem_matter" && <Layers size={18} className="text-emerald-600" />}
                                         {chapter.id === "g9_chem_atoms" && <Sparkles size={18} className="text-amber-600 animate-pulse" />}
+                                        {chapter.id === "g9_maps_location" && <Compass size={18} className="text-teal-600 animate-pulse" />}
                                         {chapter.id === "g9_french_revolution" && <BookOpen size={18} className="text-red-600" />}
                                         {chapter.id === "g9_physical_features" && <Compass size={18} className="text-amber-700" />}
                                         {chapter.id === "g9_democracy" && <Award size={18} className="text-indigo-600" />}
@@ -639,18 +680,9 @@ export default function App() {
                                     <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                                       <button
                                         onClick={() => handleChapterSelect(chapter)}
-                                        className="text-[10px] font-bold text-natural-dark bg-natural-beige-light hover:bg-natural-beige-dark/60 px-3 py-1.5 rounded-xl border border-natural-beige-dark/50 shrink-0 transition flex items-center gap-1 cursor-pointer"
+                                        className="w-full text-[10px] font-bold text-natural-dark bg-natural-beige-light hover:bg-natural-primary hover:text-white px-3 py-1.5 rounded-xl border border-natural-beige-dark/50 transition flex items-center justify-center gap-1 cursor-pointer"
                                       >
                                         📖 Study
-                                      </button>
-                                      <button
-                                        onClick={() => {
-                                          setSelectedChapter(chapter);
-                                          setActiveSection("quiz");
-                                        }}
-                                        className="text-[10px] font-black text-white bg-natural-primary hover:bg-natural-primary/90 px-3 py-1.5 rounded-xl shadow-xs hover:scale-[1.02] transition shrink-0 flex items-center gap-1 cursor-pointer"
-                                      >
-                                        ✍️ Practice Tab
                                       </button>
                                     </div>
                                   </div>
@@ -828,16 +860,46 @@ export default function App() {
 
         </div>
 
-        {/* Beautiful Footer callout */}
-        <div className="bg-gradient-to-r from-natural-dark to-[#494933] border border-natural-dark/50 rounded-2xl p-5 text-white flex gap-4 items-center shadow-xs">
-          <span className="text-3xl shrink-0">🇮🇳</span>
-          <div>
-            <h4 className="text-xs font-black uppercase tracking-wider text-natural-beige-dark">Indian Math Heritage</h4>
-            <p className="text-[11px] text-natural-beige-light/90 mt-0.5 leading-relaxed">
-              Ancient Indian scholars like Brahmagupta and Aryabhata discovered fundamental mathematical principles such as Zero, decimals, and negative numbers. Today, CBSE Grade 6 builds these powerful foundations for you!
-            </p>
-          </div>
-        </div>
+        {/* Dynamic Subject Heritage Footer Callout */}
+        {(() => {
+          let heritageTitle = "Indian Math Heritage";
+          let heritageDesc = "Ancient Indian scholars like Brahmagupta, Aryabhata, and Ramanujan discovered fundamental mathematical principles such as Zero, decimals, and negative numbers.";
+          let heritageIcon = "🇮🇳";
+
+          if (selectedSubject === "telugu") {
+            heritageTitle = "తెలుగు భాషా సాహితీ వైభవం (Telugu Literary & Cultural Heritage)";
+            heritageDesc = "తెలుగు భాషను 'దేశభాషలందు తెలుగు లెస్స' అని విజయనగర సామ్రాజ్యాధిపతి శ్రీకృష్ణదేవరాయలు కొనియాడారు. కవిత్రయం (నన్నయ, తిక్కన, ఎర్రన), బమ్మెర పోతన వంటి మహాకవులు అమృతమయమైన కావ్యాలతో మన సంస్కృతికి మహోన్నత నిధిని అందించారు.";
+            heritageIcon = "📜";
+          } else if (selectedSubject === "hindi") {
+            heritageTitle = "हिंदी भाषा एवं साहित्य धरोहर (Hindi Literary Heritage)";
+            heritageDesc = "कबीरदास, तुलसीदास, सूरदास एवं मुंशी प्रेमचंद जैसे महान साहित्यकारों ने हिंदी भाषा और भारतीय संस्कृति को अमर और समृद्ध बनाया है।";
+            heritageIcon = "🪶";
+          } else if (selectedSubject === "english") {
+            heritageTitle = "English Literary & Communication Heritage";
+            heritageDesc = "Mastering English empowers global communication, analytical thinking, and creative storytelling while bridging diverse cultures worldwide.";
+            heritageIcon = "📚";
+          } else if (selectedSubject === "social_science" || selectedSubject === "evs") {
+            heritageTitle = "Indian Cultural & Historical Heritage";
+            heritageDesc = "India's rich civilization from the Indus Valley to modern constitutional democracy showcases vibrant cultural diversity, architectural marvels, and enduring heritage.";
+            heritageIcon = "🏛️";
+          } else if (selectedSubject === "physics" || selectedSubject === "chemistry") {
+            heritageTitle = "Indian Scientific Heritage";
+            heritageDesc = "Ancient Indian thinkers like Maharishi Kanada (atomic theory) and modern pioneers like Sir C.V. Raman and Homi Bhabha unlocked foundational laws of nature.";
+            heritageIcon = "🔬";
+          }
+
+          return (
+            <div className="bg-gradient-to-r from-natural-dark to-[#494933] border border-natural-dark/50 rounded-2xl p-5 text-white flex gap-4 items-center shadow-xs">
+              <span className="text-3xl shrink-0">{heritageIcon}</span>
+              <div>
+                <h4 className="text-xs font-black uppercase tracking-wider text-natural-beige-dark">{heritageTitle}</h4>
+                <p className="text-[11px] text-natural-beige-light/90 mt-0.5 leading-relaxed">
+                  {heritageDesc}
+                </p>
+              </div>
+            </div>
+          );
+        })()}
       </main>
 
       {/* Navigation Tab Bar (Moved to bottom) */}

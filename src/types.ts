@@ -9,6 +9,13 @@ export interface Chapter {
   progress: number;
 }
 
+export interface SandharbaVakyam {
+  vakyam: string;
+  kavi: string;
+  sandharbam: string;
+  bhavam: string;
+}
+
 export interface LessonContent {
   chapterId: string;
   title: string;
@@ -17,6 +24,7 @@ export interface LessonContent {
   steps: { title: string; desc: string; example: string }[];
   didYouKnow: string;
   visualContext: string;
+  sandharbaVakyalu?: SandharbaVakyam[];
 }
 
 export interface QuizQuestion {

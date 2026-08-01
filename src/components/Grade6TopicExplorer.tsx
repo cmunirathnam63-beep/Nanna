@@ -42,9 +42,6 @@ export default function Grade6TopicExplorer({ defaultTab = "geometry", hideTabSw
       {/* Explorer Header */}
       <div className="bg-gradient-to-r from-indigo-900 via-slate-800 to-purple-900 text-white rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-xs font-bold uppercase tracking-wider mb-2 border border-indigo-400/30">
-            <Sparkles size={12} /> Grade 6 Mathematics Interactive Topic Hub
-          </div>
           <h2 className="text-2xl font-black tracking-tight text-white">
             🎓 Core Exam Topics Masterclass
           </h2>

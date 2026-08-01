@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Sparkles, HelpCircle, Compass, Circle, Check, RotateCcw, Volume2 } from "lucide-react";
-import { playSpeechWithLang } from "../utils/teluguAudio";
+import { Sparkles, HelpCircle, Compass, Circle, Check, RotateCcw } from "lucide-react";
 
 export default function GeometryExplorer() {
   const [activeTab, setActiveTab] = useState<"lines" | "intersections" | "curves" | "polygons" | "circle">("lines");
@@ -11,19 +10,12 @@ export default function GeometryExplorer() {
   const [quizAnswer, setQuizAnswer] = useState<string | null>(null);
   const [quizFeedback, setQuizFeedback] = useState<string | null>(null);
 
-  const speak = (text: string) => {
-    playSpeechWithLang(text, "en-US");
-  };
-
   return (
     <div className="space-y-6 animate-fade-in p-2 sm:p-4">
       {/* Top Interactive Banner */}
       <div className="bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 rounded-2xl p-4 sm:p-5 text-white shadow-md">
         <div className="flex items-center justify-between gap-3">
           <div className="space-y-1">
-            <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2.5 py-0.5 rounded-full border border-white/20">
-              Grade 6 Maths • Chapter 4
-            </span>
             <h3 className="text-lg sm:text-xl font-black flex items-center gap-2">
               <Compass size={22} className="animate-spin-slow text-amber-200" />
               Basic Geometrical Ideas Studio
@@ -32,19 +24,12 @@ export default function GeometryExplorer() {
               Explore points, line segments, rays, intersecting & parallel lines, polygons, angles, and circle parts interactively!
             </p>
           </div>
-          <button
-            onClick={() => speak("Welcome to Basic Geometrical Ideas Studio! Click tabs to explore shapes, lines, angles, and circles.")}
-            className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white cursor-pointer transition shrink-0 border border-white/20"
-            title="Listen to introduction"
-          >
-            <Volume2 size={18} />
-          </button>
         </div>
 
         {/* Tab Selection */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 mt-4 pt-3 border-t border-white/20">
           <button
-            onClick={() => { setActiveTab("lines"); speak("Points, Line Segments, Lines and Rays"); }}
+            onClick={() => setActiveTab("lines")}
             className={`px-3 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1 ${
               activeTab === "lines"
                 ? "bg-white text-rose-800 shadow-sm font-extrabold"
@@ -55,7 +40,7 @@ export default function GeometryExplorer() {
           </button>
 
           <button
-            onClick={() => { setActiveTab("intersections"); speak("Intersecting and Parallel Lines"); }}
+            onClick={() => setActiveTab("intersections")}
             className={`px-3 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1 ${
               activeTab === "intersections"
                 ? "bg-white text-rose-800 shadow-sm font-extrabold"
@@ -66,7 +51,7 @@ export default function GeometryExplorer() {
           </button>
 
           <button
-            onClick={() => { setActiveTab("curves"); speak("Curves, Open and Closed Shapes"); }}
+            onClick={() => setActiveTab("curves")}
             className={`px-3 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1 ${
               activeTab === "curves"
                 ? "bg-white text-rose-800 shadow-sm font-extrabold"
@@ -77,7 +62,7 @@ export default function GeometryExplorer() {
           </button>
 
           <button
-            onClick={() => { setActiveTab("polygons"); speak("Polygons and Angles"); }}
+            onClick={() => setActiveTab("polygons")}
             className={`px-3 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1 ${
               activeTab === "polygons"
                 ? "bg-white text-rose-800 shadow-sm font-extrabold"
@@ -88,7 +73,7 @@ export default function GeometryExplorer() {
           </button>
 
           <button
-            onClick={() => { setActiveTab("circle"); speak("Circle Parts: Radius, Diameter, Chord, Arc, Sector"); }}
+            onClick={() => setActiveTab("circle")}
             className={`px-3 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1 col-span-2 sm:col-span-1 ${
               activeTab === "circle"
                 ? "bg-white text-rose-800 shadow-sm font-extrabold"
@@ -166,8 +151,7 @@ export default function GeometryExplorer() {
             {/* Explanatory Cards */}
             <div className="space-y-2 text-xs">
               <div
-                onClick={() => speak("Point: A dot marked by a sharp pencil. It has position but zero length or width.")}
-                className="bg-rose-50/80 border border-rose-200 rounded-xl p-3 cursor-pointer hover:bg-rose-100/80 transition"
+                className="bg-rose-50/80 border border-rose-200 rounded-xl p-3"
               >
                 <div className="flex items-center justify-between font-extrabold text-rose-900">
                   <span>📍 1. Point</span>
@@ -177,8 +161,7 @@ export default function GeometryExplorer() {
               </div>
 
               <div
-                onClick={() => speak("Line Segment: Shortest route connecting two points A and B. It has a fixed, measurable length.")}
-                className="bg-sky-50/80 border border-sky-200 rounded-xl p-3 cursor-pointer hover:bg-sky-100/80 transition"
+                className="bg-sky-50/80 border border-sky-200 rounded-xl p-3"
               >
                 <div className="flex items-center justify-between font-extrabold text-sky-900">
                   <span>📏 2. Line Segment (AB)</span>
@@ -188,8 +171,7 @@ export default function GeometryExplorer() {
               </div>
 
               <div
-                onClick={() => speak("Line: Extends endlessly in both directions without endpoints. Denoted with arrows on both ends.")}
-                className="bg-indigo-50/80 border border-indigo-200 rounded-xl p-3 cursor-pointer hover:bg-indigo-100/80 transition"
+                className="bg-indigo-50/80 border border-indigo-200 rounded-xl p-3"
               >
                 <div className="flex items-center justify-between font-extrabold text-indigo-900">
                   <span>↔️ 3. Line (Line AB or line l)</span>
@@ -199,8 +181,7 @@ export default function GeometryExplorer() {
               </div>
 
               <div
-                onClick={() => speak("Ray: A line that starts at a fixed initial point and extends endlessly in one direction.")}
-                className="bg-amber-50/80 border border-amber-200 rounded-xl p-3 cursor-pointer hover:bg-amber-100/80 transition"
+                className="bg-amber-50/80 border border-amber-200 rounded-xl p-3"
               >
                 <div className="flex items-center justify-between font-extrabold text-amber-900">
                   <span>🔦 4. Ray (Ray OA)</span>
@@ -224,7 +205,7 @@ export default function GeometryExplorer() {
 
             <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
               <button
-                onClick={() => { setIsParallelMode(false); speak("Intersecting lines cross at a single point of intersection."); }}
+                onClick={() => setIsParallelMode(false)}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
                   !isParallelMode ? "bg-rose-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
                 }`}
@@ -232,7 +213,7 @@ export default function GeometryExplorer() {
                 Crossing (Intersecting)
               </button>
               <button
-                onClick={() => { setIsParallelMode(true); speak("Parallel lines never meet and stay equidistant forever."); }}
+                onClick={() => setIsParallelMode(true)}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
                   isParallelMode ? "bg-indigo-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
                 }`}
@@ -555,7 +536,7 @@ export default function GeometryExplorer() {
               {(["center", "radius", "diameter", "chord", "arc", "sector", "segment"] as const).map((part) => (
                 <button
                   key={part}
-                  onClick={() => { setSelectedCirclePart(part); speak(`${part} of a circle`); }}
+                  onClick={() => setSelectedCirclePart(part)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-extrabold capitalize transition cursor-pointer ${
                     selectedCirclePart === part
                       ? "bg-rose-600 text-white shadow-xs scale-105"
@@ -671,68 +652,6 @@ export default function GeometryExplorer() {
           </div>
         </div>
       )}
-
-      {/* QUICK NCERT GEOMETRY PRACTICE CHECK */}
-      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 sm:p-5 space-y-3 shadow-xs">
-        <h4 className="font-black text-amber-950 text-sm uppercase tracking-wider flex items-center gap-1.5">
-          <Sparkles size={16} className="text-amber-600" /> Quick Grade 6 Geometry Quiz Check:
-        </h4>
-
-        <p className="text-xs font-bold text-amber-900">
-          Question: "What is the relationship between Diameter (d) and Radius (r) of a circle?"
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <button
-            onClick={() => {
-              setQuizAnswer("a");
-              setQuizFeedback("Incorrect. Radius is half the diameter, so Diameter = 2 × Radius!");
-            }}
-            className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer text-left ${
-              quizAnswer === "a" ? "bg-rose-100 border-rose-300 text-rose-900" : "bg-white border-amber-200 text-amber-950 hover:bg-amber-100"
-            }`}
-          >
-            A) Radius = 2 × Diameter
-          </button>
-
-          <button
-            onClick={() => {
-              setQuizAnswer("b");
-              setQuizFeedback("✨ Correct! Diameter is twice the radius (Diameter = 2 × Radius).");
-              playSpeechWithLang("Correct! Diameter equals two times radius.", "en-US");
-            }}
-            className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer text-left ${
-              quizAnswer === "b" ? "bg-emerald-100 border-emerald-400 text-emerald-950 shadow-xs" : "bg-white border-amber-200 text-amber-950 hover:bg-amber-100"
-            }`}
-          >
-            B) Diameter = 2 × Radius
-          </button>
-
-          <button
-            onClick={() => {
-              setQuizAnswer("c");
-              setQuizFeedback("Incorrect. Diameter and Radius are related by a factor of 2!");
-            }}
-            className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer text-left ${
-              quizAnswer === "c" ? "bg-rose-100 border-rose-300 text-rose-900" : "bg-white border-amber-200 text-amber-950 hover:bg-amber-100"
-            }`}
-          >
-            C) Diameter = Radius + 10
-          </button>
-        </div>
-
-        {quizFeedback && (
-          <div className="p-3 bg-white/90 border border-amber-300 rounded-xl text-xs font-bold text-amber-950 animate-fade-in flex items-center justify-between">
-            <span>{quizFeedback}</span>
-            <button
-              onClick={() => { setQuizAnswer(null); setQuizFeedback(null); }}
-              className="text-[10px] text-amber-700 hover:underline cursor-pointer"
-            >
-              Reset
-            </button>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

@@ -1177,7 +1177,7 @@ export default function LessonSection({
             </div>
             
             <h3 className={`text-base font-black ${cfg.textCol} tracking-tight uppercase`}>
-              {cfg.title} ({cfg.hindiTitle})
+              {cfg.title}
             </h3>
             
             <p className="text-xs text-slate-700 font-bold leading-relaxed max-w-md mx-auto">
@@ -1335,29 +1335,66 @@ export default function LessonSection({
           </div>
         )}
 
-        {/* Play and Practice Shortcuts banner */}
-        {!selectedChapter.id.startsWith("g1_") && (
-          <div className="grid grid-cols-1 gap-3">
-            <button
-              onClick={() => {
-                onOpenWorksheet();
-                if (onActionComplete) onActionComplete(5);
-              }}
-              className="flex items-center justify-between p-3.5 bg-gradient-to-r from-natural-cream to-natural-gold-accent hover:to-natural-gold-accent/80 border border-natural-primary/30 text-natural-dark rounded-xl cursor-pointer transition text-left shadow-xs hover:scale-[1.01]"
-              id="btn_launch_quiz"
-            >
-              <div>
-                <h4 className="text-xs font-black uppercase tracking-wider text-natural-primary">
-                  {selectedChapter.title} — Practice Tab & Worksheet
-                </h4>
-                <p className="text-[10px] text-natural-sage mt-0.5">
-                  Solve CBSE practice questions with step-by-step AI hints and earn 1000 points!
-                </p>
+
+
+        {/* Sandharba Vakyalu (సందర్భ సహిత వ్యాఖ్యలు) Section for Telugu Lessons */}
+        {lesson?.sandharbaVakyalu && lesson.sandharbaVakyalu.length > 0 && (
+          <div className="bg-amber-50/80 border-2 border-amber-200/90 rounded-2xl p-5 space-y-4 shadow-xs" id="sandharba_vakyalu_box">
+            <div className="flex items-center justify-between border-b border-amber-200/70 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">📜</span>
+                <div>
+                  <h4 className="text-sm font-black text-amber-950 tracking-wide">
+                    సందర్భ సహిత వ్యాఖ్యలు (Sandharba Vakyalu)
+                  </h4>
+                  <p className="text-[11px] text-amber-800 font-medium">
+                    పాఠంలోని ముఖ్యమైన వాక్యాలు, కవి పరిచయం, సందర్భం మరియు భావం
+                  </p>
+                </div>
               </div>
-              <div className="p-2 bg-natural-primary text-white rounded-lg">
-                <FileText size={14} />
-              </div>
-            </button>
+              <span className="text-[10px] font-black uppercase bg-amber-200/60 text-amber-900 px-2.5 py-1 rounded-full border border-amber-300">
+                పరీక్ష ప్రత్యేకం
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {lesson.sandharbaVakyalu.map((item, idx) => (
+                <div key={idx} className="bg-white border border-amber-200 rounded-xl p-4 space-y-3 shadow-2xs">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="text-xs sm:text-sm font-black text-emerald-900 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-lg flex-1">
+                      "{item.vakyam}"
+                    </div>
+                    <button
+                      onClick={() => playTeluguSpeech(`${item.vakyam}. ${item.sandharbam}. ${item.bhavam}`)}
+                      className="flex items-center gap-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-2.5 py-1.5 rounded-lg text-[10px] shrink-0 border border-amber-300 transition cursor-pointer active:scale-95"
+                    >
+                      <span>🔊 వినండి</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-1">
+                    <div className="bg-amber-50/50 p-2.5 rounded-lg border border-amber-100 space-y-0.5">
+                      <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
+                        కవి / మూలం:
+                      </span>
+                      <p className="font-bold text-slate-800">{item.kavi}</p>
+                    </div>
+                    <div className="bg-amber-50/50 p-2.5 rounded-lg border border-amber-100 space-y-0.5">
+                      <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
+                        సందర్భం:
+                      </span>
+                      <p className="font-semibold text-slate-700 leading-relaxed">{item.sandharbam}</p>
+                    </div>
+                    <div className="bg-amber-50/50 p-2.5 rounded-lg border border-amber-100 space-y-0.5">
+                      <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
+                        భావం:
+                      </span>
+                      <p className="font-semibold text-slate-700 leading-relaxed">{item.bhavam}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

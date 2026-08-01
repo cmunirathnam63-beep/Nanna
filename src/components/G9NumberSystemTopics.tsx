@@ -40,7 +40,7 @@ export function RationalIntroTopic() {
       <div className="bg-natural-beige-light border border-natural-beige-dark/60 p-4 rounded-xl space-y-2">
         <h3 className="text-xs font-extrabold text-natural-dark uppercase tracking-wider flex items-center gap-1.5">
           <span className="w-1 h-3.5 bg-natural-terracotta rounded-full" />
-          Rational Numbers (परिमेय संख्याएँ)
+          Rational Numbers
         </h3>
         <p className="text-xs text-natural-sage leading-relaxed">
           A number is called a <strong>Rational Number</strong> if it can be written in the form{" "}
@@ -173,7 +173,7 @@ export function IrrationalNumbersTopic() {
       <div className="bg-natural-beige-light border border-natural-beige-dark/60 p-4 rounded-xl space-y-2">
         <h3 className="text-xs font-extrabold text-natural-dark uppercase tracking-wider flex items-center gap-1.5">
           <span className="w-1 h-3.5 bg-natural-terracotta rounded-full" />
-          Irrational Numbers (अपरिमेय संख्याएँ)
+          Irrational Numbers
         </h3>
         <p className="text-xs text-natural-sage leading-relaxed">
           An <strong>Irrational Number</strong> cannot be written in the form{" "}
@@ -293,7 +293,7 @@ export function DecimalExpansionsTopic() {
       <div className="bg-natural-beige-light border border-natural-beige-dark/60 p-4 rounded-xl space-y-2">
         <h3 className="text-xs font-extrabold text-natural-dark uppercase tracking-wider flex items-center gap-1.5">
           <span className="w-1 h-3.5 bg-natural-terracotta rounded-full" />
-          Decimal Expansions (दशमलव प्रसार)
+          Decimal Expansions
         </h3>
         <p className="text-xs text-natural-sage leading-relaxed">
           The decimal expansion of a rational number is either:
@@ -1236,6 +1236,55 @@ export function AlgebraicIdentitiesTopic() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Complete Grade 9 Algebraic Identities Clean Reference List */}
+      <div className="bg-white border-2 border-slate-200 rounded-xl p-4 space-y-4 shadow-xs">
+        <h4 className="text-xs font-black uppercase text-indigo-950 tracking-wider flex items-center gap-2">
+          <span>📘 Algebraic Identities Reference List</span>
+        </h4>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* Standard Identities */}
+          <div className="bg-indigo-50/60 border border-indigo-200 rounded-xl p-3.5 space-y-2">
+            <h5 className="text-xs font-extrabold text-indigo-900 border-b border-indigo-200 pb-1 uppercase tracking-tight">
+              Standard Identities
+            </h5>
+            <ul className="space-y-1.5 text-xs font-mono text-slate-800">
+              <li className="bg-white px-2.5 py-1 rounded border border-indigo-100 shadow-2xs">(x + y)² = x² + 2xy + y²</li>
+              <li className="bg-white px-2.5 py-1 rounded border border-indigo-100 shadow-2xs">(x - y)² = x² - 2xy + y²</li>
+              <li className="bg-white px-2.5 py-1 rounded border border-indigo-100 shadow-2xs">x² - y² = (x + y)(x - y)</li>
+              <li className="bg-white px-2.5 py-1 rounded border border-indigo-100 shadow-2xs">(x + a)(x + b) = x² + (a + b)x + ab</li>
+            </ul>
+          </div>
+
+          {/* Expanded Trinomial & Cubic Identities */}
+          <div className="bg-amber-50/60 border border-amber-200 rounded-xl p-3.5 space-y-2">
+            <h5 className="text-xs font-extrabold text-amber-900 border-b border-amber-200 pb-1 uppercase tracking-tight">
+              Expanded Trinomial & Cubic Identities
+            </h5>
+            <ul className="space-y-1.5 text-xs font-mono text-slate-800">
+              <li className="bg-white px-2.5 py-1 rounded border border-amber-100 shadow-2xs">(x + y + z)² = x² + y² + z² + 2xy + 2yz + 2zx</li>
+              <li className="bg-white px-2.5 py-1 rounded border border-amber-100 shadow-2xs">(x + y)³ = x³ + y³ + 3xy(x + y) = x³ + 3x²y + 3xy² + y³</li>
+              <li className="bg-white px-2.5 py-1 rounded border border-amber-100 shadow-2xs">(x - y)³ = x³ - y³ - 3xy(x - y) = x³ - 3x²y + 3xy² - y³</li>
+            </ul>
+          </div>
+
+          {/* Factorization Identities */}
+          <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-3.5 space-y-2">
+            <h5 className="text-xs font-extrabold text-emerald-900 border-b border-emerald-200 pb-1 uppercase tracking-tight">
+              Factorization Identities
+            </h5>
+            <ul className="space-y-1.5 text-xs font-mono text-slate-800">
+              <li className="bg-white px-2.5 py-1 rounded border border-emerald-100 shadow-2xs">x³ + y³ = (x + y)(x² - xy + y²)</li>
+              <li className="bg-white px-2.5 py-1 rounded border border-emerald-100 shadow-2xs">x³ - y³ = (x - y)(x² + xy + y²)</li>
+              <li className="bg-white px-2.5 py-1 rounded border border-emerald-100 shadow-2xs">x³ + y³ + z³ - 3xyz = (x + y + z)(x² + y² + z² - xy - yz - zx)</li>
+            </ul>
+            <div className="bg-emerald-100/70 p-2 rounded-lg text-[11px] font-medium text-emerald-950 border border-emerald-300">
+              <strong>Note:</strong> If x + y + z = 0, then <strong>x³ + y³ + z³ = 3xyz</strong>.
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

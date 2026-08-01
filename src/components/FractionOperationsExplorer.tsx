@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Sparkles, Volume2, Plus, Minus, X, Divide, RefreshCw, CheckCircle2 } from "lucide-react";
-import { playSpeechWithLang } from "../utils/teluguAudio";
+import { Sparkles, Plus, Minus, X, Divide, RefreshCw, CheckCircle2 } from "lucide-react";
 
 // Helper math utilities
 function gcd(a: number, b: number): number {
@@ -33,10 +32,6 @@ export default function FractionOperationsExplorer() {
   const [quizIndex, setQuizIndex] = useState<number>(0);
   const [userAnswer, setUserAnswer] = useState<string | null>(null);
   const [quizFeedback, setQuizFeedback] = useState<string | null>(null);
-
-  const speak = (text: string) => {
-    playSpeechWithLang(text, "en-US");
-  };
 
   // Calculated values
   const commonDenom = lcm(d1, d2);
@@ -115,9 +110,6 @@ export default function FractionOperationsExplorer() {
       {/* Banner */}
       <div className="bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 rounded-2xl p-4 text-white shadow-md flex items-center justify-between gap-3">
         <div className="space-y-1">
-          <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2.5 py-0.5 rounded-full border border-white/20">
-            Grade 6 Maths • Chapter 7 Operations
-          </span>
           <h3 className="text-lg sm:text-xl font-black flex items-center gap-2">
             <span>🍕 Fraction Arithmetic Studio</span>
           </h3>
@@ -125,19 +117,12 @@ export default function FractionOperationsExplorer() {
             Master Addition, Subtraction, Multiplication, and Division of Fractions with step-by-step visual working out!
           </p>
         </div>
-        <button
-          onClick={() => speak("Fraction Arithmetic Studio! Explore addition, subtraction, multiplication, and division of fractions.")}
-          className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white cursor-pointer transition shrink-0 border border-white/20"
-          title="Listen intro"
-        >
-          <Volume2 size={18} />
-        </button>
       </div>
 
       {/* Tabs */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 bg-amber-100/80 p-1.5 rounded-2xl border border-amber-200">
         <button
-          onClick={() => { setActiveTab("add"); speak("Addition of Fractions"); }}
+          onClick={() => setActiveTab("add")}
           className={`px-3 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1 ${
             activeTab === "add" ? "bg-amber-600 text-white shadow-sm" : "text-amber-950 hover:bg-amber-200/60"
           }`}
@@ -146,7 +131,7 @@ export default function FractionOperationsExplorer() {
         </button>
 
         <button
-          onClick={() => { setActiveTab("sub"); speak("Subtraction of Fractions"); }}
+          onClick={() => setActiveTab("sub")}
           className={`px-3 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1 ${
             activeTab === "sub" ? "bg-amber-600 text-white shadow-sm" : "text-amber-950 hover:bg-amber-200/60"
           }`}
@@ -155,7 +140,7 @@ export default function FractionOperationsExplorer() {
         </button>
 
         <button
-          onClick={() => { setActiveTab("mul"); speak("Multiplication of Fractions"); }}
+          onClick={() => setActiveTab("mul")}
           className={`px-3 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1 ${
             activeTab === "mul" ? "bg-amber-600 text-white shadow-sm" : "text-amber-950 hover:bg-amber-200/60"
           }`}
@@ -164,7 +149,7 @@ export default function FractionOperationsExplorer() {
         </button>
 
         <button
-          onClick={() => { setActiveTab("div"); speak("Division of Fractions"); }}
+          onClick={() => setActiveTab("div")}
           className={`px-3 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1 ${
             activeTab === "div" ? "bg-amber-600 text-white shadow-sm" : "text-amber-950 hover:bg-amber-200/60"
           }`}
@@ -173,7 +158,7 @@ export default function FractionOperationsExplorer() {
         </button>
 
         <button
-          onClick={() => { setActiveTab("quiz"); speak("Practice Quiz Challenge"); }}
+          onClick={() => setActiveTab("quiz")}
           className={`px-3 py-2 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1 col-span-2 sm:col-span-1 ${
             activeTab === "quiz" ? "bg-amber-600 text-white shadow-sm" : "text-amber-950 hover:bg-amber-200/60"
           }`}
@@ -280,13 +265,6 @@ export default function FractionOperationsExplorer() {
                     </p>
                   </div>
                 </div>
-
-                <button
-                  onClick={() => speak(`Addition equation: ${n1} over ${d1} plus ${n2} over ${d2} equals ${simplifiedSumN} over ${simplifiedSumD}`)}
-                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-                >
-                  <Volume2 size={14} /> Listen
-                </button>
               </div>
 
               {/* Equation Display Box */}
@@ -345,13 +323,6 @@ export default function FractionOperationsExplorer() {
                     </p>
                   </div>
                 </div>
-
-                <button
-                  onClick={() => speak(`Subtraction equation: ${n1} over ${d1} minus ${n2} over ${d2} equals ${simplifiedSubN} over ${simplifiedSubD}`)}
-                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-                >
-                  <Volume2 size={14} /> Listen
-                </button>
               </div>
 
               {/* Equation Display Box */}
@@ -408,13 +379,6 @@ export default function FractionOperationsExplorer() {
                     </p>
                   </div>
                 </div>
-
-                <button
-                  onClick={() => speak(`Multiplication equation: ${n1} over ${d1} times ${n2} over ${d2} equals ${simplifiedMulN} over ${simplifiedMulD}`)}
-                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-                >
-                  <Volume2 size={14} /> Listen
-                </button>
               </div>
 
               {/* Equation Display Box */}
@@ -469,13 +433,6 @@ export default function FractionOperationsExplorer() {
                     </p>
                   </div>
                 </div>
-
-                <button
-                  onClick={() => speak(`Division equation: ${n1} over ${d1} divided by ${n2} over ${d2} equals ${simplifiedDivN} over ${simplifiedDivD}`)}
-                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-                >
-                  <Volume2 size={14} /> Listen
-                </button>
               </div>
 
               {/* Equation Display Box */}
@@ -557,7 +514,6 @@ export default function FractionOperationsExplorer() {
                         setUserAnswer(opt);
                         if (opt === currentQ.correct) {
                           setQuizFeedback(`✨ Correct! ${currentQ.exp}`);
-                          speak(`Correct! ${currentQ.exp}`);
                         } else {
                           setQuizFeedback(`Incorrect. Try again or check explanation: ${currentQ.exp}`);
                         }

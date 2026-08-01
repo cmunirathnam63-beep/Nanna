@@ -309,9 +309,6 @@ export default function Grade6MathsPaper() {
       <div className="bg-gradient-to-r from-emerald-900 via-teal-800 to-slate-900 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-bold uppercase tracking-wider mb-2 border border-emerald-400/30">
-              <FileText size={12} /> Grade 6 Mathematics Term Exam
-            </div>
             <h2 className="text-2xl font-black tracking-tight text-white">
               📄 Official Term Examination Question Paper
             </h2>

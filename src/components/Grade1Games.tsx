@@ -466,6 +466,42 @@ export default function Grade1InteractiveGame({ chapterId, onActionComplete }: G
   const [tableMode, setTableMode] = useState<"multiplication" | "addition">("multiplication");
   const [selectedRowIdx, setSelectedRowIdx] = useState<number | null>(3);
   const [showGrid10x10, setShowGrid10x10] = useState<boolean>(false);
+  const [tablesPracticeSubTab, setTablesPracticeSubTab] = useState<"chart" | "drill" | "missing" | "flashcard">("chart");
+  
+  // Drill practice state
+  const [drillTargetTable, setDrillTargetTable] = useState<number | "all">(2);
+  const [drillQ, setDrillQ] = useState<{ num1: number; num2: number; answer: number; options: number[] }>(() => {
+    const n1 = 2;
+    const n2 = Math.floor(Math.random() * 10) + 1;
+    const ans = n1 * n2;
+    const opts = Array.from(new Set([ans, ans + 2, Math.max(1, ans - 2), ans + 4])).slice(0, 4);
+    if (!opts.includes(ans)) opts[0] = ans;
+    opts.sort(() => Math.random() - 0.5);
+    return { num1: n1, num2: n2, answer: ans, options: opts };
+  });
+  const [drillScore, setDrillScore] = useState<number>(0);
+  const [drillStreak, setDrillStreak] = useState<number>(0);
+  const [drillFeedback, setDrillFeedback] = useState<{ isCorrect: boolean; text: string } | null>(null);
+
+  // Missing number state
+  const [missingQ, setMissingQ] = useState<{ num1: number; missingPos: "num2" | "ans"; num2: number; ans: number; options: number[] }>(() => {
+    const num1 = 3;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    const ans = num1 * num2;
+    const missingPos = Math.random() > 0.5 ? "num2" : "ans";
+    const correctVal = missingPos === "num2" ? num2 : ans;
+    const opts = Array.from(new Set([correctVal, correctVal + 1, Math.max(1, correctVal - 1), correctVal + 2])).slice(0, 4);
+    if (!opts.includes(correctVal)) opts[0] = correctVal;
+    opts.sort(() => Math.random() - 0.5);
+    return { num1, missingPos, num2, ans, options: opts };
+  });
+  const [missingScore, setMissingScore] = useState<number>(0);
+  const [missingFeedback, setMissingFeedback] = useState<{ isCorrect: boolean; text: string } | null>(null);
+
+  // Flashcard state
+  const [flashcardCardNum, setFlashcardCardNum] = useState<number>(1);
+  const [isFlashcardFlipped, setIsFlashcardFlipped] = useState<boolean>(false);
+  const [masteredCards, setMasteredCards] = useState<string[]>([]);
 
   // Telugu Rhyme & Phonics Explorer state
   const [teluguSubTab, setTeluguSubTab] = useState<"achulu" | "hallulu" | "guninthalu" | "ottulu" | "reading" | "wheel" | "pictures" | "phonics" | "builder" | "rhymes">(
@@ -2275,9 +2311,6 @@ Time = ${hour}:${minStr}!`
         {chapterId === "g1_eng_spelling" && (
           <div className="flex flex-col items-center justify-center py-4 bg-amber-50/70 rounded-3xl border border-amber-200/90 p-4 sm:p-5 space-y-4 animate-fade-in shadow-xs">
             <div className="text-center space-y-1">
-              <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider bg-amber-100 border border-amber-300 px-3 py-1 rounded-full">
-                ✨ Grade 1 Sight Words Spell Learning Studio
-              </span>
               <p className="text-xs font-semibold text-amber-950">
                 Tap a sight word to practice spelling, phonics sounds, and interactive sentence building!
               </p>
@@ -2499,235 +2532,553 @@ Time = ${hour}:${minStr}!`
 
       </div>
 
-      {/* 2. Tables 1 to 10 Visual Explorer & Interactive Chart (placed below challenge box) */}
+      {/* 2. Tables 1 to 10 Visual Explorer & Interactive Practice Hub */}
       {chapterId === "g1_tables" && (
-        <div className="bg-white rounded-2xl p-4.5 border border-teal-200/80 shadow-xs space-y-4 animate-fade-in" id="g1_tables_explorer">
+        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-teal-200/80 shadow-xs space-y-4 animate-fade-in" id="g1_tables_explorer">
           {/* Header & Mode Switcher */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 bg-gradient-to-r from-teal-50 to-emerald-50 p-3.5 rounded-2xl border border-teal-200">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-teal-500 text-white flex items-center justify-center font-black text-sm shadow-xs">
+              <div className="w-9 h-9 rounded-xl bg-teal-500 text-white flex items-center justify-center font-black text-base shadow-xs">
                 ✖️
               </div>
               <div>
-                <h4 className="text-xs font-black text-teal-900 uppercase tracking-wide">Tables 1 to 10 Visual Explorer</h4>
-                <p className="text-[9px] font-bold text-teal-700">Choose any table from 1 to 10 & learn with visual group arrays!</p>
+                <h4 className="text-xs sm:text-sm font-black text-teal-900 uppercase tracking-wide">Grade 1 Tables Practice Hub (1 to 10)</h4>
+                <p className="text-[10px] font-bold text-teal-700">Master multiplication & addition tables with interactive drills, quizzes & flashcards!</p>
               </div>
             </div>
 
-            {/* Mode Toggle */}
-            <div className="flex bg-white/80 p-1 rounded-xl border border-teal-200 text-[10px] font-black">
-              <button
-                onClick={() => {
-                  setTableMode("multiplication");
-                  playSynthSound('tap');
-                }}
-                className={`px-3 py-1 rounded-lg transition cursor-pointer ${
-                  tableMode === "multiplication"
-                    ? "bg-teal-600 text-white shadow-xs"
-                    : "text-teal-700 hover:bg-teal-50"
-                }`}
-              >
-                ✖️ Multiplication
-              </button>
-              <button
-                onClick={() => {
-                  setTableMode("addition");
-                  playSynthSound('tap');
-                }}
-                className={`px-3 py-1 rounded-lg transition cursor-pointer ${
-                  tableMode === "addition"
-                    ? "bg-teal-600 text-white shadow-xs"
-                    : "text-teal-700 hover:bg-teal-50"
-                }`}
-              >
-                ➕ Addition
-              </button>
+            {/* SubTab Navigation */}
+            <div className="flex flex-wrap bg-white/90 p-1 rounded-xl border border-teal-200 text-[10px] font-black gap-1">
+              {[
+                { id: "chart", label: "📊 Chart" },
+                { id: "drill", label: "⚡ Speed Drill" },
+                { id: "missing", label: "🧩 Fill Missing" },
+                { id: "flashcard", label: "🎴 Flashcards" }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    setTablesPracticeSubTab(tab.id as any);
+                    playSynthSound('tap');
+                  }}
+                  className={`px-2.5 py-1 rounded-lg transition cursor-pointer ${
+                    tablesPracticeSubTab === tab.id
+                      ? "bg-teal-600 text-white shadow-xs"
+                      : "text-teal-700 hover:bg-teal-50"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Table Number Selector Pills 1 to 10 */}
-          <div className="space-y-1.5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block text-center">
-              Select Table Number (1 to 10)
-            </span>
-            <div className="flex flex-wrap justify-center gap-1.5">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => {
-                const isSelected = selectedTableNum === num;
-                return (
+          {/* SUBTAB 1: VISUAL CHART & CHANT */}
+          {tablesPracticeSubTab === "chart" && (
+            <div className="space-y-4 animate-fade-in">
+              {/* Mode Toggle (Multiplication vs Addition) */}
+              <div className="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-200">
+                <span className="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider">Select Table Type</span>
+                <div className="flex bg-white p-0.5 rounded-lg border border-slate-200 text-[10px] font-black">
                   <button
-                    key={num}
                     onClick={() => {
-                      setSelectedTableNum(num);
-                      setSelectedRowIdx(1);
+                      setTableMode("multiplication");
                       playSynthSound('tap');
                     }}
-                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl font-black text-xs sm:text-sm border-2 transition-all cursor-pointer flex items-center justify-center ${
-                      isSelected
-                        ? "bg-teal-600 border-teal-700 text-white scale-105 shadow-md ring-2 ring-teal-200"
-                        : "bg-white border-teal-150 text-teal-800 hover:border-teal-400 hover:bg-teal-50/50"
+                    className={`px-3 py-1 rounded-md transition ${
+                      tableMode === "multiplication" ? "bg-teal-600 text-white shadow-xs" : "text-teal-700 hover:bg-teal-50"
                     }`}
                   >
-                    {num}
+                    ✖️ Multiplication
                   </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Read Aloud & Grid buttons */}
-          <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-            <button
-              onClick={() => {
-                playSynthSound('tap');
-                handleChantTable(selectedTableNum, tableMode);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-[10px] rounded-xl shadow-xs transition cursor-pointer uppercase tracking-wider"
-            >
-              <span>🔊 Chant Table {selectedTableNum} Out Loud</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setShowGrid10x10(!showGrid10x10);
-                playSynthSound('tap');
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] rounded-xl shadow-xs transition cursor-pointer uppercase tracking-wider"
-            >
-              <span>📊 {showGrid10x10 ? "Hide" : "Show"} 10×10 Grid Matrix</span>
-            </button>
-          </div>
-
-          {/* 10x10 Multiplication Grid Matrix (if open) */}
-          {showGrid10x10 && (
-            <div className="bg-indigo-950 text-white p-3 sm:p-4 rounded-2xl border border-indigo-800 space-y-2 overflow-x-auto shadow-inner">
-              <div className="flex justify-between items-center">
-                <h5 className="text-[10px] font-black uppercase text-indigo-300 tracking-wider">
-                  Master 10×10 Multiplication Grid Matrix
-                </h5>
-                <span className="text-[8px] text-indigo-400">Tap any cell to calculate!</span>
+                  <button
+                    onClick={() => {
+                      setTableMode("addition");
+                      playSynthSound('tap');
+                    }}
+                    className={`px-3 py-1 rounded-md transition ${
+                      tableMode === "addition" ? "bg-teal-600 text-white shadow-xs" : "text-teal-700 hover:bg-teal-50"
+                    }`}
+                  >
+                    ➕ Addition
+                  </button>
+                </div>
               </div>
-              <div className="min-w-[300px]">
-                <table className="w-full text-center text-[10px] sm:text-xs font-mono border-collapse">
-                  <thead>
-                    <tr className="border-b border-indigo-800 text-indigo-300 font-bold">
-                      <th className="p-1 bg-indigo-900/60">×</th>
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(c => (
-                        <th key={c} className={`p-1 ${c === selectedTableNum ? "bg-amber-500 text-slate-950 font-black rounded-t" : ""}`}>{c}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(r => (
-                      <tr key={r} className="border-b border-indigo-900/50">
-                        <td className={`p-1 font-bold ${r === selectedTableNum ? "bg-amber-500 text-slate-950 font-black" : "text-indigo-300 bg-indigo-900/40"}`}>{r}</td>
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(c => {
-                          const isMatch = r === selectedTableNum || c === selectedTableNum;
-                          const isExact = r === selectedTableNum && c === (selectedRowIdx || 1);
-                          return (
-                            <td
-                              key={c}
-                              onClick={() => {
-                                setSelectedTableNum(r);
-                                setSelectedRowIdx(c);
-                                playSynthSound('tap');
-                              }}
-                              className={`p-1 cursor-pointer transition rounded ${
-                                isExact
-                                  ? "bg-amber-400 text-slate-950 font-black scale-110 shadow-md ring-2 ring-amber-200"
-                                  : isMatch
-                                  ? "bg-indigo-800/80 text-amber-200 font-bold"
-                                  : "hover:bg-indigo-800 text-slate-300"
-                              }`}
-                            >
-                              {r * c}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+
+              {/* Table Number Selector Pills 1 to 10 */}
+              <div className="space-y-1.5">
+                <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block text-center">
+                  Select Table Number (1 to 10)
+                </span>
+                <div className="flex flex-wrap justify-center gap-1.5">
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => {
+                    const isSelected = selectedTableNum === num;
+                    return (
+                      <button
+                        key={num}
+                        onClick={() => {
+                          setSelectedTableNum(num);
+                          setSelectedRowIdx(1);
+                          playSynthSound('tap');
+                        }}
+                        className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl font-black text-xs sm:text-sm border-2 transition-all cursor-pointer flex items-center justify-center ${
+                          isSelected
+                            ? "bg-teal-600 border-teal-700 text-white scale-105 shadow-md ring-2 ring-teal-200"
+                            : "bg-white border-teal-150 text-teal-800 hover:border-teal-400 hover:bg-teal-50/50"
+                        }`}
+                      >
+                        {num}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Read Aloud & Grid buttons */}
+              <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                <button
+                  onClick={() => {
+                    playSynthSound('tap');
+                    handleChantTable(selectedTableNum, tableMode);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-[10px] rounded-xl shadow-xs transition cursor-pointer uppercase tracking-wider"
+                >
+                  <span>🔊 Chant Table {selectedTableNum} Out Loud</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowGrid10x10(!showGrid10x10);
+                    playSynthSound('tap');
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] rounded-xl shadow-xs transition cursor-pointer uppercase tracking-wider"
+                >
+                  <span>📊 {showGrid10x10 ? "Hide" : "Show"} 10×10 Grid Matrix</span>
+                </button>
+              </div>
+
+              {/* 10x10 Multiplication Grid Matrix */}
+              {showGrid10x10 && (
+                <div className="bg-indigo-950 text-white p-3 sm:p-4 rounded-2xl border border-indigo-800 space-y-2 overflow-x-auto shadow-inner">
+                  <div className="flex justify-between items-center">
+                    <h5 className="text-[10px] font-black uppercase text-indigo-300 tracking-wider">
+                      Master 10×10 Multiplication Grid Matrix
+                    </h5>
+                    <span className="text-[8px] text-indigo-400">Tap any cell to calculate!</span>
+                  </div>
+                  <div className="min-w-[300px]">
+                    <table className="w-full text-center text-[10px] sm:text-xs font-mono border-collapse">
+                      <thead>
+                        <tr className="border-b border-indigo-800 text-indigo-300 font-bold">
+                          <th className="p-1 bg-indigo-900/60">×</th>
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(c => (
+                            <th key={c} className={`p-1 ${c === selectedTableNum ? "bg-amber-500 text-slate-950 font-black rounded-t" : ""}`}>{c}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(r => (
+                          <tr key={r} className="border-b border-indigo-900/50">
+                            <td className={`p-1 font-bold ${r === selectedTableNum ? "bg-amber-500 text-slate-950 font-black" : "text-indigo-300 bg-indigo-900/40"}`}>{r}</td>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(c => {
+                              const isMatch = r === selectedTableNum || c === selectedTableNum;
+                              const isExact = r === selectedTableNum && c === (selectedRowIdx || 1);
+                              return (
+                                <td
+                                  key={c}
+                                  onClick={() => {
+                                    setSelectedTableNum(r);
+                                    setSelectedRowIdx(c);
+                                    playSynthSound('tap');
+                                  }}
+                                  className={`p-1 cursor-pointer transition rounded ${
+                                    isExact
+                                      ? "bg-amber-400 text-slate-950 font-black scale-110 shadow-md ring-2 ring-amber-200"
+                                      : isMatch
+                                      ? "bg-indigo-800/80 text-amber-200 font-bold"
+                                      : "hover:bg-indigo-800 text-slate-300"
+                                  }`}
+                                >
+                                  {r * c}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Complete Table Rows (1 to 10) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rowMultiplier) => {
+                  const result = tableMode === "multiplication" ? selectedTableNum * rowMultiplier : selectedTableNum + rowMultiplier;
+                  const isSelectedRow = selectedRowIdx === rowMultiplier;
+                  
+                  return (
+                    <div
+                      key={rowMultiplier}
+                      onClick={() => {
+                        setSelectedRowIdx(rowMultiplier);
+                        playSynthSound('tap');
+                      }}
+                      className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                        isSelectedRow
+                          ? "bg-teal-50 border-teal-500 ring-2 ring-teal-200 shadow-sm"
+                          : "bg-white border-slate-200 hover:border-teal-300 hover:bg-slate-50/80"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="w-5 h-5 rounded-full bg-teal-100 text-teal-800 font-black text-[10px] flex items-center justify-center">
+                            {rowMultiplier}
+                          </span>
+                          <span className="font-extrabold text-xs text-slate-800 font-mono">
+                            {selectedTableNum} {tableMode === "multiplication" ? "×" : "+"} {rowMultiplier} = <span className="text-teal-700 font-black text-sm">{result}</span>
+                          </span>
+                        </div>
+                        <span className="text-[9px] font-bold text-slate-400 uppercase">
+                          {isSelectedRow ? "Visual Group 👇" : "Tap"}
+                        </span>
+                      </div>
+
+                      {/* Expanded Visual Array / Groups */}
+                      {isSelectedRow && (
+                        <div className="mt-2.5 pt-2 border-t border-teal-200/60 space-y-2 animate-fade-in">
+                          <div className="text-[9px] font-bold text-teal-800 flex items-center justify-between">
+                            <span>
+                              {tableMode === "multiplication"
+                                ? `${rowMultiplier} groups of ${selectedTableNum} items = ${result} total`
+                                : `${selectedTableNum} + ${rowMultiplier} combined = ${result}`}
+                            </span>
+                          </div>
+
+                          {/* Visual Emojis Grid */}
+                          {tableMode === "multiplication" ? (
+                            <div className="flex flex-wrap gap-1.5 p-2 bg-white rounded-lg border border-teal-100 shadow-inner max-h-28 overflow-y-auto">
+                              {Array.from({ length: rowMultiplier }).map((_, groupIdx) => (
+                                <div key={groupIdx} className="flex gap-0.5 bg-teal-50/70 p-1 rounded border border-teal-200/60 items-center">
+                                  {Array.from({ length: selectedTableNum }).map((_, itemIdx) => (
+                                    <span key={itemIdx} className="text-xs select-none">🍎</span>
+                                  ))}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 p-2 bg-white rounded-lg border border-teal-100 shadow-inner">
+                              <div className="flex gap-0.5 bg-blue-50 p-1 rounded border border-blue-200">
+                                {Array.from({ length: selectedTableNum }).map((_, i) => (
+                                  <span key={i} className="text-xs select-none">🍎</span>
+                                ))}
+                              </div>
+                              <span className="text-xs font-black text-teal-700">+</span>
+                              <div className="flex gap-0.5 bg-orange-50 p-1 rounded border border-orange-200">
+                                {Array.from({ length: rowMultiplier }).map((_, i) => (
+                                  <span key={i} className="text-xs select-none">🍏</span>
+                                ))}
+                              </div>
+                              <span className="text-xs font-black text-teal-700">= {result}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
 
-          {/* Complete Table Rows (1 to 10) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rowMultiplier) => {
-              const result = tableMode === "multiplication" ? selectedTableNum * rowMultiplier : selectedTableNum + rowMultiplier;
-              const isSelectedRow = selectedRowIdx === rowMultiplier;
-              
-              return (
-                <div
-                  key={rowMultiplier}
-                  onClick={() => {
-                    setSelectedRowIdx(rowMultiplier);
-                    playSynthSound('tap');
-                  }}
-                  className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
-                    isSelectedRow
-                      ? "bg-teal-50 border-teal-500 ring-2 ring-teal-200 shadow-sm"
-                      : "bg-white border-slate-200 hover:border-teal-300 hover:bg-slate-50/80"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-full bg-teal-100 text-teal-800 font-black text-[10px] flex items-center justify-center">
-                        {rowMultiplier}
-                      </span>
-                      <span className="font-extrabold text-xs text-slate-800 font-mono">
-                        {selectedTableNum} {tableMode === "multiplication" ? "×" : "+"} {rowMultiplier} = <span className="text-teal-700 font-black text-sm">{result}</span>
-                      </span>
-                    </div>
-                    <span className="text-[9px] font-bold text-slate-400 uppercase">
-                      {isSelectedRow ? "Visual Group 👇" : "Tap"}
-                    </span>
+          {/* SUBTAB 2: SPEED DRILL PRACTICE */}
+          {tablesPracticeSubTab === "drill" && (
+            <div className="space-y-4 animate-fade-in">
+              {/* Target Table Selector */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
+                <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Practice Target Table</span>
+                <div className="flex flex-wrap gap-1 justify-center">
+                  <button
+                    onClick={() => {
+                      setDrillTargetTable("all");
+                      playSynthSound('tap');
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-black cursor-pointer transition ${
+                      drillTargetTable === "all" ? "bg-amber-500 text-white shadow-xs" : "bg-white text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    🎲 All (1-10)
+                  </button>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => {
+                        setDrillTargetTable(t);
+                        playSynthSound('tap');
+                        const n1 = t;
+                        const n2 = Math.floor(Math.random() * 10) + 1;
+                        const ans = n1 * n2;
+                        const opts = Array.from(new Set([ans, ans + n1, Math.max(1, ans - n1), ans + 2])).slice(0, 4);
+                        if (!opts.includes(ans)) opts[0] = ans;
+                        opts.sort(() => Math.random() - 0.5);
+                        setDrillQ({ num1: n1, num2: n2, answer: ans, options: opts });
+                        setDrillFeedback(null);
+                      }}
+                      className={`w-7 h-7 rounded-lg text-[10px] font-black cursor-pointer transition flex items-center justify-center ${
+                        drillTargetTable === t ? "bg-teal-600 text-white shadow-xs" : "bg-white text-slate-700 hover:bg-slate-100"
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Scoreboard */}
+              <div className="flex items-center justify-between bg-gradient-to-r from-teal-500 to-emerald-600 text-white p-3 rounded-2xl shadow-xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">⭐</span>
+                  <div>
+                    <span className="text-[9px] font-black uppercase tracking-wider text-teal-100 block">Drill Score</span>
+                    <span className="text-base font-black font-mono">{drillScore} Points</span>
                   </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-[9px] font-black uppercase tracking-wider text-teal-100 block">Streak 🔥</span>
+                  <span className="text-base font-black font-mono">{drillStreak} In a Row</span>
+                </div>
+              </div>
 
-                  {/* Expanded Visual Array / Groups */}
-                  {isSelectedRow && (
-                    <div className="mt-2.5 pt-2 border-t border-teal-200/60 space-y-2 animate-fade-in">
-                      <div className="text-[9px] font-bold text-teal-800 flex items-center justify-between">
-                        <span>
-                          {tableMode === "multiplication"
-                            ? `${rowMultiplier} groups of ${selectedTableNum} items = ${result} total`
-                            : `${selectedTableNum} + ${rowMultiplier} combined = ${result}`}
-                        </span>
-                      </div>
+              {/* Question Box */}
+              <div className="bg-slate-900 text-white p-5 rounded-2xl border border-slate-800 text-center space-y-3 shadow-inner">
+                <span className="text-[10px] font-extrabold uppercase text-amber-400 tracking-wider">
+                  {drillTargetTable === "all" ? "Mixed Tables Challenge" : `Table of ${drillTargetTable} Speed Question`}
+                </span>
+                <div className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-white">
+                  {drillQ.num1} × {drillQ.num2} = ?
+                </div>
 
-                      {/* Visual Emojis Grid */}
-                      {tableMode === "multiplication" ? (
-                        <div className="flex flex-wrap gap-1.5 p-2 bg-white rounded-lg border border-teal-100 shadow-inner max-h-28 overflow-y-auto">
-                          {Array.from({ length: rowMultiplier }).map((_, groupIdx) => (
-                            <div key={groupIdx} className="flex gap-0.5 bg-teal-50/70 p-1 rounded border border-teal-200/60 items-center">
-                              {Array.from({ length: selectedTableNum }).map((_, itemIdx) => (
-                                <span key={itemIdx} className="text-xs select-none">🍎</span>
-                              ))}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 p-2 bg-white rounded-lg border border-teal-100 shadow-inner">
-                          <div className="flex gap-0.5 bg-blue-50 p-1 rounded border border-blue-200">
-                            {Array.from({ length: selectedTableNum }).map((_, i) => (
-                              <span key={i} className="text-xs select-none">🍎</span>
-                            ))}
-                          </div>
-                          <span className="text-xs font-black text-teal-700">+</span>
-                          <div className="flex gap-0.5 bg-orange-50 p-1 rounded border border-orange-200">
-                            {Array.from({ length: rowMultiplier }).map((_, i) => (
-                              <span key={i} className="text-xs select-none">🍏</span>
-                            ))}
-                          </div>
-                          <span className="text-xs font-black text-teal-700">= {result}</span>
-                        </div>
-                      )}
+                {/* Visual Group Hint */}
+                <div className="flex justify-center gap-1.5 pt-1">
+                  {Array.from({ length: Math.min(drillQ.num2, 5) }).map((_, idx) => (
+                    <div key={idx} className="bg-slate-800/80 px-2 py-1 rounded border border-slate-700 text-[10px] text-teal-300 font-mono">
+                      {drillQ.num1} 🍎
                     </div>
+                  ))}
+                  {drillQ.num2 > 5 && <span className="text-slate-400 text-xs font-bold font-mono self-center">+{drillQ.num2 - 5} more</span>}
+                </div>
+              </div>
+
+              {/* Options Grid */}
+              <div className="grid grid-cols-2 gap-2.5">
+                {drillQ.options.map((optionVal, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      if (optionVal === drillQ.answer) {
+                        playSynthSound('correct');
+                        setDrillScore(s => s + 10);
+                        setDrillStreak(st => st + 1);
+                        setDrillFeedback({ isCorrect: true, text: `Correct! ${drillQ.num1} × ${drillQ.num2} = ${drillQ.answer}! 🎉` });
+                      } else {
+                        playSynthSound('wrong');
+                        setDrillStreak(0);
+                        setDrillFeedback({ isCorrect: false, text: `Not quite! ${drillQ.num1} × ${drillQ.num2} = ${drillQ.answer}` });
+                      }
+                    }}
+                    className="p-3 bg-white hover:bg-teal-50/70 border-2 border-slate-200 hover:border-teal-400 rounded-2xl font-black text-lg text-slate-800 transition cursor-pointer shadow-xs active:scale-95"
+                  >
+                    {optionVal}
+                  </button>
+                ))}
+              </div>
+
+              {/* Feedback and Next */}
+              {drillFeedback && (
+                <div className={`p-3 rounded-2xl border text-center font-extrabold text-xs flex flex-col sm:flex-row items-center justify-between gap-2 animate-fade-in ${
+                  drillFeedback.isCorrect ? "bg-emerald-50 text-emerald-800 border-emerald-300" : "bg-rose-50 text-rose-800 border-rose-300"
+                }`}>
+                  <span>{drillFeedback.text}</span>
+                  <button
+                    onClick={() => {
+                      playSynthSound('tap');
+                      const n1 = drillTargetTable === "all" ? Math.floor(Math.random() * 10) + 1 : (drillTargetTable as number);
+                      const n2 = Math.floor(Math.random() * 10) + 1;
+                      const ans = n1 * n2;
+                      const opts = Array.from(new Set([ans, ans + n1, Math.max(1, ans - n1), ans + 2])).slice(0, 4);
+                      if (!opts.includes(ans)) opts[0] = ans;
+                      opts.sort(() => Math.random() - 0.5);
+                      setDrillQ({ num1: n1, num2: n2, answer: ans, options: opts });
+                      setDrillFeedback(null);
+                    }}
+                    className="px-4 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-black transition cursor-pointer uppercase shadow-2xs shrink-0"
+                  >
+                    Next Question ➡️
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* SUBTAB 3: FILL IN THE MISSING NUMBER */}
+          {tablesPracticeSubTab === "missing" && (
+            <div className="space-y-4 animate-fade-in">
+              <div className="bg-amber-50 p-3 rounded-2xl border border-amber-200 text-center space-y-1">
+                <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider">🧩 Fill In The Missing Table Number</span>
+                <p className="text-[10px] font-bold text-amber-700">Find the missing number to complete the table equation correctly!</p>
+              </div>
+
+              {/* Question Card */}
+              <div className="bg-indigo-900 text-white p-6 rounded-2xl border border-indigo-700 text-center space-y-4 shadow-md">
+                <span className="text-[10px] font-black uppercase text-indigo-300 tracking-wider">What number goes in ❓?</span>
+                <div className="text-3xl sm:text-4xl font-black font-mono tracking-wider">
+                  {missingQ.missingPos === "num2" ? (
+                    <span>{missingQ.num1} × <span className="bg-amber-400 text-slate-950 px-3 py-1 rounded-xl animate-pulse">❓</span> = {missingQ.ans}</span>
+                  ) : (
+                    <span>{missingQ.num1} × {missingQ.num2} = <span className="bg-amber-400 text-slate-950 px-3 py-1 rounded-xl animate-pulse">❓</span></span>
                   )}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+
+              {/* Options */}
+              <div className="grid grid-cols-2 gap-2.5">
+                {missingQ.options.map((opt, idx) => {
+                  const targetVal = missingQ.missingPos === "num2" ? missingQ.num2 : missingQ.ans;
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        if (opt === targetVal) {
+                          playSynthSound('correct');
+                          setMissingScore(s => s + 10);
+                          setMissingFeedback({ isCorrect: true, text: `Awesome! ${missingQ.num1} × ${missingQ.num2} = ${missingQ.ans}! 🌟` });
+                        } else {
+                          playSynthSound('wrong');
+                          setMissingFeedback({ isCorrect: false, text: `Incorrect! The answer is ${targetVal}` });
+                        }
+                      }}
+                      className="p-3.5 bg-white hover:bg-amber-50 border-2 border-slate-200 hover:border-amber-400 rounded-2xl font-black text-xl text-slate-800 transition cursor-pointer shadow-xs"
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Feedback and Next */}
+              {missingFeedback && (
+                <div className={`p-3 rounded-2xl border text-center font-extrabold text-xs flex flex-col sm:flex-row items-center justify-between gap-2 animate-fade-in ${
+                  missingFeedback.isCorrect ? "bg-emerald-50 text-emerald-800 border-emerald-300" : "bg-rose-50 text-rose-800 border-rose-300"
+                }`}>
+                  <span>{missingFeedback.text}</span>
+                  <button
+                    onClick={() => {
+                      playSynthSound('tap');
+                      const num1 = Math.floor(Math.random() * 10) + 1;
+                      const num2 = Math.floor(Math.random() * 10) + 1;
+                      const ans = num1 * num2;
+                      const missingPos = Math.random() > 0.5 ? "num2" : "ans";
+                      const correctVal = missingPos === "num2" ? num2 : ans;
+                      const opts = Array.from(new Set([correctVal, correctVal + 1, Math.max(1, correctVal - 1), correctVal + 2])).slice(0, 4);
+                      if (!opts.includes(correctVal)) opts[0] = correctVal;
+                      opts.sort(() => Math.random() - 0.5);
+                      setMissingQ({ num1, missingPos, num2, ans, options: opts });
+                      setMissingFeedback(null);
+                    }}
+                    className="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black transition cursor-pointer uppercase shadow-2xs shrink-0"
+                  >
+                    Next Missing Number ➡️
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* SUBTAB 4: FLASHCARDS PRACTICE */}
+          {tablesPracticeSubTab === "flashcard" && (
+            <div className="space-y-4 animate-fade-in">
+              <div className="flex justify-between items-center bg-teal-50 p-2.5 rounded-2xl border border-teal-200">
+                <span className="text-[10px] font-black uppercase text-teal-800">Selected Table: {selectedTableNum}</span>
+                <span className="text-[10px] font-bold text-teal-700">Mastered: {masteredCards.length} / 10 Cards</span>
+              </div>
+
+              {/* Flashcard Box */}
+              <div
+                onClick={() => {
+                  setIsFlashcardFlipped(!isFlashcardFlipped);
+                  playSynthSound('tap');
+                }}
+                className={`p-8 sm:p-10 rounded-3xl border-2 text-center transition-all duration-300 cursor-pointer shadow-md min-h-[180px] flex flex-col items-center justify-center gap-3 relative ${
+                  isFlashcardFlipped
+                    ? "bg-gradient-to-br from-emerald-500 to-teal-700 text-white border-emerald-400"
+                    : "bg-gradient-to-br from-slate-900 to-teal-950 text-white border-teal-800 hover:border-teal-400"
+                }`}
+              >
+                <span className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/20">
+                  {isFlashcardFlipped ? "Answer Revealed (Tap to flip back)" : "Tap Card To Flip Answer"}
+                </span>
+
+                <div className="text-3xl sm:text-5xl font-black font-mono tracking-wide">
+                  {isFlashcardFlipped ? (
+                    <span>{selectedTableNum} × {flashcardCardNum} = <span className="text-amber-300 font-extrabold">{selectedTableNum * flashcardCardNum}</span></span>
+                  ) : (
+                    <span>{selectedTableNum} × {flashcardCardNum} = ?</span>
+                  )}
+                </div>
+
+                {/* Visual Array on Reveal */}
+                {isFlashcardFlipped && (
+                  <div className="flex flex-wrap justify-center gap-1 mt-1 max-w-xs">
+                    {Array.from({ length: flashcardCardNum }).map((_, g) => (
+                      <div key={g} className="bg-white/20 p-1 rounded border border-white/30 flex gap-0.5">
+                        {Array.from({ length: selectedTableNum }).map((_, i) => (
+                          <span key={i} className="text-xs">🍎</span>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Card Nav Controls */}
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <button
+                  onClick={() => {
+                    setFlashcardCardNum(n => Math.max(1, n - 1));
+                    setIsFlashcardFlipped(false);
+                    playSynthSound('tap');
+                  }}
+                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-black text-xs transition cursor-pointer"
+                >
+                  ⏮️ Previous
+                </button>
+
+                <button
+                  onClick={() => {
+                    const cardKey = `${selectedTableNum}x${flashcardCardNum}`;
+                    if (!masteredCards.includes(cardKey)) {
+                      setMasteredCards(m => [...m, cardKey]);
+                      playSynthSound('correct');
+                    }
+                  }}
+                  className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-black text-xs transition cursor-pointer shadow-xs"
+                >
+                  ⭐ Mark Mastered
+                </button>
+
+                <button
+                  onClick={() => {
+                    setFlashcardCardNum(n => Math.min(10, n + 1));
+                    setIsFlashcardFlipped(false);
+                    playSynthSound('tap');
+                  }}
+                  className="px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-black text-xs transition cursor-pointer shadow-xs"
+                >
+                  Next Card ⏭️
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
