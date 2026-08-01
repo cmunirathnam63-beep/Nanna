@@ -609,6 +609,49 @@ export const GRADE_6_SOCIALSCIENCE_CHAPTERS: Chapter[] = [
   }
 ];
 
+export const GRADE_6_PHYSICS_CHAPTERS: Chapter[] = [
+  {
+    id: "g6_phys_motion",
+    title: "🌌 Motion & Measurement of Distances",
+    iconName: "Compass",
+    badge: "Physics Ch 1",
+    topicSummary: "Standard SI units of length, measuring straight and curved lines, rectilinear, circular, periodic, and rotational motion.",
+    colorClass: "bg-sky-50 hover:bg-sky-100 border-sky-200",
+    textColorClass: "text-sky-700",
+    progress: 75,
+  },
+  {
+    id: "g6_phys_light",
+    title: "💡 Light, Shadows and Reflections",
+    iconName: "Sparkles",
+    badge: "Physics Ch 2",
+    topicSummary: "Luminous sources, transparent, translucent & opaque materials, shadow formation, pinhole camera, and mirror reflection.",
+    colorClass: "bg-amber-50 hover:bg-amber-100 border-amber-200",
+    textColorClass: "text-amber-700",
+    progress: 70,
+  },
+  {
+    id: "g6_phys_electricity",
+    title: "⚡ Electricity and Circuits",
+    iconName: "Ruler",
+    badge: "Physics Ch 3",
+    topicSummary: "Electric cell (+ / - terminals), bulb filament, open vs closed circuits, electric switch, and conductors vs insulators.",
+    colorClass: "bg-violet-50 hover:bg-violet-100 border-violet-200",
+    textColorClass: "text-violet-700",
+    progress: 80,
+  },
+  {
+    id: "g6_phys_magnets",
+    title: "🧲 Fun with Magnets",
+    iconName: "Compass",
+    badge: "Physics Ch 4",
+    topicSummary: "Discovery of magnetite, magnetic vs non-magnetic materials, North and South poles, magnetic compass, attraction & repulsion.",
+    colorClass: "bg-emerald-50 hover:bg-emerald-100 border-emerald-200",
+    textColorClass: "text-emerald-700",
+    progress: 85,
+  }
+];
+
 export const GRADE_6_ENGLISH_CHAPTERS: Chapter[] = [
   {
     id: "g6_eng_who_did_patricks_homework",
@@ -791,6 +834,16 @@ export const GRADE_9_CHEMISTRY_CHAPTERS: Chapter[] = [
     colorClass: "bg-amber-50 hover:bg-amber-100 border-amber-200",
     textColorClass: "text-amber-700",
     progress: 40,
+  },
+  {
+    id: "g9_chem_inside_atom",
+    title: "⚛️ Journey Inside the Atom",
+    iconName: "Sparkles",
+    badge: "Chapter 3",
+    topicSummary: "Discover subatomic particles (electrons, protons, neutrons), atomic models (Thomson, Rutherford, Bohr), valency & isotopes.",
+    colorClass: "bg-purple-50 hover:bg-purple-100 border-purple-200",
+    textColorClass: "text-purple-700",
+    progress: 30,
   }
 ];
 
@@ -1142,6 +1195,190 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
       }
     ],
     didYouKnow: "The phrase 'Unity in Diversity' was coined by Pandit Jawaharlal Nehru in his landmark book 'The Discovery of India'!",
+    visualContext: "numberline"
+  },
+  g6_phys_motion: {
+    chapterId: "g6_phys_motion",
+    title: "🌌 Grade 6 Physics: Motion and Measurement of Distances",
+    introduction: "Measurement is a fundamental process in physics and daily life! From knowing the distance between two cities to measuring the height of a desk, standard units ensure accuracy across the world. In this chapter, we explore standard SI units of length, methods to measure straight and curved lines, and the four main types of motion: rectilinear, circular, periodic, and rotational.",
+    keyFormulas: [
+      {
+        name: "Standard Units of Length (SI Units)",
+        formula: "1 km = 1000 m | 1 m = 100 cm | 1 cm = 10 mm",
+        explanation: "The International System of Units (SI) established the meter (m) as the standard unit of length to eliminate confusion caused by ancient non-standard units like handspan, cubit, or pace."
+      },
+      {
+        name: "Types of Motion",
+        formula: "Rectilinear + Circular + Periodic + Rotational",
+        explanation: "Rectilinear: Motion along a straight line (falling apple, march past). Circular: Motion along a circular path at a fixed distance from center (hands of clock, fan blades). Periodic: Motion that repeats itself at equal intervals of time (swing, pendulum, guitar string). Rotational: Spinning around its own axis (spinning top, Earth's rotation)."
+      },
+      {
+        name: "Measuring Curved Lines",
+        formula: "Length = Thread Along Curve ➔ Straight Scale Measurement",
+        explanation: "Curved lines cannot be measured directly with a rigid scale. A thread is placed carefully along the curve, marked at the endpoints, then stretched straight along a ruler."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Story of Transport & Non-Standard Measurement Units",
+        desc: "In ancient times, people traveled by foot, on animals, or by boat. To measure length, they used body parts like handspan, cubit (elbow to middle fingertip), pace (footstep), and fathom (arm spread). However, because body sizes vary from person to person, these non-standard units led to inconsistent results and trade disputes.",
+        example: "A cloth measured as 5 cubits by a tall tailor might only be 4 cubits for a customer! This created the urgent need for a universal standard unit."
+      },
+      {
+        title: "2. Standard Units of Measurement (SI System) & Conversions",
+        desc: "In 1790, the French created a standard unit of measurement called the metric system. In 1960, scientists globally adopted the International System of Units (SI Units). The SI unit of length is the Meter (m).\n\nKey Conversions:\n• 1 kilometer (km) = 1,000 meters (m)\n• 1 meter (m) = 100 centimeters (cm)\n• 1 centimeter (cm) = 10 millimeters (mm)",
+        example: "Converting 2.5 meters to centimeters: 2.5 × 100 = 250 cm. Converting 1500 meters to kilometers: 1500 ÷ 1000 = 1.5 km."
+      },
+      {
+        title: "3. Rules for Accurate Measurement & Parallax Error",
+        desc: "To measure length accurately with a ruler:\n1. Place the scale along the length of the object in contact with it.\n2. If the zero mark is broken or worn out, start from a clear full mark (e.g., 1.0 cm) and subtract it from the final reading.\n3. Position your eye directly above the point being measured to avoid 'parallax error' (reading errors caused by looking at an angle).",
+        example: "If starting measurement at 1.0 cm and the end mark reads 14.3 cm, the actual length = 14.3 cm - 1.0 cm = 13.3 cm."
+      },
+      {
+        title: "4. Measuring the Length of a Curved Line",
+        desc: "A rigid ruler cannot bend around a curved line (like a river on a map or a curved boundary). To measure a curved line:\n1. Use a flexible thread or string and place it gently along the exact path of the curved line.\n2. Put knot marks on the thread at the start and end points.\n3. Stretch the thread straight along a standard meter ruler to read the true length.",
+        example: "Using a thread along a curved coastline on a map and stretching it along a centimeter scale gives an exact length of 18.5 cm."
+      },
+      {
+        title: "5. Types of Motion in Everyday Life",
+        desc: "Motion is the change in position of an object over time with respect to its surroundings. Motion is classified into 4 major types:\n• Rectilinear Motion: Movement along a straight line (falling apple, marching soldiers, vehicle on a straight road).\n• Circular Motion: Object moves along a circular path at a fixed distance from a center point (hands of a clock, blades of a ceiling fan).\n• Periodic Motion: Motion that repeats itself at equal intervals of time (swing, pendulum, vibrating guitar string).\n• Rotational Motion: Spinning on its own axis (spinning top, Earth turning on its axis).",
+        example: "A rolling bowling ball exhibits combination motion: rectilinear motion as it travels down the lane while simultaneously spinning in rotational motion!"
+      }
+    ],
+    didYouKnow: "The standard meter was originally defined in 1799 in France as one ten-millionth of the distance from the equator to the North Pole along a meridian!",
+    visualContext: "numberline"
+  },
+  g6_phys_light: {
+    chapterId: "g6_phys_light",
+    title: "💡 Grade 6 Physics: Light, Shadows and Reflections",
+    introduction: "Light is a form of energy that makes objects visible to our eyes. Without light, we cannot see anything around us! In this chapter, we discover luminous and non-luminous objects, classify materials as transparent, translucent, or opaque, learn how shadows are formed, explore pinhole cameras, and understand mirror reflections.",
+    keyFormulas: [
+      {
+        name: "Classification of Materials",
+        formula: "Transparent vs Translucent vs Opaque",
+        explanation: "Transparent: Allows light to pass through completely (clear glass, clean water, air). Translucent: Allows light to pass partially (tracing paper, butter paper, frosted glass). Opaque: Does not allow any light to pass through (wood, cardboard, metals, stone)."
+      },
+      {
+        name: "3 Requirements for Shadow Formation",
+        formula: "Light Source + Opaque Object + Screen",
+        explanation: "A shadow is a dark region formed when an opaque object obstructs the path of light. The screen can be a wall, ground, or paper sheet."
+      },
+      {
+        name: "Rectilinear Propagation of Light",
+        formula: "Light Travels in Straight Lines",
+        explanation: "Light always travels in straight lines. This property causes shadow formation, eclipses, and the inverted image in a pinhole camera."
+      },
+      {
+        name: "Reflection of Light",
+        formula: "Incident Light Ray ➔ Bounces Off Polished Surface ➔ Reflected Ray",
+        explanation: "When light falls on a smooth polished surface like a plane mirror, it changes direction. The image in a plane mirror is erect, same size, but laterally inverted (left and right interchanged)."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Luminous vs Non-Luminous Objects",
+        desc: "Luminous objects produce and emit their own light (Sun, stars, glowing bulb, burning torch, candle). Non-luminous objects do not emit light of their own; we see them because they reflect light into our eyes (Moon, chairs, books, trees).",
+        example: "The Moon is non-luminous! It shines at night because it reflects sunlight falling on its surface."
+      },
+      {
+        title: "2. Properties of Shadows",
+        desc: "Shadows only show the dark outline/shape of an object, not its color or inner details. The size of the shadow changes when the distance between the light source, object, and screen changes.",
+        example: "When you stand close to a street lamp at night, your shadow is short. As you walk further away, your shadow stretches longer!"
+      },
+      {
+        title: "3. Pinhole Camera Principle",
+        desc: "A pinhole camera consists of a light-tight box with a tiny pinhole on one side and a translucent tracing paper screen on the opposite side. Light rays passing through the pinhole cross each other, forming a real, inverted (upside-down) image of bright objects outside.",
+        example: "Natural pinhole cameras are formed when sunlight passes through tiny gaps between leaves of a dense tree, casting round circular images of the Sun on the ground!"
+      }
+    ],
+    didYouKnow: "Light travels at an astonishing speed of 3,00,000 kilometers per second (3 × 10⁸ m/s) in vacuum or air! It takes about 8 minutes and 20 seconds for sunlight to reach Earth.",
+    visualContext: "clock"
+  },
+  g6_phys_electricity: {
+    chapterId: "g6_phys_electricity",
+    title: "⚡ Grade 6 Physics: Electricity and Circuits",
+    introduction: "Electricity powers our modern world—from lighting up homes and schools to running water pumps, refrigerators, and computers. In this chapter, we examine electric cells, electric bulbs, open and closed circuits, electric switches, and the difference between electric conductors and insulators.",
+    keyFormulas: [
+      {
+        name: "Electric Cell & Terminals",
+        formula: "Positive (+) Metal Cap | Negative (-) Metal Disc",
+        explanation: "An electric cell converts chemical energy stored inside it into electrical energy. It has two terminals: a positive (+) metal cap at top and a negative (-) flat metal disc at bottom."
+      },
+      {
+        name: "Electric Circuit & Current Flow",
+        formula: "Current Direction = Positive (+) Terminal ➔ Bulb ➔ Negative (-) Terminal",
+        explanation: "An electric circuit provides a complete closed loop for electricity to flow. Electric current flows from the positive terminal of the cell to its negative terminal."
+      },
+      {
+        name: "Conductors vs Insulators",
+        formula: "Conductors = Allow Current | Insulators = Block Current",
+        explanation: "Conductors: Materials that allow electric current to pass through them (copper, aluminum, iron, brass, tap water, human body). Insulators: Materials that do not allow electric current to pass through them (rubber, plastic, dry wood, glass, air, cotton)."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Inside an Electric Bulb",
+        desc: "An electric bulb has a thin coiled wire called a filament (made of tungsten metal) that glows when electric current passes through it. The filament is supported by two thick wires connected to two terminals at the metal base of the bulb.",
+        example: "If the filament inside a bulb breaks, the bulb is said to be fused! Electricity cannot pass through a broken filament, so the circuit breaks and the bulb fails to light up."
+      },
+      {
+        title: "2. Electric Switch Operation",
+        desc: "A switch is a simple control device inserted into a circuit. When the switch is in the 'ON' position, it closes the gap, completing the circuit. When in the 'OFF' position, it creates a gap, opening the circuit and stopping the current.",
+        example: "Flipping a light switch at home simply connects or disconnects the copper wires inside the wall!"
+      },
+      {
+        title: "3. Electrical Safety Precautions",
+        desc: "Never touch electric switches, sockets, or appliances with wet hands, because human skin and water are electrical conductors! Electricians wear rubber boots and use tools with plastic handles because rubber and plastic are insulators.",
+        example: "Always use dry battery cells (1.5V) for school experiments and NEVER plug experimental wires directly into main wall sockets!"
+      }
+    ],
+    didYouKnow: "The electric eel (Electrophorus electricus) found in South American rivers can produce electric shocks up to 600 volts to stun predators and hunt prey!",
+    visualContext: "numberline"
+  },
+  g6_phys_magnets: {
+    chapterId: "g6_phys_magnets",
+    title: "🧲 Grade 6 Physics: Fun with Magnets",
+    introduction: "Magnets possess a fascinating invisible force that attracts iron and steel objects! In this chapter, we discover the history of magnets, differentiate magnetic materials from non-magnetic materials, locate magnetic poles, understand how a freely suspended magnet points North-South, use a magnetic compass, and master the rules of magnetic attraction and repulsion.",
+    keyFormulas: [
+      {
+        name: "Magnetic vs Non-Magnetic Materials",
+        formula: "Attracted by Magnet = Magnetic | Not Attracted = Non-Magnetic",
+        explanation: "Magnetic Materials: Iron, Steel, Nickel, Cobalt. Non-Magnetic Materials: Wood, Plastic, Paper, Glass, Gold, Silver, Aluminum, Copper."
+      },
+      {
+        name: "Poles of a Magnet",
+        formula: "North Pole (N) + South Pole (S)",
+        explanation: "Every magnet has two magnetic poles located near its ends where the magnetic attraction is maximum. You cannot isolate a single magnetic pole—if you cut a magnet in half, each piece gets its own N and S poles!"
+      },
+      {
+        name: "Law of Magnetic Attraction and Repulsion",
+        formula: "Like Poles Repel (N-N, S-S) | Opposite Poles Attract (N-S)",
+        explanation: "Two North poles or two South poles push each other away (repulsion). A North pole and a South pole pull towards each other (attraction)."
+      },
+      {
+        name: "Directive Property & Magnetic Compass",
+        formula: "Freely Suspended Magnet ➔ Always Rests in Geographic N-S Direction",
+        explanation: "A freely suspended bar magnet or magnetic compass needle aligns itself along Earth's North-South direction. Mariners and explorers use compasses to find directions at sea and in deserts."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Story of Discovery",
+        desc: "According to legend, an ancient Greek shepherd named Magnes was tending his sheep in Magnesia when the iron tip of his wooden stick and the nails of his sandals stuck to a black rock! That natural magnetic rock was named Magnetite (also called lodestone).",
+        example: "Today, artificial magnets are made in various shapes: Bar Magnets, Horseshoe Magnets, Cylindrical Magnets, and Ball-ended Magnets."
+      },
+      {
+        title: "2. How to Make Your Own Magnet",
+        desc: "Take an iron nail or strip. Place one pole of a bar magnet at one end of the nail. Without lifting the magnet, drag it along the nail to the other end. Lift the magnet, bring it back to the starting point, and repeat in the same direction 30 to 40 times!",
+        example: "Bring steel paperclips near the nail—they will stick to it, proving the nail has become a magnet!"
+      },
+      {
+        title: "3. Caring for Magnets",
+        desc: "Magnets lose their magnetism if they are heated, hammered, or dropped from a height! Always store bar magnets in pairs with unlike poles side-by-side separated by a piece of wood, with soft iron pieces (keepers) across their ends.",
+        example: "Keep magnets away from computers, mobiles, magnetic cassette tapes, credit cards, and televisions to prevent damage."
+      }
+    ],
+    didYouKnow: "Planet Earth behaves like a giant bar magnet! Its internal magnetic field shields our atmosphere from harmful solar wind radiation and produces spectacular northern lights (Aurora Borealis) near the polar regions.",
     visualContext: "numberline"
   },
   g9_maps_location: {
@@ -1911,6 +2148,149 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
       }
     ],
     didYouKnow: "The Law of Large Numbers was first proved by Swiss mathematician Jacob Bernoulli in 1713! It explains why casinos and insurance companies always remain profitable over thousands of events.",
+    visualContext: "typesofnumbers"
+  },
+  g9_chem_inside_atom: {
+    chapterId: "g9_chem_inside_atom",
+    title: "⚛️ Grade 9 Chemistry: Journey Inside the Atom",
+    introduction: "Everything you see, observe, or feel around you is matter. Both living beings (Body → Organ → Tissue → Cell → Protein → Atom) and non-living objects (House → Room → Wall → Brick → Molecule → Atom) are ultimately composed of tiny atoms! In Chapter 8: Journey Inside the Atom, we explore whether an atom is truly indivisible or can be divided further into subatomic particles—electrons, protons, and neutrons—and trace how atomic models evolved through J.J. Thomson, Ernest Rutherford, and Niels Bohr.",
+    keyFormulas: [
+      {
+        name: "Subatomic Particles & Charges",
+        formula: "Electron (e⁻, -1, ~0 u) | Proton (p⁺, +1, ~1 u) | Neutron (n⁰, 0, ~1 u)",
+        explanation: "Protons and neutrons reside in the dense central nucleus (nucleons), while electrons revolve around the nucleus in stationary energy shells."
+      },
+      {
+        name: "Bohr-Bury Rule (Maximum Shell Capacity)",
+        formula: "Max Electrons in Shell = 2n² (n = shell number 1, 2, 3, 4...)",
+        explanation: "K shell (n=1): max 2 | L shell (n=2): max 8 | M shell (n=3): max 18 | N shell (n=4): max 32. Outer valence shell holds at most 8 electrons."
+      },
+      {
+        name: "Atomic Number (Z) & Mass Number (A)",
+        formula: "Atomic Number Z = Protons | Mass Number A = Protons (p) + Neutrons (n)",
+        explanation: "In a neutral atom, Protons = Electrons. Neutrons = Mass Number (A) - Atomic Number (Z)."
+      },
+      {
+        name: "Valency & Octet Rule",
+        formula: "Valency = Valence e⁻ (if ≤ 4) OR (8 - Valence e⁻) (if > 4)",
+        explanation: "Combining capacity of an atom to achieve a stable octet (8 valence electrons) like noble gases."
+      },
+      {
+        name: "Isotopes vs Isobars",
+        formula: "Isotopes: Same Z, Different A | Isobars: Different Z, Same A",
+        explanation: "Isotopes: Protium, Deuterium, Tritium (Hydrogen isotopes). Isobars: Calcium (Z=20, A=40) and Argon (Z=18, A=40)."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Hierarchy of Matter & Rediscovering the Atom",
+        desc: "Everything around us is composed of atoms:\n• Non-living hierarchy: House → Room → Wall → Brick → Silicon/Molecules → Atom\n• Living hierarchy: Human Body → Organ → Tissue → Cell → Protein → Atom\n• Ancient Ideas: Acharya Kanada (Kanad) called the ultimate indivisible particle 'Parmanu'. Greek philosophers Democritus and Leucippus called them 'Atomos' (meaning indivisible).\n• Think It Over: Is the atom truly indivisible? Why don't negatively charged electrons fall into the positively charged nucleus?",
+        example: "Whether it is a brick in a wall or a protein cell in your skin, both are built from atoms as the ultimate fundamental unit!"
+      },
+      {
+        title: "2. Discovery of Subatomic Particles (Electrons, Protons & Neutrons)",
+        desc: "Experiments in the late 19th & early 20th centuries proved atoms ARE divisible:\n• Electron (e⁻): Discovered by J.J. Thomson in 1897 using cathode ray discharge tubes. Charge: -1.6 × 10⁻¹⁹ C, mass negligible (~1/2000 u).\n• Proton (p⁺): Discovered by E. Goldstein via canal rays (positively charged radiation in gas discharge). Charge: +1.6 × 10⁻¹⁹ C, mass ≈ 1 u.\n• Neutron (n⁰): Discovered by J. Chadwick in 1932 inside the atomic nucleus. Charge: 0, mass ≈ 1 u.",
+        example: "In a neutral Carbon atom (Z=6), there are 6 protons (+6) and 6 electrons (-6), resulting in a net electrical charge of 0."
+      },
+      {
+        title: "3. Thomson's Plum Pudding Model & Rutherford's Gold Foil Experiment",
+        desc: "• Thomson's Model: Atom is a positively charged sphere with electrons embedded like seeds in a watermelon.\n• Rutherford's Gold Foil Experiment: Alpha (α) particles fired at thin gold foil. Observations: Most α-particles passed undeflected; some deflected at small angles; 1 in 12,000 rebounded at 180°!\n• Conclusion: Extremely small, dense, positively charged nucleus at the center containing nearly all the atomic mass.",
+        example: "If an atom were the size of a giant sports stadium, the nucleus would be as small as a marble sitting at center field!"
+      },
+      {
+        title: "4. Bohr's Model of the Atom & Discrete Energy Shells",
+        desc: "Niels Bohr resolved Rutherford's atomic collapse paradox by postulating:\n1. Electrons revolve only in certain special, discrete orbits called stationary energy levels (K, L, M, N or n=1, 2, 3, 4).\n2. While revolving in these discrete orbits, electrons DO NOT radiate energy, preventing them from falling into the nucleus!",
+        example: "K shell (n=1) holds up to 2 electrons; L shell (n=2) holds up to 8 electrons."
+      },
+      {
+        title: "5. Electronic Configuration, Valency, Isotopes & Isobars",
+        desc: "• Bohr-Bury Scheme: Maximum capacity = 2n² (K=2, L=8, M=18, N=32).\n• Valency: Combining capacity of an atom to attain a stable octet (e.g. Sodium 2,8,1 → Valency = 1; Oxygen 2,6 → Valency = 8 - 6 = 2).\n• Isotopes: Same Z, different A (e.g., ¹₁H Protium, ²₁H Deuterium, ³₁H Tritium; Chlorine-35 & Chlorine-37 in 3:1 ratio → 35.5 u).\n• Applications: Uranium-235 (nuclear fuel), Cobalt-60 (cancer treatment), Iodine-131 (goitre treatment).\n• Isobars: Different Z, same A (e.g. ₄₀₂₀Ca and ₄₀₁₈Ar).",
+        example: "Average atomic mass of Chlorine = (35 × 75% + 37 × 25%) / 100 = 35.5 u."
+      }
+    ],
+    didYouKnow: "J.J. Thomson won the Nobel Prize in Physics in 1906 for discovering the electron, and his son George Paget Thomson won the Nobel Prize in 1937 for proving electrons behave as waves!",
+    visualContext: "typesofnumbers"
+  },
+  g9_chem_matter: {
+    chapterId: "g9_chem_matter",
+    title: "🧪 Grade 9 Chemistry: Matter in Our Surroundings",
+    introduction: "Everything in the universe is made up of matter! In this chapter, we explore the physical nature of matter, states of matter (solid, liquid, gas, plasma, BEC), interconversion of states, latent heat, and evaporation.",
+    keyFormulas: [
+      {
+        name: "Temperature Conversion Formula",
+        formula: "Kelvin (K) = Celsius (°C) + 273.15",
+        explanation: "To convert °C to Kelvin add 273.15; to convert Kelvin to °C subtract 273.15."
+      },
+      {
+        name: "Latent Heat of Fusion & Vaporization",
+        formula: "Latent Heat = Heat required to change state at constant temperature",
+        explanation: "Latent Heat of Fusion: Solid to Liquid. Latent Heat of Vaporization: Liquid to Gas."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Physical Nature & Characteristics of Particles of Matter",
+        desc: "Matter is made of tiny particles that have space between them, are continuously moving (kinetic energy increases with temperature), and attract each other.",
+        example: "A drop of ink spreads throughout a glass of water on its own due to diffusion."
+      },
+      {
+        title: "2. The Three States of Matter (Solid, Liquid, Gas)",
+        desc: "• Solids: Fixed shape & volume, high density, negligible compressibility.\n• Liquids: No fixed shape, fixed volume, moderate compressibility, fluidity.\n• Gases: No fixed shape or volume, high compressibility, rapid diffusion.",
+        example: "CNG (Compressed Natural Gas) and LPG cylinders store compressed gases as liquids."
+      },
+      {
+        title: "3. Effect of Temperature & Pressure on States of Matter",
+        desc: "Heating increases kinetic energy, causing solids to melt (Melting Point) and liquids to boil (Boiling Point). Sublimation is direct change from solid to gas (e.g. camphor, ammonium chloride, dry ice CO₂).",
+        example: "Solid CO₂ (Dry Ice) sublimates directly into gas at 1 atm pressure without melting into liquid."
+      },
+      {
+        title: "4. Evaporation & Factors Affecting Evaporation Rate",
+        desc: "Evaporation is a surface phenomenon occurring at temperatures below boiling point. Factors increasing evaporation rate:\n• Surface Area ↑\n• Temperature ↑\n• Wind Speed ↑\n• Humidity ↓",
+        example: "Sweating cools our body during hot summer days because evaporation absorbs heat from our skin."
+      }
+    ],
+    didYouKnow: "Scientists have discovered 5 states of matter: Solid, Liquid, Gas, Plasma (super hot ionized gas), and Bose-Einstein Condensate (BEC) formed at ultra-low temperatures near absolute zero (-273.15°C)!",
+    visualContext: "typesofnumbers"
+  },
+  g9_chem_atoms: {
+    chapterId: "g9_chem_atoms",
+    title: "⚛️ Grade 9 Chemistry: Atoms and Molecules",
+    introduction: "In this chapter, we learn how ancient philosophers and modern scientists discovered that matter is composed of indivisible atoms and molecules. We master the Laws of Chemical Combination, chemical formulas, molecular mass, and the mole concept!",
+    keyFormulas: [
+      {
+        name: "Law of Conservation of Mass & Definite Proportions",
+        formula: "Mass of Reactants = Mass of Products | Element ratio by mass is constant",
+        explanation: "Antoine Lavoisier & Joseph Proust established that mass is neither created nor destroyed, and elements combine in fixed integer mass ratios."
+      },
+      {
+        name: "Avogadro Constant & Mole Concept",
+        formula: "1 Mole = 6.022 × 10²³ particles | Moles n = Given Mass (m) / Molar Mass (M)",
+        explanation: "1 mole of any substance contains Avogadro's number of particles and has mass equal to its relative atomic/molecular mass in grams."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Laws of Chemical Combination & Dalton's Atomic Theory",
+        desc: "1. Law of Conservation of Mass: Mass of reactants = Mass of products.\n2. Law of Constant Proportions: Pure water (H₂O) always contains Hydrogen and Oxygen in 1:8 mass ratio.\n3. Dalton's Atomic Theory: All matter consists of tiny indivisible particles called atoms.",
+        example: "In 18g of pure water (H₂O), there are 2g of Hydrogen and 16g of Oxygen (1:8 mass ratio)."
+      },
+      {
+        title: "2. Atomic Mass Unit (u) & Chemical Formulas",
+        desc: "One atomic mass unit (1 u) is defined as a mass equal to exactly 1/12th the mass of one Carbon-12 atom. Chemical formulas are written using valency criss-cross method.",
+        example: "Magnesium Chloride: Mg (valency 2) and Cl (valency 1) -> Criss-cross gives MgCl₂."
+      },
+      {
+        title: "3. Molecular Mass & Formula Unit Mass",
+        desc: "Molecular mass is the sum of atomic masses of all atoms present in a molecule.",
+        example: "Molecular mass of H₂SO₄ = (2 × 1) + (1 × 32) + (4 × 16) = 2 + 32 + 64 = 98 u."
+      },
+      {
+        title: "4. The Mole Concept & Avogadro's Number",
+        desc: "1 mole of a substance = 6.022 × 10²³ particles (atoms, molecules, or ions). Molar mass = mass of 1 mole in grams.",
+        example: "Given 54g of H₂O (Molar Mass = 18g/mol): Number of moles = 54 / 18 = 3 moles = 3 × 6.022 × 10²³ molecules."
+      }
+    ],
+    didYouKnow: "The word 'Atom' comes from the Greek word 'Atomos', meaning indivisible! Maharishi Kanad in ancient India named the smallest indivisible particle 'Parmanu'.",
     visualContext: "typesofnumbers"
   },
   g1_evs_family: {

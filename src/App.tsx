@@ -20,6 +20,7 @@ import {
   GRADE_6_HINDI_CHAPTERS,
   GRADE_6_ENGLISH_CHAPTERS,
   GRADE_6_SOCIALSCIENCE_CHAPTERS,
+  GRADE_6_PHYSICS_CHAPTERS,
   GRADE_1_HINDI_CHAPTERS,
   GRADE_1_ENGLISH_CHAPTERS
 } from "./data/lessons";
@@ -57,6 +58,7 @@ export default function App() {
     if (selectedSubject === "hindi") return GRADE_6_HINDI_CHAPTERS;
     if (selectedSubject === "english") return GRADE_6_ENGLISH_CHAPTERS;
     if (selectedSubject === "social_science") return GRADE_6_SOCIALSCIENCE_CHAPTERS;
+    if (selectedSubject === "physics") return GRADE_6_PHYSICS_CHAPTERS;
     if (selectedSubject === "maths") return GRADE_6_CHAPTERS;
     return GRADE_6_CHAPTERS;
   };
@@ -81,6 +83,7 @@ export default function App() {
     if (subj === "hindi") return GRADE_6_HINDI_CHAPTERS;
     if (subj === "english") return GRADE_6_ENGLISH_CHAPTERS;
     if (subj === "social_science") return GRADE_6_SOCIALSCIENCE_CHAPTERS;
+    if (subj === "physics") return GRADE_6_PHYSICS_CHAPTERS;
     if (subj === "maths") return GRADE_6_CHAPTERS;
     return GRADE_6_CHAPTERS;
   };
@@ -194,7 +197,7 @@ export default function App() {
             title="Go to Dashboard"
             id="app_header_logo_btn"
           >
-            Σ
+            GS
           </button>
           {(activeSection === "lessons" || activeSection === "quiz" || activeSection === "visualtools") && selectedChapter ? (
             <div className="flex items-center gap-2.5" id="header_active_chapter_info">
@@ -208,6 +211,8 @@ export default function App() {
               <div className="hidden sm:block h-6 w-px bg-natural-beige-dark/80" />
               <div>
                 <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] text-natural-primary font-extrabold uppercase tracking-wider">
+                  <span>GyanSetu</span>
+                  <span>•</span>
                   <span>Grade {selectedGrade}</span>
                   <span>•</span>
                   <span className="capitalize">{selectedSubject === "maths" ? "Mathematics" : selectedSubject === "social_science" ? "Social Science" : selectedSubject}</span>
@@ -237,7 +242,7 @@ export default function App() {
                 </span>
                 <div>
                   <h1 className="text-sm md:text-base font-black text-natural-dark tracking-tight leading-tight">
-                    Grade {selectedGrade} Syllabus
+                    GyanSetu Grade {selectedGrade}
                   </h1>
                   <p className="text-[9px] md:text-[10px] text-natural-sage font-bold uppercase tracking-wider leading-tight">
                     {selectedGrade === 1 
@@ -249,8 +254,8 @@ export default function App() {
             </div>
           ) : (
             <div>
-              <h1 className="text-sm md:text-base font-black text-natural-dark tracking-tight">CBSE Math & Learning Companion</h1>
-              <p className="text-[9px] md:text-[10px] text-natural-sage font-bold uppercase tracking-wider">Interactive, Gamified Self-Study</p>
+              <h1 className="text-sm md:text-base font-black text-natural-dark tracking-tight">GyanSetu</h1>
+              <p className="text-[9px] md:text-[10px] text-natural-sage font-bold uppercase tracking-wider">Interactive CBSE Learning Companion</p>
             </div>
           )}
         </div>
@@ -382,30 +387,30 @@ export default function App() {
                   {selectedGrade === 1 ? (
                     <div className="space-y-6">
                       {!showGrade1Topics ? (
-                        <div className="bg-natural-beige-light border border-natural-beige-dark/60 rounded-2xl p-5 space-y-4 animate-fade-in" id="grade_1_vertical_subject_selector">
-                          <span className="text-[10px] font-black uppercase text-natural-sage tracking-wider block text-center mb-1">
+                        <div className="bg-natural-beige-light border border-natural-beige-dark/60 rounded-2xl p-3 sm:p-4 space-y-3 animate-fade-in min-w-0 max-w-full overflow-x-hidden" id="grade_1_vertical_subject_selector">
+                          <span className="text-[10px] font-black uppercase text-natural-sage tracking-wider block text-center">
                             సబ్జెక్ట్ ఎంచుకోండి / Select Subject
                           </span>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" id="subject_selector_group_vertical">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5" id="subject_selector_group_vertical">
                             {[
-                              { s: "maths" as const, label: "Maths / గణితం", desc: "Learn numbers, counting, & basic shapes!", emoji: "🍎", activeBg: "bg-orange-600 border-orange-600 text-white shadow-md", inactiveBg: "bg-white hover:bg-orange-50/40 text-natural-dark border-natural-beige-dark/60" },
-                              { s: "evs" as const, label: "EVS / పరిసరాల విజ్ఞానం", desc: "Learn about family, animals, & seasons!", emoji: "🌳", activeBg: "bg-emerald-600 border-emerald-600 text-white shadow-md", inactiveBg: "bg-white hover:bg-emerald-50/40 text-natural-dark border-natural-beige-dark/60" },
-                              { s: "telugu" as const, label: "Telugu / తెలుగు", desc: "Learn alphabets & sweet words!", emoji: "✍️", activeBg: "bg-rose-600 border-rose-600 text-white shadow-md", inactiveBg: "bg-white hover:bg-rose-50/40 text-natural-dark border-natural-beige-dark/60" },
-                              { s: "hindi" as const, label: "Hindi / హిందీ", desc: "Learn letters, counting, & simple fruits!", emoji: "🍇", activeBg: "bg-teal-600 border-teal-600 text-white shadow-md", inactiveBg: "bg-white hover:bg-teal-50/40 text-natural-dark border-natural-beige-dark/60" },
-                              { s: "english" as const, label: "English / ఆంగ్లం", desc: "Learn phonics, naming words, & action words!", emoji: "🔤", activeBg: "bg-blue-600 border-blue-600 text-white shadow-md", inactiveBg: "bg-white hover:bg-blue-50/40 text-natural-dark border-natural-beige-dark/60" }
+                              { s: "maths" as const, label: "Maths / గణితం", desc: "Learn numbers, counting, & basic shapes!", emoji: "🍎" },
+                              { s: "evs" as const, label: "EVS / పరిసరాల విజ్ఞానం", desc: "Learn about family, animals, & seasons!", emoji: "🌳" },
+                              { s: "telugu" as const, label: "Telugu / తెలుగు", desc: "Learn alphabets & sweet words!", emoji: "✍️" },
+                              { s: "hindi" as const, label: "Hindi / హిందీ", desc: "Learn letters, counting, & fruits!", emoji: "🍇" },
+                              { s: "english" as const, label: "English / ఆంగ్లం", desc: "Learn phonics, naming & action words!", emoji: "🔤" }
                             ].map((item) => (
                               <div
                                 key={item.s}
-                                className="p-4 rounded-3xl border bg-white border-natural-beige-dark/60 hover:border-natural-primary/40 hover:scale-[1.01] hover:bg-natural-cream/10 transition-all duration-200 flex flex-col justify-between gap-3.5"
+                                className="p-3 rounded-2xl border bg-white border-natural-beige-dark/60 hover:border-natural-primary/40 hover:scale-[1.01] transition-all duration-200 flex flex-col justify-between gap-2.5 min-w-0"
                               >
-                                <div className="flex gap-3.5 items-start">
-                                  <span className="text-3xl shrink-0 mt-0.5">{item.emoji}</span>
-                                  <div className="space-y-0.5">
-                                    <h4 className="font-extrabold text-sm text-natural-dark">{item.label}</h4>
-                                    <p className="text-[10px] text-natural-sage leading-normal">{item.desc}</p>
+                                <div className="flex gap-2.5 items-start min-w-0">
+                                  <span className="text-2xl shrink-0 mt-0.5">{item.emoji}</span>
+                                  <div className="min-w-0 flex-1">
+                                    <h4 className="font-extrabold text-xs text-natural-dark break-words">{item.label}</h4>
+                                    <p className="text-[9px] text-natural-sage leading-tight line-clamp-2 mt-0.5">{item.desc}</p>
                                   </div>
                                 </div>
-                                <div className="pt-3 border-t border-natural-beige-dark/30 grid grid-cols-2 gap-2">
+                                <div className="pt-2 border-t border-natural-beige-dark/30 grid grid-cols-2 gap-1.5 min-w-0">
                                   <button
                                     onClick={() => {
                                       setSelectedSubject(item.s);
@@ -415,7 +420,7 @@ export default function App() {
                                       }
                                       setShowGrade1Topics(true);
                                     }}
-                                    className="text-[10px] font-bold text-natural-primary bg-natural-beige-light hover:bg-natural-primary hover:text-white px-2 py-1.5 rounded-full border border-natural-beige-dark/50 transition duration-150 flex items-center justify-center gap-1 cursor-pointer"
+                                    className="text-[9px] font-bold text-natural-primary bg-natural-beige-light hover:bg-natural-primary hover:text-white px-1.5 py-1 rounded-full border border-natural-beige-dark/50 transition duration-150 flex items-center justify-center gap-0.5 cursor-pointer text-center whitespace-nowrap"
                                   >
                                     📖 Lessons
                                   </button>
@@ -429,7 +434,7 @@ export default function App() {
                                       setActiveSection("visualtools");
                                       setActiveTool("fraction");
                                     }}
-                                    className="text-[10px] font-black text-white bg-natural-terracotta hover:bg-natural-terracotta-dark px-2 py-1.5 rounded-full shadow-xs hover:scale-[1.02] transition duration-150 flex items-center justify-center gap-1 cursor-pointer animate-pulse"
+                                    className="text-[9px] font-black text-white bg-natural-terracotta hover:bg-natural-terracotta-dark px-1.5 py-1 rounded-full shadow-xs transition duration-150 flex items-center justify-center gap-0.5 cursor-pointer text-center whitespace-nowrap"
                                   >
                                     🔬 Visual Tool
                                   </button>
@@ -453,15 +458,15 @@ export default function App() {
                           </h3>
 
                           {currentChapters.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 min-w-0 max-w-full">
                               {currentChapters.map((chapter) => (
                                 <button
                                   key={chapter.id}
                                   onClick={() => handleChapterSelect(chapter)}
-                                  className={`p-4 rounded-2xl border text-left transition duration-200 cursor-pointer flex justify-between items-center group relative overflow-hidden shadow-xs bg-white border-natural-beige-dark hover:border-natural-primary/50 hover:bg-natural-cream/20`}
+                                  className={`p-3 sm:p-3.5 rounded-2xl border text-left transition duration-200 cursor-pointer flex justify-between items-center group relative overflow-hidden shadow-xs bg-white border-natural-beige-dark hover:border-natural-primary/50 hover:bg-natural-cream/20 min-w-0 max-w-full`}
                                 >
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-natural-beige-light flex items-center justify-center text-lg shadow-inner group-hover:scale-105 transition shrink-0">
+                                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                    <div className="w-9 h-9 rounded-xl bg-natural-beige-light flex items-center justify-center text-base shadow-inner group-hover:scale-105 transition shrink-0">
                                       {chapter.id === "g1_counting" && <Layers size={18} className="text-natural-primary" />}
                                       {chapter.id === "g1_shapes" && <Compass size={18} className="text-natural-terracotta" />}
                                       {chapter.id === "g1_comparison" && <Ruler size={18} className="text-natural-primary" />}
@@ -546,6 +551,7 @@ export default function App() {
                                 ]
                               : [
                                   { s: "maths" as const, label: "Maths / గణితం", desc: "Learn playing with numbers, decimals, fractions, and algebra!", emoji: "🍎", activeBg: "bg-slate-800 border-slate-800 text-white shadow-md", inactiveBg: "bg-white hover:bg-orange-50/40 text-natural-dark border-natural-beige-dark/60" },
+                                  { s: "physics" as const, label: "Physics / భౌతిక శాస్త్రం", desc: "Motion & measurements, light & shadows, electricity & circuits, and magnets!", emoji: "⚡", activeBg: "bg-slate-800 border-slate-800 text-white shadow-md", inactiveBg: "bg-white hover:bg-sky-50/40 text-natural-dark border-natural-beige-dark/60" },
                                   { s: "social_science" as const, label: "Social Science / సామాజిక శాస్త్రం", desc: "Locating places on Earth, timeline & sources of history, value of work!", emoji: "🌍", activeBg: "bg-slate-800 border-slate-800 text-white shadow-md", inactiveBg: "bg-white hover:bg-indigo-50/40 text-natural-dark border-natural-beige-dark/60" },
                                   { s: "telugu" as const, label: "Telugu / తెలుగు", desc: "Discover intermediate telugu prose, poetry, and sweet idioms!", emoji: "✍️", activeBg: "bg-slate-800 border-slate-800 text-white shadow-md", inactiveBg: "bg-white hover:bg-rose-50/40 text-natural-dark border-natural-beige-dark/60" },
                                   { s: "hindi" as const, label: "Hindi / हिंदी", desc: "Explore NCERT Vasant Part 1 poems, stories, & grammar!", emoji: "🍇", activeBg: "bg-slate-800 border-slate-800 text-white shadow-md", inactiveBg: "bg-white hover:bg-teal-50/40 text-natural-dark border-natural-beige-dark/60" },
@@ -613,6 +619,7 @@ export default function App() {
                                         {chapter.id === "g9_physics_force" && <Ruler size={18} className="text-violet-600" />}
                                         {chapter.id === "g9_chem_matter" && <Layers size={18} className="text-emerald-600" />}
                                         {chapter.id === "g9_chem_atoms" && <Sparkles size={18} className="text-amber-600 animate-pulse" />}
+                                        {chapter.id === "g9_chem_inside_atom" && <Sparkles size={18} className="text-purple-600 animate-pulse" />}
                                         {chapter.id === "g9_maps_location" && <Compass size={18} className="text-teal-600 animate-pulse" />}
                                         {chapter.id === "g9_french_revolution" && <BookOpen size={18} className="text-red-600" />}
                                         {chapter.id === "g9_physical_features" && <Compass size={18} className="text-amber-700" />}
@@ -709,6 +716,7 @@ export default function App() {
               }}
               onOpenWorksheet={() => setActiveSection("quiz")}
               onActionComplete={handleTutorAction}
+              onQuizComplete={handleQuizComplete}
             />
           )}
 

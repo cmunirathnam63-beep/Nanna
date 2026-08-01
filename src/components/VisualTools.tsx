@@ -40,8 +40,16 @@ export default function VisualTools({ chapterId, subject = "maths", grade, initi
     return <G6TeluguGrammarExplorer activeChapterId={chapterId} />;
   }
 
-  if (chapterId?.startsWith("g6_soc_") || chapterId?.startsWith("g1_evs_")) {
+  if (chapterId?.startsWith("g6_soc_") || chapterId?.startsWith("g1_evs_") || chapterId?.startsWith("g9_french_") || chapterId?.startsWith("g9_physical_") || chapterId?.startsWith("g9_democracy_") || chapterId?.startsWith("g9_maps_")) {
     return <SocialScienceVisualLab chapterId={chapterId} />;
+  }
+
+  if (chapterId?.startsWith("g9_chem_")) {
+    return <ChemistryVisualLab chapterId={chapterId} />;
+  }
+
+  if (chapterId?.startsWith("g9_phys_") || chapterId?.startsWith("g9_physics_")) {
+    return <PhysicsVisualLab chapterId={chapterId} />;
   }
 
   if (subject && subject !== "maths") {
@@ -2050,7 +2058,19 @@ function getNumberFactors(num: number): number[] {
 // ==========================================
 
 export function PhysicsVisualLab({ chapterId }: { chapterId?: string }) {
-  const isMotionMode = chapterId === "g9_physics_motion";
+  // Grade 6 Electricity states
+  const [circuitClosed, setCircuitClosed] = useState<boolean>(true);
+  const [testMaterial, setTestMaterial] = useState<"copper" | "iron" | "wood" | "rubber">("copper");
+  
+  // Grade 6 Magnet states
+  const [magnetPair, setMagnetPair] = useState<"NS" | "NN" | "SS">("NS");
+  const [selectedItem, setSelectedItem] = useState<"iron" | "steel" | "wood" | "gold">("iron");
+
+  // Grade 6 Light states
+  const [lightDistance, setLightDistance] = useState<number>(30);
+  const [materialType, setMaterialType] = useState<"opaque" | "translucent" | "transparent">("opaque");
+
+  // Default / Motion states
   const [mass, setMass] = useState<number>(50); // kg
   const [force, setForce] = useState<number>(40); // N
   const [objectType, setObjectType] = useState<"car" | "box" | "apple">("box");
@@ -2111,6 +2131,339 @@ export function PhysicsVisualLab({ chapterId }: { chapterId?: string }) {
     setMass(objectLabels[type].mass);
     handleReset();
   };
+
+  // Grade 6 Electricity Lab
+  if (chapterId === "g6_phys_electricity") {
+    const isConductor = testMaterial === "copper" || testMaterial === "iron";
+    const bulbGlows = circuitClosed && isConductor;
+
+    return (
+      <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="g6_electricity_lab">
+        <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+          <div>
+            <h3 className="font-extrabold text-base text-slate-800">⚡ Electric Circuit & Conductor Tester Lab</h3>
+            <p className="text-xs text-slate-500">Toggle switch, test conductors vs insulators, and see how electric current flows in a closed loop!</p>
+          </div>
+          <span className="text-[10px] font-bold text-violet-600 bg-violet-50 border border-violet-100 px-3 py-1 rounded-full uppercase font-mono">Circuit Studio</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white p-5 rounded-2xl border border-slate-150 space-y-5 shadow-xs">
+            <div>
+              <label className="block text-xs font-black uppercase text-slate-600 tracking-wider mb-2">1. Circuit Switch</label>
+              <button
+                onClick={() => setCircuitClosed(!circuitClosed)}
+                className={`w-full py-3 px-4 rounded-xl font-extrabold text-xs transition-all cursor-pointer flex items-center justify-center gap-2 border ${
+                  circuitClosed 
+                    ? "bg-emerald-600 text-white border-emerald-700 shadow-sm" 
+                    : "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100"
+                }`}
+              >
+                {circuitClosed ? "🟢 Switch is CLOSED (ON)" : "🔴 Switch is OPEN (OFF)"}
+              </button>
+            </div>
+
+            <div>
+              <label className="block text-xs font-black uppercase text-slate-600 tracking-wider mb-2">2. Test Material in Gap</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: "copper", label: "Copper Wire", icon: "🪙", type: "Conductor" },
+                  { id: "iron", label: "Iron Nail", icon: "🔩", type: "Conductor" },
+                  { id: "wood", label: "Wood Stick", icon: "🪵", type: "Insulator" },
+                  { id: "rubber", label: "Rubber Band", icon: "🛞", type: "Insulator" }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setTestMaterial(item.id as any)}
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                      testMaterial === item.id 
+                        ? "bg-violet-50 border-violet-300 text-violet-900 font-extrabold shadow-xs" 
+                        : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <span className="block text-lg">{item.icon}</span>
+                    <span className="block text-xs font-bold">{item.label}</span>
+                    <span className={`block text-[9px] font-semibold ${item.type === "Conductor" ? "text-emerald-600" : "text-amber-600"}`}>{item.type}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-2 bg-white p-6 rounded-2xl border border-slate-150 flex flex-col justify-between shadow-xs">
+            <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Live Circuit Diagram & Current Simulation</span>
+
+            <div className="my-6 p-6 bg-slate-900 rounded-2xl relative flex flex-col items-center justify-center min-h-[220px] overflow-hidden">
+              <div className="relative mb-6 flex flex-col items-center">
+                <div className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  bulbGlows 
+                    ? "bg-yellow-300 shadow-[0_0_50px_rgba(253,224,71,0.9)] border-4 border-amber-400 animate-pulse" 
+                    : "bg-slate-800 border-2 border-slate-700 text-slate-500"
+                }`}>
+                  <span className="text-4xl">💡</span>
+                </div>
+                <span className={`mt-2 text-xs font-extrabold font-mono ${bulbGlows ? "text-yellow-300" : "text-slate-500"}`}>
+                  {bulbGlows ? "BULB GLOWING! ⚡" : circuitClosed ? "NO CURRENT (INSULATOR)" : "CIRCUIT BROKEN (OFF)"}
+                </span>
+              </div>
+
+              <div className="w-full max-w-md flex justify-between items-center border-t-2 border-dashed border-sky-400 pt-4 px-4">
+                <div className="bg-slate-800 p-2.5 rounded-xl border border-slate-700 text-center">
+                  <span className="text-xl">🔋</span>
+                  <span className="block text-[9px] font-bold text-sky-400 font-mono">1.5V Cell (+ / -)</span>
+                </div>
+
+                <div className="bg-slate-800 p-2.5 rounded-xl border border-slate-700 text-center">
+                  <span className="text-xl">{testMaterial === "copper" ? "🪙" : testMaterial === "iron" ? "🔩" : testMaterial === "wood" ? "🪵" : "🛞"}</span>
+                  <span className="block text-[9px] font-bold text-slate-300 capitalize">{testMaterial}</span>
+                </div>
+
+                <div className="bg-slate-800 p-2.5 rounded-xl border border-slate-700 text-center">
+                  <span className="text-xl">{circuitClosed ? "🔌" : "✂️"}</span>
+                  <span className="block text-[9px] font-bold text-emerald-400">{circuitClosed ? "Switch ON" : "Switch OFF"}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-violet-50 rounded-xl border border-violet-100 flex items-center justify-between text-xs">
+              <span className="font-extrabold text-violet-900">Current Flow Result:</span>
+              <span className={`font-black font-mono ${bulbGlows ? "text-emerald-600" : "text-rose-600"}`}>
+                {bulbGlows ? "Closed Loop Active! Current flowing from + to - terminal." : "Incomplete Circuit! Electricity cannot complete the loop."}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Grade 6 Magnets Lab
+  if (chapterId === "g6_phys_magnets") {
+    const isAttracting = magnetPair === "NS";
+    const isMagneticItem = selectedItem === "iron" || selectedItem === "steel";
+
+    return (
+      <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="g6_magnets_lab">
+        <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+          <div>
+            <h3 className="font-extrabold text-base text-slate-800">🧲 Magnet Poles & Compass Simulation Lab</h3>
+            <p className="text-xs text-slate-500">Test attraction vs repulsion of magnetic poles, compass orientation, and magnetic materials!</p>
+          </div>
+          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full uppercase font-mono">Magnet Sandbox</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white p-5 rounded-2xl border border-slate-150 space-y-5 shadow-xs">
+            <div>
+              <label className="block text-xs font-black uppercase text-slate-600 tracking-wider mb-2">1. Test Pole Combination</label>
+              <div className="flex flex-col gap-2">
+                {[
+                  { id: "NS", label: "North & South (N ↔ S)", effect: "Unlike Poles Attract!" },
+                  { id: "NN", label: "North & North (N ↔ N)", effect: "Like Poles Repel!" },
+                  { id: "SS", label: "South & South (S ↔ S)", effect: "Like Poles Repel!" }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setMagnetPair(item.id as any)}
+                    className={`p-2.5 rounded-xl border text-left transition cursor-pointer ${
+                      magnetPair === item.id 
+                        ? "bg-emerald-500 text-white border-emerald-600 font-extrabold shadow-xs" 
+                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    <span className="block text-xs">{item.label}</span>
+                    <span className={`block text-[9px] ${magnetPair === item.id ? "text-emerald-100" : "text-emerald-600 font-bold"}`}>{item.effect}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-black uppercase text-slate-600 tracking-wider mb-2">2. Test Object Attraction</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: "iron", label: "Iron Nail", icon: "🔩", isMag: true },
+                  { id: "steel", label: "Steel Clip", icon: "📎", isMag: true },
+                  { id: "wood", label: "Wood Block", icon: "🪵", isMag: false },
+                  { id: "gold", label: "Gold Ring", icon: "💍", isMag: false }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelectedItem(item.id as any)}
+                    className={`p-2.5 rounded-xl border text-left transition cursor-pointer ${
+                      selectedItem === item.id 
+                        ? "bg-sky-50 border-sky-300 text-sky-900 font-extrabold" 
+                        : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <span className="text-base mr-1">{item.icon}</span>
+                    <span className="text-xs">{item.label}</span>
+                    <span className={`block text-[8px] font-bold ${item.isMag ? "text-emerald-600" : "text-slate-400"}`}>{item.isMag ? "Magnetic" : "Non-Magnetic"}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-2 bg-white p-6 rounded-2xl border border-slate-150 flex flex-col justify-between shadow-xs">
+            <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Visual Magnet Force Field</span>
+
+            <div className="my-4 p-6 bg-slate-900 rounded-2xl flex flex-col items-center justify-center min-h-[220px] relative overflow-hidden">
+              <div className={`flex items-center gap-8 transition-all duration-300 ${isAttracting ? "gap-2" : "gap-16"}`}>
+                <div className="flex rounded-lg overflow-hidden border-2 border-white shadow-lg">
+                  <div className="bg-rose-600 text-white font-black text-xs px-4 py-3 flex items-center justify-center font-mono">N</div>
+                  <div className="bg-sky-600 text-white font-black text-xs px-4 py-3 flex items-center justify-center font-mono">S</div>
+                </div>
+
+                <div className="text-2xl animate-bounce">
+                  {isAttracting ? "🧲 💖 🧲" : "💥 🚫 💥"}
+                </div>
+
+                <div className="flex rounded-lg overflow-hidden border-2 border-white shadow-lg">
+                  <div className={`font-black text-xs px-4 py-3 flex items-center justify-center font-mono ${
+                    magnetPair.endsWith("S") ? "bg-sky-600 text-white" : "bg-rose-600 text-white"
+                  }`}>
+                    {magnetPair.endsWith("S") ? "S" : "N"}
+                  </div>
+                  <div className={`font-black text-xs px-4 py-3 flex items-center justify-center font-mono ${
+                    magnetPair.endsWith("S") ? "bg-rose-600 text-white" : "bg-sky-600 text-white"
+                  }`}>
+                    {magnetPair.endsWith("S") ? "N" : "S"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-center flex items-center gap-3">
+                <span className="text-2xl">{selectedItem === "iron" ? "🔩" : selectedItem === "steel" ? "📎" : selectedItem === "wood" ? "🪵" : "💍"}</span>
+                <div className="text-left">
+                  <h5 className="text-xs font-extrabold text-white capitalize">{selectedItem} Test</h5>
+                  <p className={`text-[10px] font-bold ${isMagneticItem ? "text-emerald-400" : "text-amber-400"}`}>
+                    {isMagneticItem ? "ATTRACTED! Sticks tightly to the magnetic pole." : "NOT ATTRACTED! Non-magnetic material ignores magnetic force."}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between text-xs">
+              <span className="font-extrabold text-emerald-900">Law of Magnetic Poles:</span>
+              <span className="font-black text-emerald-700 font-mono">
+                {isAttracting ? "Opposite Poles (N - S) Attract!" : "Identical Poles (N-N / S-S) Repel Each Other!"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Grade 6 Light, Shadows & Reflection Lab
+  if (chapterId === "g6_phys_light") {
+    const shadowSize = Math.max(20, Math.round(100 - lightDistance * 1.5));
+
+    return (
+      <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="g6_light_lab">
+        <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+          <div>
+            <h3 className="font-extrabold text-base text-slate-800">💡 Light, Shadow & Reflection Simulator</h3>
+            <p className="text-xs text-slate-500">Adjust light source distance, toggle object transparency, and observe shadow formation!</p>
+          </div>
+          <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-3 py-1 rounded-full uppercase font-mono">Optics Studio</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white p-5 rounded-2xl border border-slate-150 space-y-5 shadow-xs">
+            <div>
+              <div className="flex justify-between text-xs font-black uppercase text-slate-600 tracking-wider mb-2">
+                <span>1. Distance to Light Torch</span>
+                <span className="text-amber-600 font-mono">{lightDistance} cm</span>
+              </div>
+              <input
+                type="range"
+                min="10"
+                max="60"
+                value={lightDistance}
+                onChange={(e) => setLightDistance(Number(e.target.value))}
+                className="w-full accent-amber-500 h-1.5 bg-slate-100 rounded-lg appearance-none"
+              />
+              <div className="flex justify-between text-[8px] font-bold text-slate-400 mt-1">
+                <span>10 cm (Close = Huge Shadow)</span>
+                <span>60 cm (Far = Small Shadow)</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-black uppercase text-slate-600 tracking-wider mb-2">2. Material Type</label>
+              <div className="flex flex-col gap-2">
+                {[
+                  { id: "opaque", label: "Opaque (Wooden Box)", desc: "Blocks all light ➔ Dark Shadow!" },
+                  { id: "translucent", label: "Translucent (Tracing Paper)", desc: "Passes partial light ➔ Faint Shadow!" },
+                  { id: "transparent", label: "Transparent (Clear Glass)", desc: "Passes full light ➔ No Shadow!" }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setMaterialType(item.id as any)}
+                    className={`p-2.5 rounded-xl border text-left transition cursor-pointer ${
+                      materialType === item.id 
+                        ? "bg-amber-500 text-white border-amber-600 font-extrabold shadow-xs" 
+                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    <span className="block text-xs">{item.label}</span>
+                    <span className={`block text-[9px] ${materialType === item.id ? "text-amber-100" : "text-slate-400"}`}>{item.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-2 bg-white p-6 rounded-2xl border border-slate-150 flex flex-col justify-between shadow-xs">
+            <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Live Shadow Projection Screen</span>
+
+            <div className="my-4 p-6 bg-slate-900 rounded-2xl flex items-center justify-between min-h-[200px] relative overflow-hidden">
+              <div className="flex flex-col items-center">
+                <span className="text-4xl animate-pulse">🔦</span>
+                <span className="text-[9px] font-bold text-amber-300 font-mono mt-1">Torch Light</span>
+              </div>
+
+              <div className="flex-1 h-12 bg-gradient-to-r from-yellow-300/60 via-yellow-200/30 to-transparent mx-2 rounded-full" />
+
+              <div className="flex flex-col items-center z-10">
+                <div className={`w-16 h-16 rounded-xl border-2 flex items-center justify-center text-2xl transition-all ${
+                  materialType === "opaque" 
+                    ? "bg-amber-800 border-amber-600 text-white" 
+                    : materialType === "translucent" 
+                    ? "bg-yellow-200/60 border-yellow-400 text-slate-800" 
+                    : "bg-sky-100/30 border-sky-300 text-sky-800"
+                }`}>
+                  {materialType === "opaque" ? "📦" : materialType === "translucent" ? "📜" : "🪟"}
+                </div>
+                <span className="text-[9px] font-bold text-white capitalize mt-1">{materialType}</span>
+              </div>
+
+              <div className="w-16 h-32 bg-slate-800 border-l-4 border-slate-700 flex flex-col items-center justify-center relative">
+                {materialType !== "transparent" && (
+                  <div 
+                    style={{ height: `${shadowSize}px`, width: "24px" }} 
+                    className={`rounded-md transition-all duration-200 ${
+                      materialType === "opaque" ? "bg-black opacity-90 shadow-2xl" : "bg-black/40 opacity-40"
+                    }`}
+                  />
+                )}
+                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-2">Wall Screen</span>
+              </div>
+            </div>
+
+            <div className="p-3 bg-amber-50 rounded-xl border border-amber-100 flex items-center justify-between text-xs">
+              <span className="font-extrabold text-amber-900">Projected Shadow Height:</span>
+              <span className="font-black text-amber-700 font-mono">
+                {materialType === "transparent" ? "No Shadow Formed!" : `${shadowSize} pixels tall (${materialType} material)`}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200">
@@ -2257,158 +2610,1066 @@ export function PhysicsVisualLab({ chapterId }: { chapterId?: string }) {
 }
 
 export function ChemistryVisualLab({ chapterId }: { chapterId?: string }) {
-  const isMatterChapter = chapterId === "g9_chem_matter";
-  const [protons, setProtons] = useState<number>(1);
-  const [neutrons, setNeutrons] = useState<number>(1);
-  const [electrons, setElectrons] = useState<number>(1);
+  const [activeTab, setActiveTab] = useState<"atom_builder" | "rutherford" | "models" | "isotopes" | "hierarchy">("atom_builder");
+
+  // 1. ATOM BUILDER STATE
+  const [protons, setProtons] = useState<number>(6); // Default Carbon
+  const [neutrons, setNeutrons] = useState<number>(6);
+  const [electrons, setElectrons] = useState<number>(6);
+
+  // 2. RUTHERFORD EXPERIMENT STATE
+  const [rutherfordFired, setRutherfordFired] = useState<number>(0);
+  const [straightPassCount, setStraightPassCount] = useState<number>(0);
+  const [deflectedCount, setDeflectedCount] = useState<number>(0);
+  const [reboundCount, setReboundCount] = useState<number>(0);
+  const [isFiring, setIsFiring] = useState<boolean>(false);
+  const [microscopicZoom, setMicroscopicZoom] = useState<boolean>(false);
+
+  // 3. ATOMIC MODELS STATE
+  const [selectedModel, setSelectedModel] = useState<"thomson" | "rutherford" | "bohr">("bohr");
+  const [bohrEnergyLevel, setBohrEnergyLevel] = useState<number>(1); // n=1 K shell
+  const [energyTransitionMsg, setEnergyTransitionMsg] = useState<string>("");
+
+  // 4. ISOTOPES & ISOBARS STATE
+  const [cl35Percent, setCl35Percent] = useState<number>(75);
+
+  // Periodic Table Elements Data (Z = 1 to 20)
+  const ELEMENTS_20 = [
+    { z: 0, name: "Empty Space", symbol: "∅", desc: "No protons! Add protons to build an element." },
+    { z: 1, name: "Hydrogen", symbol: "H", desc: "Simplest element! Most abundant element in the universe." },
+    { z: 2, name: "Helium", symbol: "He", desc: "Noble gas with a complete duplet shell! Non-reactive gas." },
+    { z: 3, name: "Lithium", symbol: "Li", desc: "Lightest alkali metal used in rechargeable smartphone batteries." },
+    { z: 4, name: "Beryllium", symbol: "Be", desc: "Lightweight, strong metal used in aerospace and satellite mirrors." },
+    { z: 5, name: "Boron", symbol: "B", desc: "Metalloid used in heat-resistant Pyrex laboratory glassware." },
+    { z: 6, name: "Carbon", symbol: "C", desc: "Fundamental building block of all organic life on Earth!" },
+    { z: 7, name: "Nitrogen", symbol: "N", desc: "Makes up 78% of Earth's atmosphere; essential for protein synthesis." },
+    { z: 8, name: "Oxygen", symbol: "O", desc: "Life-supporting gas essential for animal and human respiration." },
+    { z: 9, name: "Fluorine", symbol: "F", desc: "Most electronegative element; added to toothpaste to strengthen enamel." },
+    { z: 10, name: "Neon", symbol: "Ne", desc: "Inert noble gas that glows vibrant reddish-orange in illuminated signboards." },
+    { z: 11, name: "Sodium", symbol: "Na", desc: "Highly reactive metal that forms table salt (NaCl) with chlorine." },
+    { z: 12, name: "Magnesium", symbol: "Mg", desc: "Burns with a dazzling white light; essential mineral in chlorophyll." },
+    { z: 13, name: "Aluminium", symbol: "Al", desc: "Strong, lightweight metal used in aircraft bodies and food foils." },
+    { z: 14, name: "Silicon", symbol: "Si", desc: "Semi-conductor at the heart of computer microchips and solar panels." },
+    { z: 15, name: "Phosphorus", symbol: "P", desc: "Essential element in DNA backbone and strike-anywhere matchheads." },
+    { z: 16, name: "Sulphur", symbol: "S", desc: "Yellow non-metal found near volcanoes; essential for vulcanizing rubber." },
+    { z: 17, name: "Chlorine", symbol: "Cl", desc: "Greenish-yellow disinfectant gas used to sanitize drinking water." },
+    { z: 18, name: "Argon", symbol: "Ar", desc: "Abundant noble gas used inside electric bulbs to protect filaments." },
+    { z: 19, name: "Potassium", symbol: "K", desc: "Vital electrolyte for heart rhythms; found abundantly in bananas." },
+    { z: 20, name: "Calcium", symbol: "Ca", desc: "Key constituent of bones, teeth, milk, and limestone structures." }
+  ];
+
+  // Bohr-Bury Shell Distribution Calculation (K=2, L=8, M=8, N=2 for Z<=20)
+  const calculateBohrDistribution = (eCount: number) => {
+    let rem = eCount;
+    const k = Math.min(2, rem);
+    rem -= k;
+    const l = Math.min(8, rem);
+    rem -= l;
+    const m = Math.min(8, rem);
+    rem -= m;
+    const n = Math.min(2, rem);
+    return { k, l, m, n };
+  };
+
+  const shells = calculateBohrDistribution(electrons);
+  const outerShellElectrons = shells.n > 0 ? shells.n : shells.m > 0 ? shells.m : shells.l > 0 ? shells.l : shells.k;
+  const isOuterShellFull = (electrons === 2 && protons <= 2) || outerShellElectrons === 8;
+  const valency = isOuterShellFull ? 0 : outerShellElectrons <= 4 ? outerShellElectrons : 8 - outerShellElectrons;
+
+  const currentElement = ELEMENTS_20[protons] || {
+    z: protons,
+    name: "Transuranic Nucleus",
+    symbol: "X",
+    desc: "Heavy synthetic element beyond Calcium."
+  };
 
   const totalMass = protons + neutrons;
   const netCharge = protons - electrons;
 
-  const elements = [
-    { name: "Empty Space", symbol: "∅", desc: "No protons! Add some protons to build an element!" },
-    { name: "Hydrogen", symbol: "H", desc: "The simplest and most abundant element in the universe!" },
-    { name: "Helium", symbol: "He", desc: "A super-light, non-reactive noble gas used to fill festive balloons!" },
-    { name: "Lithium", symbol: "Li", desc: "A soft, silver-white metal used to power modern phone batteries!" },
-    { name: "Beryllium", symbol: "Be", desc: "A strong, lightweight metal used in aerospace and satellite structures!" },
-    { name: "Boron", symbol: "B", desc: "A metalloid used in making tough fiberglass and lab glassware!" },
-    { name: "Carbon", symbol: "C", desc: "The basic building block of all organic life on Earth!" },
-    { name: "Nitrogen", symbol: "N", desc: "Makes up 78% of the air we breathe and helps plants grow!" },
-    { name: "Oxygen", symbol: "O", desc: "The life-giving gas essential for respiration in humans and animals!" }
-  ];
+  // RUTHERFORD FIRE HANDLER
+  const fireAlphaParticles = (count: number) => {
+    setIsFiring(true);
+    let straight = 0;
+    let def = 0;
+    let reb = 0;
 
-  const currentElement = elements[protons] || { name: "Heavy Nucleus", symbol: "X", desc: "An advanced, heavier element on the periodic table!" };
+    for (let i = 0; i < count; i++) {
+      const rand = Math.random();
+      if (rand < 0.0001) {
+        reb++; // 1 in 10,000 to 12,000 rebound
+      } else if (rand < 0.05) {
+        def++; // ~5% small angle deflection
+      } else {
+        straight++; // >95% straight pass
+      }
+    }
 
-  const handleReset = () => {
-    setProtons(1);
-    setNeutrons(1);
-    setElectrons(1);
+    setRutherfordFired((prev) => prev + count);
+    setStraightPassCount((prev) => prev + straight);
+    setDeflectedCount((prev) => prev + def);
+    setReboundCount((prev) => prev + reb);
+
+    setTimeout(() => {
+      setIsFiring(false);
+    }, 600);
   };
 
+  const resetRutherford = () => {
+    setRutherfordFired(0);
+    setStraightPassCount(0);
+    setDeflectedCount(0);
+    setReboundCount(0);
+  };
+
+  // BOHR ENERGY JUMP HANDLER
+  const triggerBohrJump = (direction: "absorb" | "emit") => {
+    if (direction === "absorb") {
+      if (bohrEnergyLevel < 4) {
+        const nextLevel = bohrEnergyLevel + 1;
+        setBohrEnergyLevel(nextLevel);
+        setEnergyTransitionMsg(`⚡ Absorbed Photon energy (+hν)! Electron jumped from n=${bohrEnergyLevel} to excited shell n=${nextLevel}.`);
+      } else {
+        setEnergyTransitionMsg("⚠️ Maximum energy shell reached! Ionization threshold.");
+      }
+    } else {
+      if (bohrEnergyLevel > 1) {
+        const prevLevel = bohrEnergyLevel - 1;
+        setBohrEnergyLevel(prevLevel);
+        setEnergyTransitionMsg(`💡 Emitted Photon light wavelength (-hν)! Electron dropped from n=${bohrEnergyLevel} back to stable shell n=${prevLevel}.`);
+      } else {
+        setEnergyTransitionMsg("ℹ️ Electron is already at ground state (K shell, n=1). Cannot drop lower!");
+      }
+    }
+  };
+
+  // Chlorine Average Mass Calculation
+  const cl37Percent = 100 - cl35Percent;
+  const avgChlorineMass = ((35 * cl35Percent + 37 * cl37Percent) / 100).toFixed(2);
+
   return (
-    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200">
-      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+    <div className="flex flex-col gap-5 p-5 bg-slate-50 rounded-2xl border border-slate-200">
+      {/* Header Banner */}
+      <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 p-5 rounded-2xl text-white shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h3 className="font-extrabold text-base text-slate-800">🧪 Chemistry Lab: Atomic Structure Sandbox</h3>
-          <p className="text-xs text-slate-500">Add subatomic particles to build elements and observe atomic mass, stability, and net charges!</p>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="bg-purple-500/30 text-purple-200 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border border-purple-400/30">
+              Grade 9 Chemistry • Chapter 8
+            </span>
+            <span className="bg-emerald-500/30 text-emerald-200 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+              Interactive Lab
+            </span>
+          </div>
+          <h3 className="font-extrabold text-lg text-white tracking-tight flex items-center gap-2">
+            ⚛️ Journey Inside the Atom: Interactive Visual Lab
+          </h3>
+          <p className="text-xs text-purple-200/90 leading-relaxed max-w-2xl">
+            Explore subatomic particles, build atoms up to Z=20, simulate Rutherford's Gold Foil scattering experiment, jump Bohr energy shells, and analyze isotopes & matter hierarchy!
+          </p>
         </div>
-        <span className="text-[10px] font-bold text-teal-600 bg-teal-50 border border-teal-100 px-3 py-1 rounded-full uppercase font-mono">Atom Sandbox</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Controls Column */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-150 space-y-4 shadow-xs">
-          <span className="text-xs font-black uppercase text-slate-600 tracking-wider block border-b border-slate-100 pb-1">1. Add Subatomic Particles</span>
-          
-          {/* Protons Control */}
-          <div className="flex items-center justify-between p-2.5 bg-orange-50/30 border border-orange-100 rounded-xl">
-            <div className="flex flex-col">
-              <span className="text-xs font-extrabold text-orange-700">🔴 Protons (p⁺)</span>
-              <span className="text-[8px] text-orange-500">Mass: 1 | Charge: +1</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setProtons(Math.max(0, protons - 1))} className="w-8 h-8 rounded-full bg-white border border-orange-200 flex items-center justify-center font-bold text-orange-600 hover:bg-orange-50 transition cursor-pointer">-</button>
-              <span className="font-mono font-black text-sm text-orange-800 w-4 text-center">{protons}</span>
-              <button onClick={() => setProtons(Math.min(8, protons + 1))} className="w-8 h-8 rounded-full bg-white border border-orange-200 flex items-center justify-center font-bold text-orange-600 hover:bg-orange-50 transition cursor-pointer">+</button>
-            </div>
+      {/* Navigation Sub-Tabs */}
+      <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-2">
+        <button
+          onClick={() => setActiveTab("atom_builder")}
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+            activeTab === "atom_builder"
+              ? "bg-purple-600 text-white shadow-xs"
+              : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+          }`}
+        >
+          <span>⚛️ Atom & Shell Sandbox</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("rutherford")}
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+            activeTab === "rutherford"
+              ? "bg-purple-600 text-white shadow-xs"
+              : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+          }`}
+        >
+          <span>🎯 Rutherford Alpha Experiment</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("models")}
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+            activeTab === "models"
+              ? "bg-purple-600 text-white shadow-xs"
+              : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+          }`}
+        >
+          <span>🍉 Atomic Models & Bohr Jumps</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("isotopes")}
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+            activeTab === "isotopes"
+              ? "bg-purple-600 text-white shadow-xs"
+              : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+          }`}
+        >
+          <span>⚖️ Isotopes & Isobars</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("hierarchy")}
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+            activeTab === "hierarchy"
+              ? "bg-purple-600 text-white shadow-xs"
+              : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+          }`}
+        >
+          <span>🏢 Hierarchy of Matter</span>
+        </button>
+      </div>
+
+      {/* ==================== TAB 1: ATOM & SHELL SANDBOX ==================== */}
+      {activeTab === "atom_builder" && (
+        <div className="space-y-5 animate-fade-in">
+          {/* Quick Preset Buttons */}
+          <div className="bg-white p-3.5 rounded-xl border border-slate-200 flex flex-wrap items-center gap-2">
+            <span className="text-xs font-black uppercase text-slate-500 mr-2">Quick Presets:</span>
+            {[
+              { label: "1H (Hydrogen)", p: 1, n: 0, e: 1 },
+              { label: "2He (Helium)", p: 2, n: 2, e: 2 },
+              { label: "6C (Carbon)", p: 6, n: 6, e: 6 },
+              { label: "8O (Oxygen)", p: 8, n: 8, e: 8 },
+              { label: "11Na (Sodium)", p: 11, n: 12, e: 11 },
+              { label: "17Cl (Chlorine)", p: 17, n: 18, e: 17 },
+              { label: "18Ar (Argon)", p: 18, n: 22, e: 18 },
+              { label: "20Ca (Calcium)", p: 20, n: 20, e: 20 }
+            ].map((preset, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  setProtons(preset.p);
+                  setNeutrons(preset.n);
+                  setElectrons(preset.e);
+                }}
+                className="text-xs font-bold bg-slate-100 hover:bg-purple-100 hover:text-purple-800 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 transition cursor-pointer active:scale-95"
+              >
+                {preset.label}
+              </button>
+            ))}
           </div>
 
-          {/* Neutrons Control */}
-          <div className="flex items-center justify-between p-2.5 bg-slate-100 border border-slate-200 rounded-xl">
-            <div className="flex flex-col">
-              <span className="text-xs font-extrabold text-slate-700">⚪ Neutrons (n⁰)</span>
-              <span className="text-[8px] text-slate-500">Mass: 1 | Charge: 0</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setNeutrons(Math.max(0, neutrons - 1))} className="w-8 h-8 rounded-full bg-white border border-slate-300 flex items-center justify-center font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer">-</button>
-              <span className="font-mono font-black text-sm text-slate-800 w-4 text-center">{neutrons}</span>
-              <button onClick={() => setNeutrons(Math.min(10, neutrons + 1))} className="w-8 h-8 rounded-full bg-white border border-slate-300 flex items-center justify-center font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer">+</button>
-            </div>
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            {/* Column 1: Controls */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-2xs">
+              <span className="text-xs font-black uppercase text-slate-700 tracking-wider block border-b pb-2">
+                1. Adjust Subatomic Particles
+              </span>
 
-          {/* Electrons Control */}
-          <div className="flex items-center justify-between p-2.5 bg-sky-50/30 border border-sky-100 rounded-xl">
-            <div className="flex flex-col">
-              <span className="text-xs font-extrabold text-sky-700">🔵 Electrons (e⁻)</span>
-              <span className="text-[8px] text-sky-500">Mass: 0 | Charge: -1</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setElectrons(Math.max(0, electrons - 1))} className="w-8 h-8 rounded-full bg-white border border-sky-200 flex items-center justify-center font-bold text-sky-600 hover:bg-sky-50 transition cursor-pointer">-</button>
-              <span className="font-mono font-black text-sm text-sky-800 w-4 text-center">{electrons}</span>
-              <button onClick={() => setElectrons(Math.min(10, electrons + 1))} className="w-8 h-8 rounded-full bg-white border border-sky-200 flex items-center justify-center font-bold text-sky-600 hover:bg-sky-50 transition cursor-pointer">+</button>
-            </div>
-          </div>
-
-          <button onClick={handleReset} className="w-full py-2.5 text-xs font-extrabold text-slate-700 bg-slate-100 border border-slate-200 hover:bg-slate-200 rounded-xl transition cursor-pointer">
-            🔄 Reset Atom
-          </button>
-        </div>
-
-        {/* Orbit Visualization Column */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-150 flex flex-col items-center justify-center relative min-h-60 shadow-xs">
-          <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest absolute top-3 left-4">Atomic Orbit Model</span>
-          
-          <div className="relative w-44 h-44 flex items-center justify-center">
-            {/* Orbit Shell 1 */}
-            <div className="absolute w-28 h-28 rounded-full border-2 border-dashed border-sky-200 animate-spin" style={{ animationDuration: "12s" }}>
-              {/* Electron on Shell 1 */}
-              {electrons > 0 && <div className="absolute top-0 left-1/2 -ml-1.5 -mt-1.5 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
-              {electrons > 1 && <div className="absolute bottom-0 left-1/2 -ml-1.5 -mb-1.5 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
-            </div>
-
-            {/* Orbit Shell 2 */}
-            <div className="absolute w-44 h-44 rounded-full border-2 border-dashed border-sky-100 animate-spin" style={{ animationDuration: "25s" }}>
-              {electrons > 2 && <div className="absolute top-4 left-4 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
-              {electrons > 3 && <div className="absolute top-4 right-4 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
-              {electrons > 4 && <div className="absolute bottom-4 left-4 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
-              {electrons > 5 && <div className="absolute bottom-4 right-4 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
-              {electrons > 6 && <div className="absolute top-1/2 right-0 -mr-1.5 -mt-1.5 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
-              {electrons > 7 && <div className="absolute top-1/2 left-0 -ml-1.5 -mt-1.5 w-3.5 h-3.5 rounded-full bg-sky-500 border border-white flex items-center justify-center text-[7px] text-white font-bold select-none">e⁻</div>}
-            </div>
-
-            {/* Nucleus Compound */}
-            <div className="w-12 h-12 rounded-full bg-rose-50 border border-orange-250 flex flex-wrap items-center justify-center gap-0.5 p-1 z-10 shadow-md">
-              {protons === 0 && neutrons === 0 && <span className="text-[8px] font-black text-slate-400">Empty</span>}
-              {Array.from({ length: Math.min(6, protons) }).map((_, i) => (
-                <div key={i} className="w-2.5 h-2.5 rounded-full bg-orange-500 border border-white text-[5px] text-white font-bold flex items-center justify-center select-none">+</div>
-              ))}
-              {Array.from({ length: Math.min(6, neutrons) }).map((_, i) => (
-                <div key={i} className="w-2.5 h-2.5 rounded-full bg-slate-400 border border-white text-[5px] text-white font-bold flex items-center justify-center select-none">0</div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Element Info Output Column */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-150 flex flex-col justify-between shadow-xs">
-          <div className="space-y-3">
-            <span className="text-xs font-black uppercase text-slate-600 tracking-wider block border-b border-slate-100 pb-1">2. Identified Element</span>
-            
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-teal-500 border-2 border-teal-600 flex flex-col items-center justify-center text-white font-black shadow-md">
-                <span className="text-xs leading-none font-mono">{protons}</span>
-                <span className="text-2xl leading-none">{currentElement.symbol}</span>
+              {/* Protons Control */}
+              <div className="p-3 bg-orange-50/60 border border-orange-200 rounded-xl space-y-2">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span className="text-xs font-extrabold text-orange-900 block">🔴 Protons (p⁺)</span>
+                    <span className="text-[10px] text-orange-700 font-medium">Atomic Number Z = {protons} | Charge: +1</span>
+                  </div>
+                  <span className="font-mono font-black text-base text-orange-900">{protons}</span>
+                </div>
+                <input
+                  type="range"
+                  min="1"
+                  max="20"
+                  value={protons}
+                  onChange={(e) => setProtons(Number(e.target.value))}
+                  className="w-full accent-orange-600 cursor-pointer"
+                />
               </div>
+
+              {/* Neutrons Control */}
+              <div className="p-3 bg-slate-100/80 border border-slate-200 rounded-xl space-y-2">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span className="text-xs font-extrabold text-slate-800 block">⚪ Neutrons (n⁰)</span>
+                    <span className="text-[10px] text-slate-600 font-medium">Mass Contribution | Charge: 0</span>
+                  </div>
+                  <span className="font-mono font-black text-base text-slate-800">{neutrons}</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="25"
+                  value={neutrons}
+                  onChange={(e) => setNeutrons(Number(e.target.value))}
+                  className="w-full accent-slate-600 cursor-pointer"
+                />
+              </div>
+
+              {/* Electrons Control */}
+              <div className="p-3 bg-sky-50/60 border border-sky-200 rounded-xl space-y-2">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span className="text-xs font-extrabold text-sky-900 block">🔵 Electrons (e⁻)</span>
+                    <span className="text-[10px] text-sky-700 font-medium">Orbital Shells | Charge: -1</span>
+                  </div>
+                  <span className="font-mono font-black text-base text-sky-900">{electrons}</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="20"
+                  value={electrons}
+                  onChange={(e) => setElectrons(Number(e.target.value))}
+                  className="w-full accent-sky-600 cursor-pointer"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setElectrons(protons); // Make neutral
+                  }}
+                  className="flex-1 py-2 text-[11px] font-extrabold text-purple-800 bg-purple-50 border border-purple-200 hover:bg-purple-100 rounded-xl transition cursor-pointer"
+                >
+                  ⚖️ Make Neutral Atom (e⁻ = p⁺)
+                </button>
+              </div>
+            </div>
+
+            {/* Column 2: Bohr Shell Orbital Diagram */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col items-center justify-between min-h-[320px] relative shadow-2xs">
+              <div className="w-full flex justify-between items-center border-b pb-2">
+                <span className="text-xs font-black uppercase text-purple-900 tracking-wider">
+                  2. Bohr Atomic Orbital Model
+                </span>
+                <span className="text-[10px] font-mono font-extrabold bg-purple-100 text-purple-900 px-2 py-0.5 rounded-full">
+                  Bohr-Bury Rule (2n²)
+                </span>
+              </div>
+
+              {/* Orbit Visual Stage */}
+              <div className="relative w-64 h-64 flex items-center justify-center my-4">
+                {/* Shell N (n=4) */}
+                {shells.n > 0 && (
+                  <div className="absolute w-60 h-60 rounded-full border-2 border-dashed border-emerald-300 animate-spin" style={{ animationDuration: "35s" }}>
+                    <span className="absolute -top-3 left-1/2 -ml-2 text-[9px] font-bold text-emerald-600 bg-white px-1">N (n=4)</span>
+                    {Array.from({ length: shells.n }).map((_, i) => (
+                      <div
+                        key={`n-${i}`}
+                        className="absolute w-3.5 h-3.5 bg-emerald-500 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
+                        style={{
+                          top: `${50 - 48 * Math.cos((2 * Math.PI * i) / shells.n)}%`,
+                          left: `${50 + 48 * Math.sin((2 * Math.PI * i) / shells.n)}%`
+                        }}
+                      >
+                        e⁻
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Shell M (n=3) */}
+                {(shells.m > 0 || shells.n > 0) && (
+                  <div className="absolute w-48 h-48 rounded-full border-2 border-dashed border-amber-300 animate-spin" style={{ animationDuration: "25s" }}>
+                    <span className="absolute -top-3 left-1/2 -ml-2 text-[9px] font-bold text-amber-600 bg-white px-1">M (n=3)</span>
+                    {Array.from({ length: shells.m }).map((_, i) => (
+                      <div
+                        key={`m-${i}`}
+                        className="absolute w-3.5 h-3.5 bg-amber-500 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
+                        style={{
+                          top: `${50 - 48 * Math.cos((2 * Math.PI * i) / shells.m)}%`,
+                          left: `${50 + 48 * Math.sin((2 * Math.PI * i) / shells.m)}%`
+                        }}
+                      >
+                        e⁻
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Shell L (n=2) */}
+                {(shells.l > 0 || shells.m > 0) && (
+                  <div className="absolute w-36 h-36 rounded-full border-2 border-dashed border-purple-300 animate-spin" style={{ animationDuration: "18s" }}>
+                    <span className="absolute -top-3 left-1/2 -ml-2 text-[9px] font-bold text-purple-600 bg-white px-1">L (n=2)</span>
+                    {Array.from({ length: shells.l }).map((_, i) => (
+                      <div
+                        key={`l-${i}`}
+                        className="absolute w-3.5 h-3.5 bg-purple-600 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
+                        style={{
+                          top: `${50 - 48 * Math.cos((2 * Math.PI * i) / shells.l)}%`,
+                          left: `${50 + 48 * Math.sin((2 * Math.PI * i) / shells.l)}%`
+                        }}
+                      >
+                        e⁻
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Shell K (n=1) */}
+                <div className="absolute w-24 h-24 rounded-full border-2 border-dashed border-sky-400 animate-spin" style={{ animationDuration: "12s" }}>
+                  <span className="absolute -top-3 left-1/2 -ml-2 text-[9px] font-bold text-sky-600 bg-white px-1">K (n=1)</span>
+                  {Array.from({ length: shells.k }).map((_, i) => (
+                    <div
+                      key={`k-${i}`}
+                      className="absolute w-3.5 h-3.5 bg-sky-500 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
+                      style={{
+                        top: `${50 - 48 * Math.cos((2 * Math.PI * i) / Math.max(1, shells.k))}%`,
+                        left: `${50 + 48 * Math.sin((2 * Math.PI * i) / Math.max(1, shells.k))}%`
+                      }}
+                    >
+                      e⁻
+                    </div>
+                  ))}
+                </div>
+
+                {/* Dense Central Nucleus */}
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-rose-500 border-2 border-white flex flex-col items-center justify-center text-white z-10 shadow-md p-1">
+                  <span className="text-[9px] font-black leading-none">{protons}p⁺</span>
+                  <span className="text-[8px] font-bold leading-none opacity-90">{neutrons}n⁰</span>
+                </div>
+              </div>
+
+              {/* Shell Count Summary Pills */}
+              <div className="flex gap-2 text-[10px] font-mono font-bold text-slate-700">
+                <span className="bg-sky-50 text-sky-800 border border-sky-200 px-2 py-0.5 rounded">K: {shells.k}/2</span>
+                <span className="bg-purple-50 text-purple-800 border border-purple-200 px-2 py-0.5 rounded">L: {shells.l}/8</span>
+                <span className="bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded">M: {shells.m}/8</span>
+                <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded">N: {shells.n}/2</span>
+              </div>
+            </div>
+
+            {/* Column 3: Chemical Properties & Valency Card */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col justify-between shadow-2xs space-y-4">
+              <span className="text-xs font-black uppercase text-slate-700 tracking-wider block border-b pb-2">
+                3. Element & Valency Analysis
+              </span>
+
+              <div className="flex items-center gap-4 bg-purple-50 border border-purple-200 p-3 rounded-xl">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white flex flex-col items-center justify-center font-black shadow-md shrink-0">
+                  <span className="text-xs font-mono opacity-80 leading-none">Z = {protons}</span>
+                  <span className="text-2xl leading-none font-sans">{currentElement.symbol}</span>
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-base text-purple-950">{currentElement.name}</h4>
+                  <p className="text-[11px] text-purple-800/90 leading-snug">{currentElement.desc}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-0.5">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Configuration</span>
+                  <span className="text-sm font-black font-mono text-purple-900">
+                    {[shells.k, shells.l, shells.m, shells.n].filter((s) => s > 0).join(", ")}
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-0.5">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Valency</span>
+                  <span className="text-sm font-black font-mono text-emerald-700">{valency}</span>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-0.5">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Mass Number (A = p+n)</span>
+                  <span className="text-sm font-black font-mono text-slate-800">{totalMass} u</span>
+                </div>
+
+                <div className={`border p-2.5 rounded-xl space-y-0.5 ${netCharge > 0 ? "bg-orange-50 border-orange-200 text-orange-900" : netCharge < 0 ? "bg-sky-50 border-sky-200 text-sky-900" : "bg-emerald-50 border-emerald-200 text-emerald-900"}`}>
+                  <span className="text-[9px] font-bold opacity-80 uppercase tracking-widest block">Net Charge</span>
+                  <span className="text-sm font-black font-mono">
+                    {netCharge > 0 ? `+${netCharge} (Cation)` : netCharge < 0 ? `${netCharge} (Anion)` : "0 (Neutral)"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Octet Status Box */}
+              <div className={`p-3 rounded-xl border text-xs flex items-center gap-2 ${isOuterShellFull ? "bg-emerald-50 border-emerald-200 text-emerald-900" : "bg-amber-50 border-amber-200 text-amber-900"}`}>
+                <span className="text-lg">{isOuterShellFull ? "🛡️" : "⚡"}</span>
+                <div>
+                  <span className="font-extrabold block">
+                    {isOuterShellFull ? "Stable Octet / Duplet Achieved!" : "Chemically Reactive (Incomplete Octet)"}
+                  </span>
+                  <span className="text-[10px] leading-snug block opacity-90">
+                    {isOuterShellFull
+                      ? "Outer shell is completely full like a noble gas. Very low chemical reactivity."
+                      : `Needs to ${outerShellElectrons <= 4 ? `lose ${outerShellElectrons} e⁻` : `gain ${8 - outerShellElectrons} e⁻`} to form a stable octet.`}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== TAB 2: RUTHERFORD ALPHA EXPERIMENT ==================== */}
+      {activeTab === "rutherford" && (
+        <div className="space-y-5 animate-fade-in">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-2xs">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-3">
               <div>
-                <h4 className="font-extrabold text-sm text-slate-800">{currentElement.name}</h4>
-                <p className="text-[10px] text-slate-500 leading-normal">{currentElement.desc}</p>
+                <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                  🎯 Rutherford's Gold Foil Alpha (α) Particle Scattering Experiment
+                </h4>
+                <p className="text-xs text-slate-600">
+                  Ernest Rutherford fired positively charged alpha particles (He²⁺) at ultra-thin gold foil (1000 atoms thick) to discover the atomic nucleus!
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setMicroscopicZoom(!microscopicZoom)}
+                  className="px-3 py-1.5 text-xs font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl border border-amber-300 transition cursor-pointer"
+                >
+                  {microscopicZoom ? "🔍 Macro View (Gold Foil)" : "🔬 Micro Zoom (Single Nucleus)"}
+                </button>
+                <button
+                  onClick={resetRutherford}
+                  className="px-3 py-1.5 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl border border-slate-300 transition cursor-pointer"
+                >
+                  🔄 Reset Counter
+                </button>
               </div>
             </div>
-          </div>
 
-          <div className="pt-4 border-t border-slate-100 grid grid-cols-2 gap-2 mt-4">
-            <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl text-center">
-              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Mass Number (p + n)</span>
-              <span className="text-base font-black text-slate-700 font-mono">{totalMass}</span>
+            {/* Visual Canvas Stage */}
+            <div className="bg-slate-950 p-6 rounded-2xl relative overflow-hidden flex flex-col items-center justify-center min-h-[260px] text-white">
+              {!microscopicZoom ? (
+                /* Macro View: Alpha Source -> Lead Plate -> Gold Foil -> Fluorescent ZnS Screen */
+                <div className="w-full flex items-center justify-between gap-4 my-4 relative">
+                  {/* Alpha Ray Gun */}
+                  <div className="flex flex-col items-center">
+                    <div className="w-14 h-14 bg-gradient-to-r from-red-600 to-amber-600 rounded-xl border-2 border-amber-400 flex flex-col items-center justify-center text-[10px] font-black text-white shadow-lg">
+                      <span>α-Source</span>
+                      <span className="text-[8px] font-mono opacity-80">(Ra / Po)</span>
+                    </div>
+                    <span className="text-[9px] font-bold text-amber-300 mt-1">Alpha Cannon</span>
+                  </div>
+
+                  {/* Fired Particle Beam Animation */}
+                  <div className="flex-1 h-12 relative flex items-center">
+                    <div className="w-full h-0.5 bg-amber-400/40 border-t border-dashed border-amber-300"></div>
+                    {isFiring && (
+                      <div className="absolute inset-0 flex items-center justify-around animate-pulse">
+                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-md shadow-amber-400/80"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-md shadow-amber-400/80"></div>
+                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-md shadow-amber-400/80"></div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Gold Foil Target */}
+                  <div className="flex flex-col items-center relative z-10">
+                    <div className="w-4 h-24 bg-gradient-to-b from-yellow-300 via-amber-400 to-yellow-500 border border-yellow-200 shadow-lg rounded-xs"></div>
+                    <span className="text-[9px] font-bold text-yellow-300 mt-1">Thin Gold Foil (1000 atoms)</span>
+                  </div>
+
+                  {/* Deflected Paths & Circular ZnS Detector Screen */}
+                  <div className="flex-1 h-24 relative flex items-center justify-center">
+                    {/* Deflected Ray Paths */}
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                      <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="3,3" />
+                      <line x1="0" y1="50%" x2="90%" y2="10%" stroke="#fbbf24" strokeWidth="1.5" strokeDasharray="3,3" />
+                      <line x1="0" y1="50%" x2="90%" y2="90%" stroke="#fbbf24" strokeWidth="1.5" strokeDasharray="3,3" />
+                      <line x1="0" y1="50%" x2="10%" y2="20%" stroke="#ef4444" strokeWidth="2" strokeDasharray="2,2" />
+                    </svg>
+
+                    <div className="w-24 h-24 rounded-full border-2 border-emerald-400/60 border-l-transparent flex items-center justify-center relative">
+                      <span className="text-[8px] font-bold text-emerald-400 uppercase text-center px-1">
+                        Circular ZnS Screen
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Microscopic Atomic Nucleus Zoom View */
+                <div className="w-full flex flex-col items-center justify-center space-y-3 py-2">
+                  <span className="text-xs font-mono font-bold text-amber-300">
+                    🔬 Microscopic View: Alpha Particles hitting Gold Atom Nucleus (Z=79)
+                  </span>
+
+                  <div className="relative w-64 h-48 border border-slate-800 rounded-xl bg-slate-900/90 flex items-center justify-center overflow-hidden">
+                    {/* Giant Gold Atom Central Nucleus */}
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 border-2 border-white shadow-xl shadow-amber-500/50 flex items-center justify-center text-[9px] font-black text-slate-900 z-20">
+                      79p⁺
+                    </div>
+                    <span className="absolute text-[8px] font-mono text-yellow-300 bottom-1">Dense Central Nucleus (Heavy Positive Charge)</span>
+
+                    {/* Orbiting Shell Lines */}
+                    <div className="absolute w-40 h-40 rounded-full border border-slate-700/60"></div>
+                    <div className="absolute w-56 h-56 rounded-full border border-slate-700/40"></div>
+
+                    {/* Fired Particles Visual Deflection Lines */}
+                    {isFiring && (
+                      <>
+                        <div className="absolute left-0 top-6 w-full h-0.5 bg-amber-400 animate-pulse"></div>
+                        <div className="absolute left-0 top-1/2 w-28 h-0.5 bg-red-500 origin-left -rotate-12 animate-pulse"></div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Controls Toolbar */}
+              <div className="flex flex-wrap items-center justify-center gap-3 mt-4 pt-3 border-t border-slate-800 w-full">
+                <button
+                  onClick={() => fireAlphaParticles(1)}
+                  disabled={isFiring}
+                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-extrabold text-xs rounded-xl shadow-md transition cursor-pointer active:scale-95 disabled:opacity-50"
+                >
+                  🚀 Fire 1 Alpha Particle
+                </button>
+
+                <button
+                  onClick={() => fireAlphaParticles(1000)}
+                  disabled={isFiring}
+                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-md transition cursor-pointer active:scale-95 disabled:opacity-50"
+                >
+                  💥 Fire Beam (1,000 Particles)
+                </button>
+
+                <button
+                  onClick={() => fireAlphaParticles(12000)}
+                  disabled={isFiring}
+                  className="px-4 py-2 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-700 hover:to-red-800 text-white font-extrabold text-xs rounded-xl shadow-md transition cursor-pointer active:scale-95 disabled:opacity-50"
+                >
+                  🎯 Fire 12,000 Particles (Catch 180° Rebound!)
+                </button>
+              </div>
             </div>
-            <div className={`border p-2.5 rounded-xl text-center ${netCharge > 0 ? "bg-orange-50/10 border-orange-200 text-orange-700" : netCharge < 0 ? "bg-sky-50/10 border-sky-200 text-sky-700" : "bg-emerald-50/10 border-emerald-200 text-emerald-700"}`}>
-              <span className="text-[8px] font-bold opacity-75 uppercase tracking-widest block mb-0.5">Net Charge</span>
-              <span className="text-base font-black font-mono">{netCharge > 0 ? `+${netCharge}` : netCharge}</span>
-              <span className="text-[8px] font-semibold block">{netCharge > 0 ? "Positive Ion" : netCharge < 0 ? "Negative Ion" : "Neutral Atom"}</span>
+
+            {/* Real-Time Experiment Results Counter */}
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-center">
+              <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl">
+                <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block">Total Particles Fired</span>
+                <span className="text-xl font-black font-mono text-slate-800">{rutherfordFired.toLocaleString()}</span>
+              </div>
+
+              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-xl">
+                <span className="text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider block">Passed Undeflected (&gt;99.9%)</span>
+                <span className="text-xl font-black font-mono text-emerald-700">{straightPassCount.toLocaleString()}</span>
+                <span className="text-[9px] text-emerald-800 block mt-0.5">Proves atom is mostly EMPTY space!</span>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl">
+                <span className="text-[10px] font-extrabold text-amber-800 uppercase tracking-wider block">Small Deflections (~0.1%)</span>
+                <span className="text-xl font-black font-mono text-amber-700">{deflectedCount.toLocaleString()}</span>
+                <span className="text-[9px] text-amber-800 block mt-0.5">Repelled by positive central charge</span>
+              </div>
+
+              <div className="bg-rose-50 border border-rose-200 p-3 rounded-xl">
+                <span className="text-[10px] font-extrabold text-rose-800 uppercase tracking-wider block">180° Rebound (1 in 12,000)</span>
+                <span className="text-xl font-black font-mono text-rose-700">{reboundCount.toLocaleString()}</span>
+                <span className="text-[9px] text-rose-800 block mt-0.5">Hits extremely dense tiny nucleus!</span>
+              </div>
+            </div>
+
+            {/* Rutherford Conclusions Card */}
+            <div className="bg-purple-50 border border-purple-200 p-4 rounded-xl text-xs space-y-2">
+              <span className="font-extrabold text-purple-950 uppercase tracking-wider block">
+                📌 Major Conclusions from Rutherford's Experiment:
+              </span>
+              <ul className="list-disc list-inside space-y-1 text-slate-700 font-medium">
+                <li><b>Most of the space inside an atom is empty</b> because most α-particles passed undeflected.</li>
+                <li><b>Positive charge is concentrated in a tiny space</b> because very few α-particles were deflected from their path.</li>
+                <li><b>Almost all the atomic mass resides in the central nucleus</b>, which is ~10⁵ times smaller than the atom!</li>
+              </ul>
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* ==================== TAB 3: ATOMIC MODELS & BOHR JUMPS ==================== */}
+      {activeTab === "models" && (
+        <div className="space-y-5 animate-fade-in">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-5 shadow-2xs">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
+              <div>
+                <h4 className="font-extrabold text-base text-slate-900">
+                  🍉 Historical Evolution of Atomic Models
+                </h4>
+                <p className="text-xs text-slate-600">
+                  Compare how scientists modeled the internal structure of the atom over time.
+                </p>
+              </div>
+
+              {/* Model Switcher Buttons */}
+              <div className="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
+                <button
+                  onClick={() => setSelectedModel("thomson")}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer ${
+                    selectedModel === "thomson" ? "bg-white text-rose-700 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Watermelon (1897)
+                </button>
+
+                <button
+                  onClick={() => setSelectedModel("rutherford")}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer ${
+                    selectedModel === "rutherford" ? "bg-white text-amber-700 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Nuclear Model (1911)
+                </button>
+
+                <button
+                  onClick={() => setSelectedModel("bohr")}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer ${
+                    selectedModel === "bohr" ? "bg-white text-purple-700 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Bohr Shells (1913)
+                </button>
+              </div>
+            </div>
+
+            {/* Model Display Stage */}
+            {selectedModel === "thomson" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
+                <div className="bg-rose-50 border-2 border-rose-200 p-6 rounded-2xl flex flex-col items-center justify-center min-h-[220px]">
+                  {/* Thomson Watermelon Diagram */}
+                  <div className="w-44 h-44 rounded-full bg-gradient-to-br from-red-400 to-rose-600 border-4 border-emerald-600 flex items-center justify-center relative shadow-lg">
+                    <span className="text-[10px] font-black text-white/90 uppercase tracking-widest absolute top-3">
+                      Positively Charged Sphere
+                    </span>
+                    {/* Embedded Black Seeds (Electrons) */}
+                    <div className="absolute top-10 left-10 w-4 h-4 rounded-full bg-slate-900 text-white text-[8px] font-bold flex items-center justify-center">-</div>
+                    <div className="absolute top-12 right-12 w-4 h-4 rounded-full bg-slate-900 text-white text-[8px] font-bold flex items-center justify-center">-</div>
+                    <div className="absolute bottom-10 left-14 w-4 h-4 rounded-full bg-slate-900 text-white text-[8px] font-bold flex items-center justify-center">-</div>
+                    <div className="absolute bottom-12 right-10 w-4 h-4 rounded-full bg-slate-900 text-white text-[8px] font-bold flex items-center justify-center">-</div>
+                    <div className="w-4 h-4 rounded-full bg-slate-900 text-white text-[8px] font-bold flex items-center justify-center">-</div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-xs text-slate-700">
+                  <span className="text-xs font-black uppercase text-rose-800 tracking-wider block">
+                    J.J. Thomson's Plum Pudding / Watermelon Model (1897)
+                  </span>
+                  <p className="leading-relaxed">
+                    • Proposed that an atom consists of a positively charged sphere with electrons embedded in it like seeds in a watermelon or raisins in a pudding.
+                  </p>
+                  <p className="leading-relaxed">
+                    • <b>Key Triumph:</b> Explained that negative and positive charges are equal in magnitude, making the atom electrically neutral.
+                  </p>
+                  <p className="bg-rose-100/80 p-2.5 rounded-xl border border-rose-200 text-rose-950 font-medium">
+                    ⚠️ <b>Limitation:</b> Could not explain the results of Rutherford's alpha particle scattering experiments!
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {selectedModel === "rutherford" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
+                <div className="bg-amber-50 border-2 border-amber-200 p-6 rounded-2xl flex flex-col items-center justify-center min-h-[220px]">
+                  <div className="w-44 h-44 rounded-full border-2 border-dashed border-amber-400 flex items-center justify-center relative">
+                    <div className="w-8 h-8 rounded-full bg-orange-500 border-2 border-white text-white text-[8px] font-black flex items-center justify-center shadow-md">
+                      + Nucleus
+                    </div>
+                    {/* Orbiting Electron */}
+                    <div className="absolute top-0 left-1/2 -ml-2 -mt-2 w-4 h-4 bg-sky-500 rounded-full border border-white text-white text-[8px] font-bold flex items-center justify-center animate-spin" style={{ animationDuration: "3s" }}>
+                      e⁻
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-xs text-slate-700">
+                  <span className="text-xs font-black uppercase text-amber-800 tracking-wider block">
+                    Ernest Rutherford's Nuclear Atomic Model (1911)
+                  </span>
+                  <p className="leading-relaxed">
+                    • Proposed a heavy, positively charged nucleus at the center containing almost all atomic mass.
+                  </p>
+                  <p className="leading-relaxed">
+                    • Electrons revolve around the nucleus in circular paths, similar to planets revolving around the Sun.
+                  </p>
+                  <p className="bg-amber-100/80 p-2.5 rounded-xl border border-amber-200 text-amber-950 font-medium">
+                    ⚠️ <b>Limitation:</b> Maxwell's electromagnetic theory predicted that revolving accelerated electrons must radiate energy continuously, lose speed, and spiral into the nucleus causing atomic collapse!
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {selectedModel === "bohr" && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
+                  <div className="bg-purple-50 border-2 border-purple-200 p-6 rounded-2xl flex flex-col items-center justify-center min-h-[240px] relative">
+                    <span className="text-[10px] font-black uppercase text-purple-800 tracking-widest absolute top-3">
+                      Bohr Stationary Energy Shells (n=1, 2, 3, 4)
+                    </span>
+
+                    {/* Interactive Shell Jumping Diagram */}
+                    <div className="relative w-52 h-52 flex items-center justify-center my-2">
+                      {/* Shell 4 */}
+                      <div className={`absolute w-48 h-48 rounded-full border-2 ${bohrEnergyLevel === 4 ? "border-emerald-500 border-solid bg-emerald-50/30" : "border-slate-300 border-dashed"}`}>
+                        <span className="absolute -top-2.5 left-1/2 -ml-2 text-[8px] font-bold text-slate-500 bg-white px-1">N (n=4)</span>
+                        {bohrEnergyLevel === 4 && <div className="absolute top-0 left-1/2 -ml-2 -mt-2 w-4 h-4 bg-emerald-600 rounded-full text-white text-[8px] font-bold flex items-center justify-center animate-ping">e⁻</div>}
+                      </div>
+
+                      {/* Shell 3 */}
+                      <div className={`absolute w-36 h-36 rounded-full border-2 ${bohrEnergyLevel === 3 ? "border-amber-500 border-solid bg-amber-50/30" : "border-slate-300 border-dashed"}`}>
+                        <span className="absolute -top-2.5 left-1/2 -ml-2 text-[8px] font-bold text-slate-500 bg-white px-1">M (n=3)</span>
+                        {bohrEnergyLevel === 3 && <div className="absolute top-0 left-1/2 -ml-2 -mt-2 w-4 h-4 bg-amber-600 rounded-full text-white text-[8px] font-bold flex items-center justify-center animate-ping">e⁻</div>}
+                      </div>
+
+                      {/* Shell 2 */}
+                      <div className={`absolute w-24 h-24 rounded-full border-2 ${bohrEnergyLevel === 2 ? "border-purple-600 border-solid bg-purple-50/30" : "border-slate-300 border-dashed"}`}>
+                        <span className="absolute -top-2.5 left-1/2 -ml-2 text-[8px] font-bold text-slate-500 bg-white px-1">L (n=2)</span>
+                        {bohrEnergyLevel === 2 && <div className="absolute top-0 left-1/2 -ml-2 -mt-2 w-4 h-4 bg-purple-600 rounded-full text-white text-[8px] font-bold flex items-center justify-center animate-ping">e⁻</div>}
+                      </div>
+
+                      {/* Shell 1 */}
+                      <div className={`absolute w-14 h-14 rounded-full border-2 ${bohrEnergyLevel === 1 ? "border-sky-500 border-solid bg-sky-50/30" : "border-slate-300 border-dashed"}`}>
+                        <span className="absolute -top-2.5 left-1/2 -ml-2 text-[8px] font-bold text-slate-500 bg-white px-1">K (n=1)</span>
+                        {bohrEnergyLevel === 1 && <div className="absolute top-0 left-1/2 -ml-2 -mt-2 w-4 h-4 bg-sky-500 rounded-full text-white text-[8px] font-bold flex items-center justify-center animate-ping">e⁻</div>}
+                      </div>
+
+                      {/* Nucleus */}
+                      <div className="w-8 h-8 rounded-full bg-rose-500 text-white text-[8px] font-black flex items-center justify-center z-10 shadow-md">
+                        +
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 text-xs text-slate-700">
+                    <span className="text-xs font-black uppercase text-purple-900 tracking-wider block">
+                      Niels Bohr's Postulates (1913) & Quantum Energy Jumps
+                    </span>
+                    <p className="leading-relaxed">
+                      1. Electrons revolve ONLY in discrete orbits called <b>stationary energy levels</b> (K, L, M, N or n=1, 2, 3, 4).
+                    </p>
+                    <p className="leading-relaxed">
+                      2. While revolving in these discrete orbits, electrons <b>DO NOT radiate energy</b>, overcoming Rutherford's collapse defect!
+                    </p>
+
+                    {/* Energy Transition Simulator Buttons */}
+                    <div className="bg-purple-50 p-3.5 rounded-xl border border-purple-200 space-y-2">
+                      <span className="font-extrabold text-purple-950 block">⚡ Energy Transition Simulator:</span>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => triggerBohrJump("absorb")}
+                          className="flex-1 py-2 bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-[11px] rounded-lg transition cursor-pointer active:scale-95"
+                        >
+                          ⚡ Absorb Photon (+hν)
+                        </button>
+                        <button
+                          onClick={() => triggerBohrJump("emit")}
+                          className="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-[11px] rounded-lg transition cursor-pointer active:scale-95"
+                        >
+                          💡 Emit Light (-hν)
+                        </button>
+                      </div>
+
+                      {energyTransitionMsg && (
+                        <p className="text-[11px] font-bold text-purple-900 bg-white p-2 rounded-lg border border-purple-200 mt-2">
+                          {energyTransitionMsg}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ==================== TAB 4: ISOTOPES & ISOBARS ==================== */}
+      {activeTab === "isotopes" && (
+        <div className="space-y-5 animate-fade-in">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {/* Isotopes Explorer */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-2xs">
+              <span className="text-xs font-black uppercase text-purple-900 tracking-wider block border-b pb-2">
+                1. Isotopes (Same Atomic Number Z, Different Mass Number A)
+              </span>
+
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Atoms of the same element having identical protons but different neutrons.
+              </p>
+
+              {/* Hydrogen Isotopes Visual Cards */}
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="bg-sky-50 border border-sky-200 p-3 rounded-xl">
+                  <span className="font-mono text-xs font-black text-sky-900 block">¹₁H (Protium)</span>
+                  <span className="text-[10px] text-sky-700 block mt-1">1 Proton (p⁺)</span>
+                  <span className="text-[10px] text-sky-700 block">0 Neutrons (n⁰)</span>
+                  <span className="text-[9px] font-bold text-sky-900 bg-sky-200 px-1.5 py-0.5 rounded block mt-2">Mass A = 1 u</span>
+                </div>
+
+                <div className="bg-purple-50 border border-purple-200 p-3 rounded-xl">
+                  <span className="font-mono text-xs font-black text-purple-900 block">²₁H (Deuterium)</span>
+                  <span className="text-[10px] text-purple-700 block mt-1">1 Proton (p⁺)</span>
+                  <span className="text-[10px] text-purple-700 block">1 Neutron (n⁰)</span>
+                  <span className="text-[9px] font-bold text-purple-900 bg-purple-200 px-1.5 py-0.5 rounded block mt-2">Mass A = 2 u</span>
+                </div>
+
+                <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl">
+                  <span className="font-mono text-xs font-black text-amber-900 block">³₁H (Tritium)</span>
+                  <span className="text-[10px] text-amber-700 block mt-1">1 Proton (p⁺)</span>
+                  <span className="text-[10px] text-amber-700 block">2 Neutrons (n⁰)</span>
+                  <span className="text-[9px] font-bold text-amber-900 bg-amber-200 px-1.5 py-0.5 rounded block mt-2">Mass A = 3 u</span>
+                </div>
+              </div>
+
+              {/* Fractional Atomic Mass Calculator for Chlorine */}
+              <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl space-y-2">
+                <span className="text-xs font-extrabold text-slate-800 block">
+                  🧮 Chlorine Average Atomic Mass Calculator:
+                </span>
+                <p className="text-[11px] text-slate-600">
+                  Chlorine occurs in nature as ³⁵Cl ({cl35Percent}%) and ³⁷Cl ({cl37Percent}%):
+                </p>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] font-bold text-slate-600">³⁵Cl: {cl35Percent}%</span>
+                  <input
+                    type="range"
+                    min="10"
+                    max="90"
+                    value={cl35Percent}
+                    onChange={(e) => setCl35Percent(Number(e.target.value))}
+                    className="flex-1 accent-purple-600 cursor-pointer"
+                  />
+                  <span className="text-[10px] font-bold text-slate-600">³⁷Cl: {cl37Percent}%</span>
+                </div>
+
+                <div className="bg-white p-2.5 rounded-lg border border-purple-200 font-mono text-xs text-purple-950 font-extrabold text-center">
+                  Avg Mass = ({35} × {cl35Percent}% + {37} × {cl37Percent}%) / 100 = {avgChlorineMass} u
+                </div>
+              </div>
+            </div>
+
+            {/* Isobars & Applications Explorer */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-2xs">
+              <span className="text-xs font-black uppercase text-purple-900 tracking-wider block border-b pb-2">
+                2. Isobars & Medical Applications
+              </span>
+
+              <p className="text-xs text-slate-600 leading-relaxed">
+                <b>Isobars:</b> Atoms of different elements with different Z but identical Mass Number A.
+              </p>
+
+              {/* Isobar Comparison Card */}
+              <div className="grid grid-cols-2 gap-3 text-center">
+                <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-xl">
+                  <span className="font-mono text-xs font-black text-emerald-900 block">₄₀₂₀Ca (Calcium)</span>
+                  <span className="text-[10px] text-emerald-700 block mt-1">Z = 20 Protons</span>
+                  <span className="text-[10px] text-emerald-700 block">Mass A = 40 u</span>
+                </div>
+
+                <div className="bg-teal-50 border border-teal-200 p-3 rounded-xl">
+                  <span className="font-mono text-xs font-black text-teal-900 block">₄₀₁₈Ar (Argon)</span>
+                  <span className="text-[10px] text-teal-700 block mt-1">Z = 18 Protons</span>
+                  <span className="text-[10px] text-teal-700 block">Mass A = 40 u</span>
+                </div>
+              </div>
+
+              {/* Isotope Applications Reference Cards */}
+              <div className="space-y-2 pt-2">
+                <span className="text-xs font-extrabold text-slate-800 block">
+                  💡 Vital Applications of Radioactive Isotopes:
+                </span>
+
+                <div className="grid grid-cols-1 gap-2 text-xs">
+                  <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-2">
+                    <span className="text-lg">☢️</span>
+                    <div>
+                      <span className="font-extrabold text-amber-950 block">Uranium-235 (²³⁵U)</span>
+                      <span className="text-[10px] text-amber-800">Used as fuel in nuclear reactors to generate clean electricity.</span>
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2">
+                    <span className="text-lg">🩺</span>
+                    <div>
+                      <span className="font-extrabold text-rose-950 block">Cobalt-60 (⁶⁰Co)</span>
+                      <span className="text-[10px] text-rose-800">Used in radiation therapy for cancer treatment.</span>
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 bg-purple-50 border border-purple-200 rounded-xl flex items-center gap-2">
+                    <span className="text-lg">💉</span>
+                    <div>
+                      <span className="font-extrabold text-purple-950 block">Iodine-131 (¹³¹I)</span>
+                      <span className="text-[10px] text-purple-800">Used in the medical diagnosis and treatment of goitre (thyroid).</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== TAB 5: HIERARCHY OF MATTER ==================== */}
+      {activeTab === "hierarchy" && (
+        <div className="space-y-5 animate-fade-in">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-2xs">
+            <h4 className="font-extrabold text-base text-slate-900 border-b pb-2">
+              🏢 Hierarchy of Matter: From Macroscopic Objects to Subatomic Particles
+            </h4>
+            <p className="text-xs text-slate-600">
+              Everything in our surroundings—living or non-living—is ultimately composed of subatomic particles!
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Non-Living System */}
+              <div className="bg-amber-50/60 border-2 border-amber-200 p-4 rounded-2xl space-y-3">
+                <span className="text-xs font-black uppercase text-amber-900 tracking-wider block">
+                  🧱 Non-Living Physical Structure Hierarchy
+                </span>
+
+                <div className="flex flex-col gap-2 text-xs">
+                  <div className="bg-white p-2.5 rounded-xl border border-amber-200 font-bold text-amber-950 flex justify-between items-center shadow-2xs">
+                    <span>1. Building / House</span>
+                    <span className="text-[10px] text-amber-700 font-mono">Macro World</span>
+                  </div>
+                  <div className="text-center text-amber-500 font-bold text-xs">↓</div>
+                  <div className="bg-white p-2.5 rounded-xl border border-amber-200 font-bold text-amber-950 flex justify-between items-center shadow-2xs">
+                    <span>2. Room & Brick Wall</span>
+                    <span className="text-[10px] text-amber-700 font-mono">Structural Unit</span>
+                  </div>
+                  <div className="text-center text-amber-500 font-bold text-xs">↓</div>
+                  <div className="bg-white p-2.5 rounded-xl border border-amber-200 font-bold text-amber-950 flex justify-between items-center shadow-2xs">
+                    <span>3. Clay & Silicon Molecules</span>
+                    <span className="text-[10px] text-amber-700 font-mono">Chemical Compounds</span>
+                  </div>
+                  <div className="text-center text-amber-500 font-bold text-xs">↓</div>
+                  <div className="bg-purple-600 text-white p-3 rounded-xl font-extrabold flex justify-between items-center shadow-md">
+                    <span>4. Atoms & Subatomic Particles (p⁺, n⁰, e⁻)</span>
+                    <span className="text-[10px] font-mono bg-purple-800 px-2 py-0.5 rounded">Fundamental Unit</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Living System */}
+              <div className="bg-emerald-50/60 border-2 border-emerald-200 p-4 rounded-2xl space-y-3">
+                <span className="text-xs font-black uppercase text-emerald-900 tracking-wider block">
+                  🧬 Living Biological Organism Hierarchy
+                </span>
+
+                <div className="flex flex-col gap-2 text-xs">
+                  <div className="bg-white p-2.5 rounded-xl border border-emerald-200 font-bold text-emerald-950 flex justify-between items-center shadow-2xs">
+                    <span>1. Human Body</span>
+                    <span className="text-[10px] text-emerald-700 font-mono">Organism</span>
+                  </div>
+                  <div className="text-center text-emerald-500 font-bold text-xs">↓</div>
+                  <div className="bg-white p-2.5 rounded-xl border border-emerald-200 font-bold text-emerald-950 flex justify-between items-center shadow-2xs">
+                    <span>2. Organs, Tissues & Cells</span>
+                    <span className="text-[10px] text-emerald-700 font-mono">Biological Unit</span>
+                  </div>
+                  <div className="text-center text-emerald-500 font-bold text-xs">↓</div>
+                  <div className="bg-white p-2.5 rounded-xl border border-emerald-200 font-bold text-emerald-950 flex justify-between items-center shadow-2xs">
+                    <span>3. Proteins, DNA & Biomolecules</span>
+                    <span className="text-[10px] text-emerald-700 font-mono">Organic Molecules</span>
+                  </div>
+                  <div className="text-center text-emerald-500 font-bold text-xs">↓</div>
+                  <div className="bg-purple-600 text-white p-3 rounded-xl font-extrabold flex justify-between items-center shadow-md">
+                    <span>4. Atoms & Subatomic Particles (C, H, O, N, P, S)</span>
+                    <span className="text-[10px] font-mono bg-purple-800 px-2 py-0.5 rounded">Fundamental Unit</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

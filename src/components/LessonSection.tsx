@@ -4,6 +4,7 @@ import { playSpeechWithLang, playTeluguSpeech } from "../utils/teluguAudio";
 import { LESSONS_DATA } from "../data/lessons";
 import DefinitionDiagram from "./DefinitionDiagram";
 import { Chapter } from "../types";
+import TopicQuizView from "./TopicQuizView";
 import Grade1InteractiveGame from "./Grade1Games";
 import {
   EvenNumberGame,
@@ -377,9 +378,10 @@ function DeprecatedEvenGame() {
 
 interface LessonSectionProps {
   selectedChapter: Chapter;
-  onOpenTool: (toolId: "fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers" | "clock", highlightMode?: string) => void;
+  onOpenTool: (toolId: "fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers" | "clock" | string, highlightMode?: string) => void;
   onOpenWorksheet: () => void;
   onActionComplete?: (points: number) => void;
+  onQuizComplete?: (pointsWon: number, solvedCount: number) => void;
 }
 
 function IstStudentExplainer() {
@@ -589,7 +591,8 @@ export default function LessonSection({
   selectedChapter,
   onOpenTool,
   onOpenWorksheet,
-  onActionComplete
+  onActionComplete,
+  onQuizComplete
 }: LessonSectionProps) {
   const lesson = LESSONS_DATA[selectedChapter.id];
 
@@ -611,12 +614,16 @@ export default function LessonSection({
   const [selectedNumberPage, setSelectedNumberPage] = React.useState<"even" | "odd" | "prime" | "composite" | "square" | "multiples" | "divisibility" | "real" | "imaginary" | "whole" | "integers" | null>(null);
   const [selectedG9Topic, setSelectedG9Topic] = React.useState<"rational_intro" | "irrational_numbers" | "decimal_expansions" | "real_operations" | "rationalizing" | "exponent_laws" | null>(null);
   const [g1SecretOpen, setG1SecretOpen] = React.useState<boolean>(false);
+  const [activeChapterTab, setActiveChapterTab] = React.useState<"textbook" | "interactive" | "notes" | "topic_quiz">(
+    selectedChapter.id.startsWith("g1_") ? "interactive" : "textbook"
+  );
 
   React.useEffect(() => {
     setSelectedFractionPage(null);
     setSelectedNumberPage(null);
     setSelectedG9Topic(null);
     setG1SecretOpen(false);
+    setActiveChapterTab(selectedChapter.id.startsWith("g1_") ? "interactive" : "textbook");
   }, [selectedChapter]);
 
   const handleToolNavigation = (toolName: string, highlightMode?: string) => {
@@ -1477,126 +1484,348 @@ export default function LessonSection({
     );
   }
 
+  if (selectedChapter.id.startsWith("g1_")) {
+    return (
+      <div className="w-full max-w-full min-w-0 overflow-x-hidden p-2 sm:p-4 md:p-5 space-y-3" id="g1_lesson_viewport">
+        <Grade1InteractiveGame
+          chapterId={selectedChapter.id}
+          onActionComplete={onActionComplete}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full max-w-full min-w-0 overflow-x-hidden" id="lesson_viewport">
+    <div className="w-full max-w-full min-w-0 overflow-x-hidden flex flex-col justify-between" id="lesson_viewport">
 
-      <div className="p-3 sm:p-5 md:p-6 space-y-6 min-w-0">
-        {/* Render Geometry Interactive Studio directly for Grade 6 Geometry */}
-        {selectedChapter.id === "geometry" && (
-          <div className="space-y-6">
-            <Grade6TopicExplorer defaultTab="geometry" hideTabSwitcher={true} />
-            <GeometryExplorer />
-          </div>
-        )}
+      {/* Main Tab Content Display Container */}
+      <div className="p-3 sm:p-5 md:p-6 space-y-4 min-w-0 flex-1">
 
-        {/* Render Fraction Operations Studio for Grade 6 Chapter 7 Fractions */}
-        {selectedChapter.id === "fractions" && (
-          <FractionOperationsExplorer />
-        )}
+        {/* Top Sub-Tab Navigation Bar */}
+        <div className="flex flex-wrap items-center gap-2 bg-slate-100/90 p-1.5 rounded-xl border border-slate-200/90 w-fit">
+          <button
+            onClick={() => setActiveChapterTab("textbook")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-black transition flex items-center gap-1.5 cursor-pointer ${
+              activeChapterTab === "textbook"
+                ? "bg-sky-600 text-white shadow-2xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+            }`}
+          >
+            <span>📖</span> <span>Textbook Lesson</span>
+          </button>
 
-        {/* Render Number Patterns & Sequences Topic Hub */}
-        {selectedChapter.id === "patterns" && (
-          <Grade6TopicExplorer defaultTab="patterns" hideTabSwitcher={true} />
-        )}
+          <button
+            onClick={() => setActiveChapterTab("topic_quiz")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-black transition flex items-center gap-1.5 cursor-pointer ${
+              activeChapterTab === "topic_quiz"
+                ? "bg-indigo-600 text-white shadow-2xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+            }`}
+          >
+            <span>🎯</span> <span>Quiz (10 MCQs + 10 Assertion-Reason)</span>
+          </button>
 
-        {/* Render Official Grade 6 Mathematics Term Exam Question Paper */}
-        {selectedChapter.id === "g6_exam_paper" && (
-          <Grade6MathsPaper />
-        )}
+          {(lesson?.didYouKnow || (lesson?.sandharbaVakyalu && lesson.sandharbaVakyalu.length > 0) || selectedChapter.id === "g6_soc_locating_places") && (
+            <button
+              onClick={() => setActiveChapterTab("notes")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-black transition flex items-center gap-1.5 cursor-pointer ${
+                activeChapterTab === "notes"
+                  ? "bg-amber-600 text-white shadow-2xs"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+              }`}
+            >
+              <span>💡</span> <span>Trivia & Special Notes</span>
+            </button>
+          )}
+        </div>
 
-        {/* Render Interactive Probability Simulator for Grade 9 Probability */}
-        {selectedChapter.id === "g9_probability" && (
-          <ProbabilityTopic />
-        )}
-
-        {/* Render Interactive Algebraic Identities Explorer for Grade 9 Polynomials */}
-        {selectedChapter.id === "g9_polynomials" && (
-          <AlgebraicIdentitiesTopic />
-        )}
-
-        {/* Render Interactive Cartesian Plane Canvas for Grade 9 Coordinate Geometry */}
-        {selectedChapter.id === "g9_coordinate" && (
-          <CoordinateGeometryTopic />
-        )}
-
-        {/* Render Grade 1 custom interactive game directly */}
-        {selectedChapter.id.startsWith("g1_") && (
-          <div className="space-y-6" id="g1_content_wrapper">
-            <Grade1InteractiveGame
+        {/* TAB: TOPIC QUIZ (10 MCQs + 10 Assertion & Reason) */}
+        {activeChapterTab === "topic_quiz" && (
+          <div className="animate-fade-in">
+            <TopicQuizView
               chapterId={selectedChapter.id}
-              onActionComplete={onActionComplete}
+              chapterTitle={selectedChapter.title}
+              onQuizComplete={onQuizComplete}
             />
           </div>
         )}
 
-        {/* Textbook Lesson Overview & Definitions Card */}
-        {lesson && (lesson.introduction || (lesson.keyFormulas && lesson.keyFormulas.length > 0)) && (
-          <div className="bg-white border-2 border-slate-200/90 rounded-2xl p-4 sm:p-5 md:p-6 space-y-6 shadow-xs min-w-0 max-w-full overflow-x-hidden" id="lesson_definitions_container">
-            {/* Chapter Header Banner */}
-            <div className="bg-gradient-to-r from-sky-900 via-indigo-900 to-slate-900 text-white rounded-xl p-4 sm:p-5 shadow-inner space-y-2 min-w-0">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="bg-sky-400/20 text-sky-200 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-md border border-sky-300/30 tracking-wider">
-                  📖 NCERT Textbook Lesson Content
-                </span>
-                <button
-                  onClick={() => playSpeechWithLang(`${lesson.title}. ${lesson.introduction}`, "en-US")}
-                  className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-sky-100 font-bold px-3 py-1 rounded-lg text-xs transition cursor-pointer active:scale-95 border border-white/20"
-                >
-                  🔊 Listen
-                </button>
-              </div>
-              <h2 className="text-lg md:text-xl font-black text-white tracking-tight break-words">{lesson.title}</h2>
-              {lesson.introduction && (
-                <p className="text-xs md:text-sm text-sky-100/90 leading-relaxed font-medium break-words">
-                  {lesson.introduction}
-                </p>
-              )}
-            </div>
+        {/* TAB 1: TEXTBOOK & LESSONS */}
+        {activeChapterTab === "textbook" && (
+          <div className="space-y-4 animate-fade-in">
+            {lesson && (lesson.introduction || (lesson.keyFormulas && lesson.keyFormulas.length > 0)) ? (
+              <div className="bg-white border-2 border-slate-200/90 rounded-2xl p-4 sm:p-5 md:p-6 space-y-6 shadow-xs min-w-0 max-w-full overflow-x-hidden" id="lesson_definitions_container">
+                {/* Chapter Header Banner */}
+                <div className="bg-gradient-to-r from-sky-900 via-indigo-900 to-slate-900 text-white rounded-xl p-4 sm:p-5 shadow-inner space-y-2 min-w-0">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="bg-sky-400/20 text-sky-200 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-md border border-sky-300/30 tracking-wider">
+                      📖 NCERT Textbook Lesson Content
+                    </span>
+                    <button
+                      onClick={() => playSpeechWithLang(`${lesson.title}. ${lesson.introduction}`, "en-US")}
+                      className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-sky-100 font-bold px-3 py-1 rounded-lg text-xs transition cursor-pointer active:scale-95 border border-white/20"
+                    >
+                      🔊 Listen
+                    </button>
+                  </div>
+                  <h2 className="text-lg md:text-xl font-black text-white tracking-tight break-words">{lesson.title}</h2>
+                  {lesson.introduction && (
+                    <p className="text-xs md:text-sm text-sky-100/90 leading-relaxed font-medium break-words">
+                      {lesson.introduction}
+                    </p>
+                  )}
+                </div>
 
+                {/* Core Definitions & Key Concepts Section */}
+                {lesson.keyFormulas && lesson.keyFormulas.length > 0 && (
+                  <div className="space-y-4 min-w-0">
+                    <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                      <div className="w-2 h-5 bg-sky-600 rounded-full shrink-0" />
+                      <h3 className="text-sm font-black text-slate-800 uppercase tracking-wide">
+                        📖 Key Definitions & Core Concepts ({lesson.keyFormulas.length})
+                      </h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 min-w-0 w-full">
+                      {lesson.keyFormulas.map((kf, idx) => (
+                        <div key={idx} className="bg-slate-50/80 border border-slate-200 hover:border-sky-300 transition rounded-xl p-3.5 sm:p-4 space-y-3 flex flex-col justify-between shadow-2xs min-w-0 max-w-full">
+                          <div className="space-y-2 min-w-0">
+                            <div className="flex items-center justify-between gap-2 min-w-0">
+                              <h4 className="text-xs md:text-sm font-black text-slate-900 flex items-center gap-1.5 break-words min-w-0">
+                                <span className="w-1.5 h-1.5 bg-sky-500 rounded-full shrink-0" />
+                                {kf.name}
+                              </h4>
+                            </div>
+                            {kf.formula && (
+                              <div className="bg-sky-50 border border-sky-200/80 rounded-lg px-2.5 py-1 text-[11px] font-extrabold text-sky-900 font-mono break-words min-w-0">
+                                {kf.formula}
+                              </div>
+                            )}
+                            {/* Interactive or Illustrated Visual Diagram */}
+                            {kf.diagramType && (
+                              <div className="pt-1 max-w-full overflow-hidden">
+                                <DefinitionDiagram diagramType={kf.diagramType} title={kf.name} />
+                              </div>
+                            )}
+                            {kf.image && (
+                              <div className="pt-1 overflow-hidden rounded-xl border border-slate-200 max-w-full">
+                                <img src={kf.image} alt={kf.name} className="w-full h-auto object-cover max-h-48" referrerPolicy="no-referrer" />
+                              </div>
+                            )}
+                            <p className="text-xs text-slate-700 font-medium leading-relaxed pt-0.5 whitespace-pre-line break-words min-w-0">
+                              {kf.explanation}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step-by-Step Learning Topics */}
+                {lesson.steps && lesson.steps.length > 0 && (
+                  <div className="space-y-4 pt-2 min-w-0">
+                    <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                      <div className="w-2 h-5 bg-amber-500 rounded-full shrink-0" />
+                      <h3 className="text-sm font-black text-slate-800 uppercase tracking-wide">
+                        💡 Key Topics & Examples
+                      </h3>
+                    </div>
+
+                    <div className="space-y-4 min-w-0">
+                      {lesson.steps.map((step, idx) => (
+                        <div key={idx} className="bg-amber-50/40 border border-amber-200/90 rounded-2xl p-4 sm:p-5 space-y-3 min-w-0 shadow-2xs relative hover:border-amber-400 transition-all">
+                          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-200/60 pb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="bg-amber-600 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md tracking-wider">
+                                Topic Division {idx + 1}
+                              </span>
+                              <span className="text-[11px] font-bold text-amber-800">
+                                {selectedChapter.title}
+                              </span>
+                            </div>
+
+                            <button
+                              onClick={() => {
+                                setActiveChapterTab("topic_quiz");
+                                const container = document.getElementById("topic_quiz_container");
+                                if (container) {
+                                  container.scrollIntoView({ behavior: "smooth" });
+                                }
+                              }}
+                              className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-extrabold text-xs flex items-center gap-1.5 cursor-pointer transition shadow-2xs"
+                            >
+                              <span>🎯</span>
+                              <span>Take Topic Quiz</span>
+                            </button>
+                          </div>
+
+                          <h4 className="text-xs md:text-sm font-black text-amber-950 flex items-center gap-2 min-w-0 break-words">
+                            <span className="w-6 h-6 bg-amber-500 text-white rounded-lg flex items-center justify-center text-xs font-black shrink-0">
+                              {idx + 1}
+                            </span>
+                            {step.title}
+                          </h4>
+
+                          <p className="text-xs text-slate-700 font-medium leading-relaxed whitespace-pre-line pl-1 sm:pl-8 break-words min-w-0">
+                            {step.desc}
+                          </p>
+
+                          {step.example && (
+                            <div className="ml-1 sm:ml-8 bg-white border border-amber-300/80 rounded-xl p-3 text-xs text-slate-800 font-semibold space-y-1 min-w-0 shadow-2xs">
+                              <span className="text-[10px] font-extrabold uppercase text-amber-800 flex items-center gap-1 tracking-wider">
+                                <span>💡</span> <span>Real-World Example / Illustration:</span>
+                              </span>
+                              <p className="break-words leading-relaxed text-slate-700">{step.example}</p>
+                            </div>
+                          )}
+
+                          <div className="pt-1 flex items-center justify-end">
+                            <button
+                              onClick={() => {
+                                setActiveChapterTab("topic_quiz");
+                                const container = document.getElementById("topic_quiz_container");
+                                if (container) {
+                                  container.scrollIntoView({ behavior: "smooth" });
+                                }
+                              }}
+                              className="text-xs font-bold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-200 transition cursor-pointer flex items-center gap-1.5"
+                            >
+                              <span>📝</span>
+                              <span>Practice 10 MCQs + 10 Assertion-Reason for Topic {idx + 1}</span>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="bg-white border-2 border-slate-200/90 rounded-2xl p-6 text-center space-y-3">
+                <span className="text-3xl block">📖</span>
+                <h3 className="font-extrabold text-slate-800 text-sm">Interactive Study Chapter</h3>
+                <p className="text-xs text-slate-600">Switch to the Games & Visual Tools tab below to practice!</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 2: INTERACTIVE GAMES & VISUAL TOOLS */}
+        {activeChapterTab === "interactive" && (
+          <div className="space-y-4 animate-fade-in">
+            {/* Render Geometry Interactive Studio directly for Grade 6 Geometry */}
+            {selectedChapter.id === "geometry" && (
+              <div className="space-y-6">
+                <Grade6TopicExplorer defaultTab="geometry" hideTabSwitcher={true} />
+                <GeometryExplorer />
+              </div>
+            )}
+
+            {/* Render Fraction Operations Studio for Grade 6 Chapter 7 Fractions */}
+            {selectedChapter.id === "fractions" && (
+              <FractionOperationsExplorer />
+            )}
+
+            {/* Render Number Patterns & Sequences Topic Hub */}
+            {selectedChapter.id === "patterns" && (
+              <Grade6TopicExplorer defaultTab="patterns" hideTabSwitcher={true} />
+            )}
+
+            {/* Render Official Grade 6 Mathematics Term Exam Question Paper */}
+            {selectedChapter.id === "g6_exam_paper" && (
+              <Grade6MathsPaper />
+            )}
+
+            {/* Render Interactive Probability Simulator for Grade 9 Probability */}
+            {selectedChapter.id === "g9_probability" && (
+              <ProbabilityTopic />
+            )}
+
+            {/* Render Interactive Algebraic Identities Explorer for Grade 9 Polynomials */}
+            {selectedChapter.id === "g9_polynomials" && (
+              <AlgebraicIdentitiesTopic />
+            )}
+
+            {/* Render Interactive Cartesian Plane Canvas for Grade 9 Coordinate Geometry */}
+            {selectedChapter.id === "g9_coordinate" && (
+              <CoordinateGeometryTopic />
+            )}
+
+            {/* Render Chapter-Specific Visual Studio for all other chapters */}
+            {!["geometry", "fractions", "patterns", "g6_exam_paper", "g9_probability", "g9_polynomials", "g9_coordinate"].includes(selectedChapter.id) && (
+              <div className="space-y-4" id="chapter_visual_studio_wrapper">
+                <VisualTools
+                  chapterId={selectedChapter.id}
+                  onActionComplete={onActionComplete}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 3: TRIVIA & SPECIAL NOTES */}
+        {activeChapterTab === "notes" && (
+          <div className="space-y-4 animate-fade-in">
             {/* Dedicated Interactive Student Guide for Longitude & IST */}
             {selectedChapter.id === "g6_soc_locating_places" && (
               <IstStudentExplainer />
             )}
 
-            {/* Core Definitions & Key Concepts Section */}
-            {lesson.keyFormulas && lesson.keyFormulas.length > 0 && (
-              <div className="space-y-4 min-w-0">
-                <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
-                  <div className="w-2 h-5 bg-sky-600 rounded-full shrink-0" />
-                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-wide">
-                    📖 Key Definitions & Core Concepts ({lesson.keyFormulas.length})
-                  </h3>
+            {/* Sandharba Vakyalu (సందర్భ సహిత వ్యాఖ్యలు) Section for Telugu Lessons */}
+            {lesson?.sandharbaVakyalu && lesson.sandharbaVakyalu.length > 0 && (
+              <div className="bg-amber-50/80 border-2 border-amber-200/90 rounded-2xl p-5 space-y-4 shadow-xs" id="sandharba_vakyalu_box">
+                <div className="flex items-center justify-between border-b border-amber-200/70 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">📜</span>
+                    <div>
+                      <h4 className="text-sm font-black text-amber-950 tracking-wide">
+                        సందర్భ సహిత వ్యాఖ్యలు (Sandharba Vakyalu)
+                      </h4>
+                      <p className="text-[11px] text-amber-800 font-medium">
+                        పాఠంలోని ముఖ్యమైన వాక్యాలు, కవి పరిచయం, సందర్భం మరియు భావం
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-black uppercase bg-amber-200/60 text-amber-900 px-2.5 py-1 rounded-full border border-amber-300">
+                    పరీక్ష ప్రత్యేకం
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 min-w-0 w-full">
-                  {lesson.keyFormulas.map((kf, idx) => (
-                    <div key={idx} className="bg-slate-50/80 border border-slate-200 hover:border-sky-300 transition rounded-xl p-3.5 sm:p-4 space-y-3 flex flex-col justify-between shadow-2xs min-w-0 max-w-full">
-                      <div className="space-y-2 min-w-0">
-                        <div className="flex items-center justify-between gap-2 min-w-0">
-                          <h4 className="text-xs md:text-sm font-black text-slate-900 flex items-center gap-1.5 break-words min-w-0">
-                            <span className="w-1.5 h-1.5 bg-sky-500 rounded-full shrink-0" />
-                            {kf.name}
-                          </h4>
+                <div className="space-y-4">
+                  {lesson.sandharbaVakyalu.map((item, idx) => (
+                    <div key={idx} className="bg-white border border-amber-200 rounded-xl p-4 space-y-3 shadow-2xs">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="text-xs sm:text-sm font-black text-emerald-900 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-lg flex-1">
+                          "{item.vakyam}"
                         </div>
-                        {kf.formula && (
-                          <div className="bg-sky-50 border border-sky-200/80 rounded-lg px-2.5 py-1 text-[11px] font-extrabold text-sky-900 font-mono break-words min-w-0">
-                            {kf.formula}
-                          </div>
-                        )}
-                        {/* Interactive or Illustrated Visual Diagram */}
-                        {kf.diagramType && (
-                          <div className="pt-1 max-w-full overflow-hidden">
-                            <DefinitionDiagram diagramType={kf.diagramType} title={kf.name} />
-                          </div>
-                        )}
-                        {kf.image && (
-                          <div className="pt-1 overflow-hidden rounded-xl border border-slate-200 max-w-full">
-                            <img src={kf.image} alt={kf.name} className="w-full h-auto object-cover max-h-48" referrerPolicy="no-referrer" />
-                          </div>
-                        )}
-                        <p className="text-xs text-slate-700 font-medium leading-relaxed pt-0.5 whitespace-pre-line break-words min-w-0">
-                          {kf.explanation}
-                        </p>
+                        <button
+                          onClick={() => playTeluguSpeech(`${item.vakyam}. ${item.sandharbam}. ${item.bhavam}`)}
+                          className="flex items-center gap-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-2.5 py-1.5 rounded-lg text-[10px] shrink-0 border border-amber-300 transition cursor-pointer active:scale-95"
+                        >
+                          <span>🔊 వినండి</span>
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-1">
+                        <div className="bg-amber-50/50 p-2.5 rounded-lg border border-amber-100 space-y-0.5">
+                          <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
+                            కవి / మూలం:
+                          </span>
+                          <p className="font-bold text-slate-800">{item.kavi}</p>
+                        </div>
+                        <div className="bg-amber-50/50 p-2.5 rounded-lg border border-amber-100 space-y-0.5">
+                          <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
+                            సందర్భం:
+                          </span>
+                          <p className="font-semibold text-slate-700 leading-relaxed">{item.sandharbam}</p>
+                        </div>
+                        <div className="bg-amber-50/50 p-2.5 rounded-lg border border-amber-100 space-y-0.5">
+                          <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
+                            భావం:
+                          </span>
+                          <p className="font-semibold text-slate-700 leading-relaxed">{item.bhavam}</p>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -1604,141 +1833,36 @@ export default function LessonSection({
               </div>
             )}
 
-            {/* Step-by-Step Learning Topics */}
-            {lesson.steps && lesson.steps.length > 0 && (
-              <div className="space-y-4 pt-2 min-w-0">
-                <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
-                  <div className="w-2 h-5 bg-amber-500 rounded-full shrink-0" />
-                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-wide">
-                    💡 Key Topics & Examples
-                  </h3>
-                </div>
-
-                <div className="space-y-3 min-w-0">
-                  {lesson.steps.map((step, idx) => (
-                    <div key={idx} className="bg-amber-50/40 border border-amber-200/80 rounded-xl p-3.5 sm:p-4 space-y-2 min-w-0">
-                      <h4 className="text-xs md:text-sm font-extrabold text-amber-950 flex items-center gap-2 min-w-0 break-words">
-                        <span className="w-5 h-5 bg-amber-500 text-white rounded-full flex items-center justify-center text-[10px] font-black shrink-0">
-                          {idx + 1}
-                        </span>
-                        {step.title}
-                      </h4>
-                      <p className="text-xs text-slate-700 font-medium leading-relaxed whitespace-pre-line pl-2 sm:pl-7 break-words min-w-0">
-                        {step.desc}
-                      </p>
-                      {step.example && (
-                        <div className="ml-2 sm:ml-7 bg-white border border-amber-300/60 rounded-lg p-2.5 text-xs text-slate-800 font-semibold space-y-0.5 min-w-0">
-                          <span className="text-[10px] font-extrabold uppercase text-amber-800 block tracking-wider">💡 Real-World Example:</span>
-                          <p className="break-words">{step.example}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Render Chapter-Specific Visual Studio for all other chapters */}
-        {!["geometry", "fractions", "patterns", "g6_exam_paper", "g9_probability", "g9_polynomials", "g9_coordinate"].includes(selectedChapter.id) && !selectedChapter.id.startsWith("g1_") && (
-          <div className="space-y-4" id="chapter_visual_studio_wrapper">
-            <VisualTools
-              chapterId={selectedChapter.id}
-              onActionComplete={onActionComplete}
-            />
-          </div>
-        )}
-
-
-
-        {/* Sandharba Vakyalu (సందర్భ సహిత వ్యాఖ్యలు) Section for Telugu Lessons */}
-        {lesson?.sandharbaVakyalu && lesson.sandharbaVakyalu.length > 0 && (
-          <div className="bg-amber-50/80 border-2 border-amber-200/90 rounded-2xl p-5 space-y-4 shadow-xs" id="sandharba_vakyalu_box">
-            <div className="flex items-center justify-between border-b border-amber-200/70 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">📜</span>
-                <div>
-                  <h4 className="text-sm font-black text-amber-950 tracking-wide">
-                    సందర్భ సహిత వ్యాఖ్యలు (Sandharba Vakyalu)
+            {/* Indian History / Trivia Section */}
+            {lesson?.didYouKnow && (
+              <div className="bg-natural-cream border border-natural-beige-dark/60 rounded-2xl p-5 relative overflow-hidden" id="did_you_know_box">
+                <div className="absolute -right-2 -bottom-2 text-6xl opacity-10 select-none">🇮🇳</div>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <h4 className="text-xs font-black text-natural-terracotta uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles size={14} className="text-natural-terracotta animate-pulse" /> Did You Know?
                   </h4>
-                  <p className="text-[11px] text-amber-800 font-medium">
-                    పాఠంలోని ముఖ్యమైన వాక్యాలు, కవి పరిచయం, సందర్భం మరియు భావం
-                  </p>
-                </div>
-              </div>
-              <span className="text-[10px] font-black uppercase bg-amber-200/60 text-amber-900 px-2.5 py-1 rounded-full border border-amber-300">
-                పరీక్ష ప్రత్యేకం
-              </span>
-            </div>
-
-            <div className="space-y-4">
-              {lesson.sandharbaVakyalu.map((item, idx) => (
-                <div key={idx} className="bg-white border border-amber-200 rounded-xl p-4 space-y-3 shadow-2xs">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="text-xs sm:text-sm font-black text-emerald-900 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-lg flex-1">
-                      "{item.vakyam}"
-                    </div>
-                    <button
-                      onClick={() => playTeluguSpeech(`${item.vakyam}. ${item.sandharbam}. ${item.bhavam}`)}
-                      className="flex items-center gap-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-2.5 py-1.5 rounded-lg text-[10px] shrink-0 border border-amber-300 transition cursor-pointer active:scale-95"
+                  {(selectedChapter.id.startsWith("g1_") || selectedChapter.id.startsWith("g6_tel_")) && (
+                    <button 
+                      onClick={() => {
+                        if (selectedChapter.id.includes("tel")) {
+                          playTeluguSpeech(lesson.didYouKnow);
+                        } else {
+                          playSpeechWithLang(lesson.didYouKnow, "en-US");
+                        }
+                      }}
+                      className="flex items-center gap-1 bg-natural-terracotta/10 hover:bg-natural-terracotta/20 text-natural-terracotta font-bold px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wide cursor-pointer transition active:scale-95 border border-natural-terracotta/20"
                     >
-                      <span>🔊 వినండి</span>
+                      <span>🔊 Read Aloud</span>
                     </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-1">
-                    <div className="bg-amber-50/50 p-2.5 rounded-lg border border-amber-100 space-y-0.5">
-                      <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
-                        కవి / మూలం:
-                      </span>
-                      <p className="font-bold text-slate-800">{item.kavi}</p>
-                    </div>
-                    <div className="bg-amber-50/50 p-2.5 rounded-lg border border-amber-100 space-y-0.5">
-                      <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
-                        సందర్భం:
-                      </span>
-                      <p className="font-semibold text-slate-700 leading-relaxed">{item.sandharbam}</p>
-                    </div>
-                    <div className="bg-amber-50/50 p-2.5 rounded-lg border border-amber-100 space-y-0.5">
-                      <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
-                        భావం:
-                      </span>
-                      <p className="font-semibold text-slate-700 leading-relaxed">{item.bhavam}</p>
-                    </div>
-                  </div>
+                  )}
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Indian History / Trivia Section */}
-        <div className="bg-natural-cream border border-natural-beige-dark/60 rounded-2xl p-5 relative overflow-hidden" id="did_you_know_box">
-          <div className="absolute -right-2 -bottom-2 text-6xl opacity-10 select-none">🇮🇳</div>
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <h4 className="text-xs font-black text-natural-terracotta uppercase tracking-wider flex items-center gap-1.5">
-              <Sparkles size={14} className="text-natural-terracotta animate-pulse" /> Did You Know?
-            </h4>
-            {(selectedChapter.id.startsWith("g1_") || selectedChapter.id.startsWith("g6_tel_")) && (
-              <button 
-                onClick={() => {
-                  if (selectedChapter.id.includes("tel")) {
-                    playTeluguSpeech(lesson.didYouKnow);
-                  } else {
-                    playSpeechWithLang(lesson.didYouKnow, "en-US");
-                  }
-                }}
-                className="flex items-center gap-1 bg-natural-terracotta/10 hover:bg-natural-terracotta/20 text-natural-terracotta font-bold px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wide cursor-pointer transition active:scale-95 border border-natural-terracotta/20"
-              >
-                <span>🔊 Read Aloud</span>
-              </button>
+                <p className="text-xs text-natural-dark leading-relaxed">
+                  {lesson.didYouKnow}
+                </p>
+              </div>
             )}
           </div>
-          <p className="text-xs text-natural-dark leading-relaxed">
-            {lesson.didYouKnow}
-          </p>
-        </div>
+        )}
       </div>
     </div>
   );

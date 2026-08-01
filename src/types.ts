@@ -23,7 +23,7 @@ export interface LessonContent {
   keyFormulas: { name: string; formula: string; explanation: string; image?: string; diagramType?: string }[];
   steps: { title: string; desc: string; example: string }[];
   didYouKnow: string;
-  visualContext: string;
+  visualContext?: string;
   sandharbaVakyalu?: SandharbaVakyam[];
 }
 
@@ -34,6 +34,22 @@ export interface QuizQuestion {
   correctAnswer: string; // "A" | "B" | "C" | "D"
   hint: string;
   explanation: string;
+}
+
+export interface AssertionReasonQuestion {
+  id: string;
+  assertion: string;
+  reason: string;
+  options: string[];
+  correctAnswer: "A" | "B" | "C" | "D" | string;
+  explanation: string;
+}
+
+export interface TopicQuizData {
+  chapterId: string;
+  chapterTitle: string;
+  mcqs: QuizQuestion[];
+  assertionReasons: AssertionReasonQuestion[];
 }
 
 export interface Worksheet {

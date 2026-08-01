@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { HelpCircle, ChevronRight, ChevronLeft, CheckCircle2, XCircle, Award, RotateCcw, MessageSquare, Loader, Bookmark } from "lucide-react";
 import { QuizQuestion, Worksheet } from "../types";
+import TopicQuizView from "./TopicQuizView";
 
 interface PracticeQuizProps {
   chapterId: string;
@@ -28,8 +29,8 @@ export default function PracticeQuiz({
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
   const [retryAttempt, setRetryAttempt] = useState<number>(0);
 
-  // Mode Selection: selection, mcq_in_one (JEE style online exam), cbse_exam (traditional step-by-step)
-  const [quizMode, setQuizMode] = useState<"selection" | "mcq_in_one" | "cbse_exam">("selection");
+  // Mode Selection: selection, topic_quiz (5 MCQs + 5 Assertion-Reason), mcq_in_one (JEE style online exam), cbse_exam (traditional step-by-step)
+  const [quizMode, setQuizMode] = useState<"selection" | "topic_quiz" | "mcq_in_one" | "cbse_exam">("topic_quiz");
   const [showMcqHints, setShowMcqHints] = useState<Record<number, boolean>>({});
 
   // JEE Mode specific states
@@ -377,7 +378,15 @@ export default function PracticeQuiz({
         )}
       </div>
 
-      {quizMode === "selection" ? (
+      {quizMode === "topic_quiz" ? (
+        <div className="p-3 sm:p-5">
+          <TopicQuizView
+            chapterId={chapterId}
+            chapterTitle={chapterTitle}
+            onQuizComplete={onQuizComplete}
+          />
+        </div>
+      ) : quizMode === "selection" ? (
         /* MODE SELECTION VIEW */
         <div className="p-6 text-center space-y-5 animate-fade-in" id="quiz_mode_selection">
           <div className="w-12 h-12 rounded-full bg-natural-cream flex items-center justify-center mx-auto text-xl border border-natural-beige-dark/60 shadow-xs">
@@ -391,6 +400,27 @@ export default function PracticeQuiz({
           </div>
 
           <div className="grid grid-cols-1 gap-3.5 max-w-sm mx-auto">
+            {/* TOPIC QUIZ BUTTON (10 MCQs + 10 Reason-Assertion) */}
+            <button
+              onClick={() => setQuizMode("topic_quiz")}
+              className="group flex flex-col items-start p-4 bg-gradient-to-br from-sky-50 to-indigo-50 hover:from-sky-100 hover:to-indigo-100 border-2 border-sky-300 rounded-2xl cursor-pointer transition-all duration-200 text-left shadow-sm hover:shadow-md relative"
+              id="btn_mode_topic_quiz"
+            >
+              <div className="flex justify-between items-center w-full">
+                <span className="text-[8px] font-black uppercase tracking-wider text-sky-800 bg-sky-200/80 px-2 py-0.5 rounded border border-sky-300">Recommended</span>
+                <span className="text-base shrink-0 group-hover:scale-110 transition">🎯</span>
+              </div>
+              <h4 className="font-black text-xs text-sky-950 mt-1.5 tracking-tight transition">
+                TOPIC QUIZ (10 MCQs + 10 Assertion & Reason)
+              </h4>
+              <p className="text-[10px] text-sky-900/80 leading-relaxed mt-1">
+                Targeted chapter knowledge test with 10 MCQs and 10 Assertion-Reason questions with instant explanations & scorecard.
+              </p>
+              <div className="mt-2.5 text-[8px] font-black text-sky-800 bg-white/80 px-2 py-0.5 rounded border border-sky-200">
+                ⚡ 10 MCQs + 10 Reason & Assertion Questions
+              </div>
+            </button>
+
             {/* MCQ IN ONE BUTTON */}
             <button
               onClick={initJeeMode}
@@ -398,11 +428,11 @@ export default function PracticeQuiz({
               id="btn_mode_mcq_in_one"
             >
               <div className="flex justify-between items-center w-full">
-                <span className="text-[8px] font-black uppercase tracking-wider text-natural-terracotta bg-natural-cream px-2 py-0.5 rounded border border-natural-terracotta/15">Mode A</span>
+                <span className="text-[8px] font-black uppercase tracking-wider text-natural-terracotta bg-natural-cream px-2 py-0.5 rounded border border-natural-terracotta/15">Full Worksheet</span>
                 <span className="text-base shrink-0 group-hover:scale-110 transition">📋</span>
               </div>
               <h4 className="font-black text-xs text-natural-dark mt-1.5 tracking-tight group-hover:text-natural-terracotta transition">
-                MCQ IN ONE
+                MCQ IN ONE (20 Questions)
               </h4>
               <p className="text-[10px] text-natural-sage leading-relaxed mt-1">
                 JEE EXAM style console. 20 questions ordered from beginner to expert. Navigate with interactive question palette and submit all.
@@ -426,7 +456,7 @@ export default function PracticeQuiz({
               id="btn_mode_cbse_exam"
             >
               <div className="flex justify-between items-center w-full">
-                <span className="text-[8px] font-black uppercase tracking-wider text-natural-primary bg-natural-cream px-2 py-0.5 rounded border border-natural-primary/15">Mode B</span>
+                <span className="text-[8px] font-black uppercase tracking-wider text-natural-primary bg-natural-cream px-2 py-0.5 rounded border border-natural-primary/15">Step-by-Step</span>
                 <span className="text-base shrink-0 group-hover:scale-110 transition">⏱️</span>
               </div>
               <h4 className="font-black text-xs text-natural-dark mt-1.5 tracking-tight group-hover:text-natural-primary transition">
