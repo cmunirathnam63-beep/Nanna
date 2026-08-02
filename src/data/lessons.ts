@@ -611,20 +611,50 @@ export const GRADE_6_SOCIALSCIENCE_CHAPTERS: Chapter[] = [
 
 export const GRADE_6_PHYSICS_CHAPTERS: Chapter[] = [
   {
-    id: "g6_phys_motion",
-    title: "🌌 Motion & Measurement of Distances",
+    id: "g6_phys_magnets",
+    title: "🧲 Chapter 4: Exploring Magnets",
     iconName: "Compass",
-    badge: "Physics Ch 1",
+    badge: "Curiosity Ch 4",
+    topicSummary: "Discovery of magnetite, magnetic vs non-magnetic materials, North and South poles, magnetic compass, attraction & repulsion.",
+    colorClass: "bg-emerald-50 hover:bg-emerald-100 border-emerald-200",
+    textColorClass: "text-emerald-700",
+    progress: 85,
+  },
+  {
+    id: "g6_phys_motion",
+    title: "🌌 Chapter 5: Measurement of Length and Motion",
+    iconName: "Compass",
+    badge: "Curiosity Ch 5",
     topicSummary: "Standard SI units of length, measuring straight and curved lines, rectilinear, circular, periodic, and rotational motion.",
     colorClass: "bg-sky-50 hover:bg-sky-100 border-sky-200",
     textColorClass: "text-sky-700",
     progress: 75,
   },
   {
+    id: "g6_phys_temp",
+    title: "🌡️ Chapter 7: Temperature and its Measurement",
+    iconName: "Flame",
+    badge: "Curiosity Ch 7",
+    topicSummary: "Understanding hot vs cold, thermal sensation, laboratory & clinical thermometers, Celsius & Kelvin scales, and body temperature.",
+    colorClass: "bg-rose-50 hover:bg-rose-100 border-rose-200",
+    textColorClass: "text-rose-700",
+    progress: 60,
+  },
+  {
+    id: "g6_phys_beyond_earth",
+    title: "🪐 Chapter 12: Beyond Earth",
+    iconName: "Sparkles",
+    badge: "Curiosity Ch 12",
+    topicSummary: "The Solar System, Sun, 8 planets, Earth, Moon phases, constellations, rotation, revolution, day & night, and seasons.",
+    colorClass: "bg-indigo-50 hover:bg-indigo-100 border-indigo-200",
+    textColorClass: "text-indigo-700",
+    progress: 50,
+  },
+  {
     id: "g6_phys_light",
     title: "💡 Light, Shadows and Reflections",
     iconName: "Sparkles",
-    badge: "Physics Ch 2",
+    badge: "Physics Extra",
     topicSummary: "Luminous sources, transparent, translucent & opaque materials, shadow formation, pinhole camera, and mirror reflection.",
     colorClass: "bg-amber-50 hover:bg-amber-100 border-amber-200",
     textColorClass: "text-amber-700",
@@ -634,21 +664,11 @@ export const GRADE_6_PHYSICS_CHAPTERS: Chapter[] = [
     id: "g6_phys_electricity",
     title: "⚡ Electricity and Circuits",
     iconName: "Ruler",
-    badge: "Physics Ch 3",
+    badge: "Physics Extra",
     topicSummary: "Electric cell (+ / - terminals), bulb filament, open vs closed circuits, electric switch, and conductors vs insulators.",
     colorClass: "bg-violet-50 hover:bg-violet-100 border-violet-200",
     textColorClass: "text-violet-700",
     progress: 80,
-  },
-  {
-    id: "g6_phys_magnets",
-    title: "🧲 Fun with Magnets",
-    iconName: "Compass",
-    badge: "Physics Ch 4",
-    topicSummary: "Discovery of magnetite, magnetic vs non-magnetic materials, North and South poles, magnetic compass, attraction & repulsion.",
-    colorClass: "bg-emerald-50 hover:bg-emerald-100 border-emerald-200",
-    textColorClass: "text-emerald-700",
-    progress: 85,
   }
 ];
 
@@ -1199,53 +1219,58 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
   },
   g6_phys_motion: {
     chapterId: "g6_phys_motion",
-    title: "🌌 Grade 6 Physics: Motion and Measurement of Distances",
-    introduction: "Measurement is a fundamental process in physics and daily life! From knowing the distance between two cities to measuring the height of a desk, standard units ensure accuracy across the world. In this chapter, we explore standard SI units of length, methods to measure straight and curved lines, and the four main types of motion: rectilinear, circular, periodic, and rotational.",
+    title: "🌌 Grade 6 Physics: Measurement of Length and Motion",
+    introduction: "Motion is everywhere around us—from flying birds and running water to moving vehicles and spinning planets! Understanding motion begins with knowing what motion means relative to a stationary reference point, and identifying how objects move in different paths.",
     keyFormulas: [
       {
-        name: "Standard Units of Length (SI Units)",
+        name: "Definition of Motion & Reference Point",
+        formula: "Motion = Change in Position with Time relative to Reference Point",
+        explanation: "An object is in Motion if its position changes continuously with time relative to a fixed reference point (like a tree, building, or road mark). If its position does NOT change over time, the object is at Rest."
+      },
+      {
+        name: "4 Fundamental Types of Motion (+ Combination)",
+        formula: "Rectilinear | Circular | Rotational | Periodic | Combination",
+        explanation: "1) Rectilinear: Moving along a straight line path.\n2) Circular: Moving along a circular path at a fixed distance from a center.\n3) Rotational: Spinning on an internal central axis without changing location.\n4) Periodic: Motion that repeats itself at equal intervals of time.\n5) Combination: Exhibiting 2 or more types of motion simultaneously."
+      },
+      {
+        name: "Standard SI Units of Length",
         formula: "1 km = 1000 m | 1 m = 100 cm | 1 cm = 10 mm",
-        explanation: "The International System of Units (SI) established the meter (m) as the standard unit of length to eliminate confusion caused by ancient non-standard units like handspan, cubit, or pace."
-      },
-      {
-        name: "Types of Motion",
-        formula: "Rectilinear + Circular + Periodic + Rotational",
-        explanation: "Rectilinear: Motion along a straight line (falling apple, march past). Circular: Motion along a circular path at a fixed distance from center (hands of clock, fan blades). Periodic: Motion that repeats itself at equal intervals of time (swing, pendulum, guitar string). Rotational: Spinning around its own axis (spinning top, Earth's rotation)."
-      },
-      {
-        name: "Measuring Curved Lines",
-        formula: "Length = Thread Along Curve ➔ Straight Scale Measurement",
-        explanation: "Curved lines cannot be measured directly with a rigid scale. A thread is placed carefully along the curve, marked at the endpoints, then stretched straight along a ruler."
+        explanation: "Standard SI unit of length is Meter (m). Conversions allow measuring micro distances (mm) up to vast geographical distances (km)."
       }
     ],
     steps: [
       {
-        title: "1. Story of Transport & Non-Standard Measurement Units",
-        desc: "In ancient times, people traveled by foot, on animals, or by boat. To measure length, they used body parts like handspan, cubit (elbow to middle fingertip), pace (footstep), and fathom (arm spread). However, because body sizes vary from person to person, these non-standard units led to inconsistent results and trade disputes.",
-        example: "A cloth measured as 5 cubits by a tall tailor might only be 4 cubits for a customer! This created the urgent need for a universal standard unit."
+        title: "1. What is Motion? Rest vs. Reference Point",
+        desc: "An object is said to be at REST if it does not change its position with time with respect to its surroundings. An object is said to be in MOTION if its position changes continuously over time relative to a stationary object (called the Reference Point).\n\n• Reference Point: A fixed object (like a roadside tree or house) used to determine if something has moved.\n• Example: When you sit in a moving bus, you are at rest relative to the passenger next to you, but in motion relative to the trees outside!",
+        example: "A car parked near a lamppost is at rest. When the driver starts the engine and moves away, its distance from the lamppost increases over time, so the car is in motion."
       },
       {
-        title: "2. Standard Units of Measurement (SI System) & Conversions",
-        desc: "In 1790, the French created a standard unit of measurement called the metric system. In 1960, scientists globally adopted the International System of Units (SI Units). The SI unit of length is the Meter (m).\n\nKey Conversions:\n• 1 kilometer (km) = 1,000 meters (m)\n• 1 meter (m) = 100 centimeters (cm)\n• 1 centimeter (cm) = 10 millimeters (mm)",
-        example: "Converting 2.5 meters to centimeters: 2.5 × 100 = 250 cm. Converting 1500 meters to kilometers: 1500 ÷ 1000 = 1.5 km."
+        title: "2. Type 1: Rectilinear Motion (Straight Line)",
+        desc: "Rectilinear motion is the movement of an object along a straight line path in one direction.\n\nKey Examples:\n• Soldiers marching on a straight parade ground.\n• A sprinter running on a straight 100-meter track.\n• An apple or stone falling freely straight down from a tree branch.\n• A train moving on a straight railway track.",
+        example: "When a marble rolls down a straight inclined ramp without veering left or right, it exhibits pure rectilinear motion."
       },
       {
-        title: "3. Rules for Accurate Measurement & Parallax Error",
-        desc: "To measure length accurately with a ruler:\n1. Place the scale along the length of the object in contact with it.\n2. If the zero mark is broken or worn out, start from a clear full mark (e.g., 1.0 cm) and subtract it from the final reading.\n3. Position your eye directly above the point being measured to avoid 'parallax error' (reading errors caused by looking at an angle).",
-        example: "If starting measurement at 1.0 cm and the end mark reads 14.3 cm, the actual length = 14.3 cm - 1.0 cm = 13.3 cm."
+        title: "3. Type 2: Circular Motion (Round & Round Path)",
+        desc: "Circular motion occurs when an object moves along a circular path such that its distance from a fixed center point remains constant at all times.\n\nKey Examples:\n• The tip of the hand of a clock moving around the dial.\n• A stone tied to a thread and swung around in a circle.\n• Blades of a ceiling fan turning around its motor hub.\n• A bull or horse moving around a central water wheel.",
+        example: "The tip of a second hand on a watch moves in circular motion because its distance from the central pin never changes!"
       },
       {
-        title: "4. Measuring the Length of a Curved Line",
-        desc: "A rigid ruler cannot bend around a curved line (like a river on a map or a curved boundary). To measure a curved line:\n1. Use a flexible thread or string and place it gently along the exact path of the curved line.\n2. Put knot marks on the thread at the start and end points.\n3. Stretch the thread straight along a standard meter ruler to read the true length.",
-        example: "Using a thread along a curved coastline on a map and stretching it along a centimeter scale gives an exact length of 18.5 cm."
+        title: "4. Type 3: Rotational Motion (Spinning on an Axis)",
+        desc: "Rotational motion occurs when an object turns or spins continuously around its own internal central line called an AXIS, without moving from its location as a whole.\n\nKey Examples:\n• A spinning top (lattu) spinning on its tip.\n• Potter's wheel spinning to shape clay pots.\n• Earth spinning on its axis once every 24 hours (causing day & night).\n• A Ferris wheel turning on its central axle.",
+        example: "Difference between Circular and Rotational: In circular motion, an object travels along a circular path (e.g., Earth around Sun). In rotational motion, the object spins around its own center (e.g., Earth turning on its axis)."
       },
       {
-        title: "5. Types of Motion in Everyday Life",
-        desc: "Motion is the change in position of an object over time with respect to its surroundings. Motion is classified into 4 major types:\n• Rectilinear Motion: Movement along a straight line (falling apple, marching soldiers, vehicle on a straight road).\n• Circular Motion: Object moves along a circular path at a fixed distance from a center point (hands of a clock, blades of a ceiling fan).\n• Periodic Motion: Motion that repeats itself at equal intervals of time (swing, pendulum, vibrating guitar string).\n• Rotational Motion: Spinning on its own axis (spinning top, Earth turning on its axis).",
-        example: "A rolling bowling ball exhibits combination motion: rectilinear motion as it travels down the lane while simultaneously spinning in rotational motion!"
+        title: "5. Type 4: Periodic Motion (To-and-Fro at Regular Intervals)",
+        desc: "Periodic motion is a motion that repeats itself at regular, fixed intervals of time (equal time periods).\n\nKey Examples:\n• A pendulum of a clock swinging back and forth.\n• A child swinging on a playground swing.\n• The pluck and vibration of a guitar string or drum membrane.\n• Heartbeats in a healthy human body (~72 times per minute).\n• Earth's revolution around the Sun (repeats every 365.25 days).",
+        example: "A grandfather clock pendulum takes exactly 1 second to swing left to right and 1 second to swing back. Because the time interval is fixed, it is periodic motion!"
+      },
+      {
+        title: "6. Type 5: Combination Motion (Multiple Motions Together)",
+        desc: "In everyday life, many objects perform two or more different types of motion at the exact same time!\n\nKey Examples:\n• Rolling Bicycle Wheel / Bowling Ball: Moves forward in Rectilinear motion while simultaneously turning in Rotational motion.\n• Earth: Spins on its axis (Rotational) while orbiting the Sun (Circular & Periodic).\n• Sewing Machine Needle: Hand wheel turns in Rotational motion while the needle moves up and down in Periodic motion.",
+        example: "A football kicked across a straight pitch rolls forward (rectilinear + rotational) while spinning!"
       }
     ],
-    didYouKnow: "The standard meter was originally defined in 1799 in France as one ten-millionth of the distance from the equator to the North Pole along a meridian!",
+    didYouKnow: "Light travels in straight lines (rectilinear motion) at an astonishing speed of 3,000,000 km per second—fast enough to circle planet Earth 7.5 times in just one second!",
     visualContext: "numberline"
   },
   g6_phys_light: {
@@ -1379,6 +1404,78 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
       }
     ],
     didYouKnow: "Planet Earth behaves like a giant bar magnet! Its internal magnetic field shields our atmosphere from harmful solar wind radiation and produces spectacular northern lights (Aurora Borealis) near the polar regions.",
+    visualContext: "numberline"
+  },
+  g6_phys_temp: {
+    chapterId: "g6_phys_temp",
+    title: "🌡️ Grade 6 Science: Chapter 7 - Temperature and its Measurement",
+    introduction: "Temperature is the quantitative measure of how hot or cold an object is. Our sense of touch can be unreliable—what feels warm to one hand may feel cool to another! In this chapter, we explore thermal energy, clinical and laboratory thermometers, reading temperature scales in Celsius (°C) and Kelvin (K), normal human body temperature (37°C or 98.6°F), and precautions when using thermometers.",
+    keyFormulas: [
+      {
+        name: "Temperature Scales & Relation",
+        formula: "K = °C + 273.15 | Normal Body Temp = 37°C (98.6°F)",
+        explanation: "The Celsius scale (°C) sets 0°C as the freezing point of water and 100°C as the boiling point. The SI unit of temperature is Kelvin (K). Normal human body temperature is 37°C."
+      },
+      {
+        name: "Clinical vs Laboratory Thermometer",
+        formula: "Clinical: 35°C to 42°C (Has Kink) | Laboratory: -10°C to 110°C (No Kink)",
+        explanation: "Clinical thermometers have a constriction ('kink') near the bulb that prevents mercury level from falling automatically when taken out of a patient's mouth. Laboratory thermometers have no kink and must be read while immersed in the substance!"
+      }
+    ],
+    steps: [
+      {
+        title: "1. Why Sense of Touch is Unreliable",
+        desc: "If you place one hand in cold water and the other in warm water for 1 minute, and then dip both hands into lukewarm water, the lukewarm water feels warm to the cold hand but cool to the warm hand! This proves our sense of touch cannot accurately determine temperature.",
+        example: "A thermometer provides an objective, accurate numerical value for hotness or coldness."
+      },
+      {
+        title: "2. Structure & Working of a Thermometer",
+        desc: "A liquid-in-glass thermometer consists of a long narrow uniform glass tube with a bulb at one end containing mercury or colored alcohol. As temperature rises, the liquid expands and moves up the calibrated capillary tube.",
+        example: "Modern digital thermometers use thermistor sensors instead of mercury to eliminate toxic mercury spill risks!"
+      },
+      {
+        title: "3. Precautions when Reading Thermometers",
+        desc: "• Wash clinical thermometer with an antiseptic solution before and after use.\n• Ensure mercury level is below 35°C before taking body temperature.\n• Read the temperature keeping the line of sight level with the top of the mercury column.\n• Handle with care—glass can break if hit against a hard object!",
+        example: "Never hold the thermometer by its bulb while reading it!"
+      }
+    ],
+    didYouKnow: "Galileo Galilei invented the first primitive water thermoscope in 1593! Anders Celsius introduced the centigrade scale in 1742.",
+    visualContext: "numberline"
+  },
+  g6_phys_beyond_earth: {
+    chapterId: "g6_phys_beyond_earth",
+    title: "🪐 Grade 6 Science: Chapter 12 - Beyond Earth",
+    introduction: "Looking up at the night sky fills us with wonder! Earth is a tiny blue planet floating in the vastness of space. In this chapter, we explore celestial bodies including the Sun, Moon, 8 planets of our Solar System, constellations, phases of the Moon, satellite motions, Earth's rotation (causing Day and Night), and Earth's revolution (causing Seasons).",
+    keyFormulas: [
+      {
+        name: "Earth's Motions & Phenomena",
+        formula: "Rotation = 24 Hours (Day/Night) | Revolution = 365.25 Days (Seasons)",
+        explanation: "Rotation: Earth spins on its axis once every 24 hours from West to East, causing day and night. Revolution: Earth orbits the Sun in an elliptical path every 365¼ days, causing seasonal variations."
+      },
+      {
+        name: "Order of Planets from the Sun",
+        formula: "Mercury ➔ Venus ➔ Earth ➔ Mars ➔ Jupiter ➔ Saturn ➔ Uranus ➔ Neptune",
+        explanation: "Mnemonic: 'My Very Excellent Mother Just Served Us Noodles'. Inner Rocky Planets: Mercury, Venus, Earth, Mars. Outer Gas/Ice Giants: Jupiter, Saturn, Uranus, Neptune."
+      }
+    ],
+    steps: [
+      {
+        title: "1. The Sun & Solar System Family",
+        desc: "The Sun is a massive glowing star of hot gases situated at the center of the Solar System. Its immense gravity holds 8 planets, dwarf planets (like Pluto), moons, asteroids, and comets in orbit.",
+        example: "Sunlight takes approximately 8 minutes and 20 seconds to travel 150 million kilometers to reach Earth."
+      },
+      {
+        title: "2. Phases of the Moon",
+        desc: "The Moon is Earth's natural satellite that orbits us every ~29.5 days. Because the Moon reflects sunlight, its visible shape appears to change daily—from New Moon (Amavasya) to Waxing Crescent, First Quarter, Gibbous, Full Moon (Poornima), and Waning Crescent.",
+        example: "On New Moon night, the Moon is situated between Earth and Sun, so its illuminated side faces away from Earth!"
+      },
+      {
+        title: "3. Stars & Constellations in the Night Sky",
+        desc: "Constellations are recognizable patterns formed by groups of stars in the night sky. Famous examples include Ursa Major (Great Bear / Saptarishi), Orion (The Hunter), and Cassiopeia. The Pole Star (Polaris) sits directly above Earth's North Pole and stays fixed in position.",
+        example: "Ancient navigators used the Saptarishi constellation to locate the Pole Star and determine the North direction at night!"
+      }
+    ],
+    didYouKnow: "Olympus Mons on Mars is the largest volcano in the entire Solar System—nearly 3 times taller than Mount Everest!",
     visualContext: "numberline"
   },
   g9_maps_location: {
@@ -2209,7 +2306,7 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
       }
     ],
     didYouKnow: "J.J. Thomson won the Nobel Prize in Physics in 1906 for discovering the electron, and his son George Paget Thomson won the Nobel Prize in 1937 for proving electrons behave as waves!",
-    visualContext: "typesofnumbers"
+    visualContext: "chemistry_inside_atom"
   },
   g9_chem_matter: {
     chapterId: "g9_chem_matter",
@@ -2250,48 +2347,73 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
       }
     ],
     didYouKnow: "Scientists have discovered 5 states of matter: Solid, Liquid, Gas, Plasma (super hot ionized gas), and Bose-Einstein Condensate (BEC) formed at ultra-low temperatures near absolute zero (-273.15°C)!",
-    visualContext: "typesofnumbers"
+    visualContext: "chemistry_matter"
   },
   g9_chem_atoms: {
     chapterId: "g9_chem_atoms",
-    title: "⚛️ Grade 9 Chemistry: Atoms and Molecules",
-    introduction: "In this chapter, we learn how ancient philosophers and modern scientists discovered that matter is composed of indivisible atoms and molecules. We master the Laws of Chemical Combination, chemical formulas, molecular mass, and the mole concept!",
+    title: "⚛️ Grade 9 Chemistry Chapter 3: Atoms and Molecules",
+    introduction: "In Chapter 3: Atoms and Molecules, we master the fundamental laws governing matter and chemical reactions. We explore the Laws of Chemical Combination, Dalton's Atomic Theory, Atomic Mass Units (u), Polyatomic Ions, Writing Chemical Formulas via the Criss-Cross Method, Molecular Mass, and the Mole Concept with Avogadro's Constant!",
     keyFormulas: [
       {
-        name: "Law of Conservation of Mass & Definite Proportions",
-        formula: "Mass of Reactants = Mass of Products | Element ratio by mass is constant",
-        explanation: "Antoine Lavoisier & Joseph Proust established that mass is neither created nor destroyed, and elements combine in fixed integer mass ratios."
+        name: "Law of Conservation of Mass",
+        formula: "Mass of Reactants = Mass of Products",
+        explanation: "Discovered by Antoine Lavoisier. Matter is neither created nor destroyed during a chemical reaction. Example: 10g AgNO₃ + 5.85g NaCl → 14.35g AgCl + 1.5g NaNO₃."
       },
       {
-        name: "Avogadro Constant & Mole Concept",
-        formula: "1 Mole = 6.022 × 10²³ particles | Moles n = Given Mass (m) / Molar Mass (M)",
-        explanation: "1 mole of any substance contains Avogadro's number of particles and has mass equal to its relative atomic/molecular mass in grams."
+        name: "Law of Constant (Definite) Proportions",
+        formula: "Mass Ratio of Elements = Fixed Constant Ratio",
+        explanation: "Stated by Joseph Proust. In a chemical compound, elements are always present in definite proportions by mass. Pure water (H₂O) is always 1:8 Hydrogen to Oxygen by mass."
+      },
+      {
+        name: "Atomic Mass Unit (u)",
+        formula: "1 u = (1/12) × Mass of 1 Carbon-12 Atom",
+        explanation: "1 u = 1.66 × 10⁻²⁴ grams. Standard reference scale used by IUPAC to measure relative atomic masses."
+      },
+      {
+        name: "Molecular Mass & Formula Unit Mass",
+        formula: "Molecular Mass = ∑ (Atom Count × Atomic Mass of Element)",
+        explanation: "Sum of atomic masses of all atoms in a molecule. Example: H₂SO₄ = (2×1) + (1×32) + (4×16) = 98 u."
+      },
+      {
+        name: "The Mole Concept & Avogadro Constant",
+        formula: "n = m / M  |  N = n × N_A (where N_A = 6.022 × 10²³ particles/mol)",
+        explanation: "1 mole of any substance contains 6.022 × 10²³ particles (atoms, molecules, or ions) and has mass equal to its molar mass in grams."
       }
     ],
     steps: [
       {
-        title: "1. Laws of Chemical Combination & Dalton's Atomic Theory",
-        desc: "1. Law of Conservation of Mass: Mass of reactants = Mass of products.\n2. Law of Constant Proportions: Pure water (H₂O) always contains Hydrogen and Oxygen in 1:8 mass ratio.\n3. Dalton's Atomic Theory: All matter consists of tiny indivisible particles called atoms.",
-        example: "In 18g of pure water (H₂O), there are 2g of Hydrogen and 16g of Oxygen (1:8 mass ratio)."
+        title: "1. Laws of Chemical Combination (Mass Conservation & Definite Proportions)",
+        desc: "• Law 1 (Conservation of Mass): Stated by Antoine Lavoisier in 1789. In any chemical transformation, total mass remains constant (Mass of Reactants = Mass of Products).\n• Law 2 (Constant Proportions): Stated by Joseph Proust in 1799. A pure chemical compound always contains the exact same elements combined together in fixed proportions by mass, regardless of source or method of preparation.\n• Example: Water (H₂O) always yields 1g Hydrogen for every 8g Oxygen (1:8 by mass). Ammonia (NH₃) is always 14:3 Nitrogen to Hydrogen by mass.",
+        example: "Decomposing 9g of pure water (H₂O) yields exactly 1g of Hydrogen gas and 8g of Oxygen gas!"
       },
       {
-        title: "2. Atomic Mass Unit (u) & Chemical Formulas",
-        desc: "One atomic mass unit (1 u) is defined as a mass equal to exactly 1/12th the mass of one Carbon-12 atom. Chemical formulas are written using valency criss-cross method.",
-        example: "Magnesium Chloride: Mg (valency 2) and Cl (valency 1) -> Criss-cross gives MgCl₂."
+        title: "2. Dalton's Atomic Theory & Modern Atomic Symbols",
+        desc: "John Dalton proposed his atomic theory in 1808 based on the laws of chemical combination:\n1. All matter is made of microscopic, indivisible particles called atoms.\n2. Atoms of a given element are identical in mass and chemical properties.\n3. Atoms of different elements have different masses and chemical properties.\n4. Atoms combine in ratios of small whole numbers to form compounds.\n5. Atoms cannot be created or destroyed in a chemical reaction.\n• Modern IUPAC Symbols: Berzelius suggested using one or two letters derived from English or Latin names (e.g. Hydrogen = H, Sodium = Na from Natrium, Potassium = K from Kalium, Iron = Fe from Ferrum, Gold = Au from Aurum).",
+        example: "Iron is symbolized as 'Fe' from its Latin name Ferrum; Sodium is 'Na' from Natrium."
       },
       {
-        title: "3. Molecular Mass & Formula Unit Mass",
-        desc: "Molecular mass is the sum of atomic masses of all atoms present in a molecule.",
-        example: "Molecular mass of H₂SO₄ = (2 × 1) + (1 × 32) + (4 × 16) = 2 + 32 + 64 = 98 u."
+        title: "3. Atomic Mass Unit (u) & Relative Atomic Mass",
+        desc: "• Atomic Mass Unit (u): Defined as a mass equal to exactly 1/12th the mass of one Carbon-12 atom (¹²C).\n• Relative Atomic Mass: The average mass of an atom of the element compared to 1/12th the mass of a Carbon-12 atom.\n• Standard Atomic Masses to Remember:\n  H = 1 u, C = 12 u, N = 14 u, O = 16 u, Na = 23 u, Mg = 24 u, S = 32 u, Cl = 35.5 u, K = 39 u, Ca = 40 u, Fe = 56 u.",
+        example: "1 atom of Oxygen has a relative mass of 16 u, meaning it is 16 times heavier than 1/12th of a C-12 atom."
       },
       {
-        title: "4. The Mole Concept & Avogadro's Number",
-        desc: "1 mole of a substance = 6.022 × 10²³ particles (atoms, molecules, or ions). Molar mass = mass of 1 mole in grams.",
-        example: "Given 54g of H₂O (Molar Mass = 18g/mol): Number of moles = 54 / 18 = 3 moles = 3 × 6.022 × 10²³ molecules."
+        title: "4. Molecules, Ions & Polyatomic Valency",
+        desc: "• Molecule: A group of two or more atoms chemically bonded together (e.g. Element molecules: O₂, N₂, P₄, S₈; Compound molecules: H₂O, CO₂, NH₃).\n• Ion: An atom or group of atoms carrying a net electric charge. Positive ions = Cations (Na⁺, Ca²⁺, Al³⁺); Negative ions = Anions (Cl⁻, O²⁻, SO₄²⁻).\n• Polyatomic Ions: Ions composed of more than one atom (e.g. Ammonium NH₄⁺, Carbonate CO₃²⁻, Sulphate SO₄²⁻, Nitrate NO₃⁻, Phosphate PO₄³⁻, Hydroxide OH⁻).",
+        example: "In Ammonium Sulphate (NH₄)₂SO₄, the cation is polyatomic NH₄⁺ (valency 1) and anion is polyatomic SO₄²⁻ (valency 2)."
+      },
+      {
+        title: "5. Writing Chemical Formulas via the Criss-Cross Method",
+        desc: "To write the chemical formula of a compound:\n1. Write the symbols of Cation (+) on left and Anion (-) on right.\n2. Write the valency (charge without sign) beneath each symbol.\n3. Criss-cross the valency numbers as subscripts to the opposite symbol.\n4. Enclose polyatomic ions in brackets if subscript is > 1.\n5. Simplify valency ratios if divisible (e.g., Ca²⁺ + O²⁻ → Ca₂O₂ → CaO).\n• Key Examples:\n  • Aluminium Oxide: Al (+3) & O (-2) → Criss-cross → Al₂O₃\n  • Magnesium Hydroxide: Mg (+2) & OH (-1) → Criss-cross → Mg(OH)₂\n  • Calcium Carbonate: Ca (+2) & CO₃ (-2) → Ca₂(CO₃)₂ → CaCO₃",
+        example: "Criss-crossing Calcium (valency 2) and Chloride (valency 1) gives Ca₁Cl₂ → CaCl₂."
+      },
+      {
+        title: "6. Molecular Mass, Formula Unit Mass & Mole Concept",
+        desc: "• Molecular Mass: Sum of atomic masses of all atoms in a molecule.\n  • H₂O = (2×1) + (1×16) = 18 u\n  • HNO₃ = (1×1) + (1×14) + (3×16) = 63 u\n  • C₆H₁₂O₆ (Glucose) = (6×12) + (12×1) + (6×16) = 72 + 12 + 96 = 180 u\n• Formula Unit Mass: Calculated in same way for ionic substances (e.g., NaCl = 23 + 35.5 = 58.5 u).\n• The Mole Concept: 1 mole = 6.022 × 10²³ particles (Avogadro's Number N_A).\n  • Moles (n) = Given Mass (m in g) / Molar Mass (M in g/mol)\n  • Particles (N) = Moles (n) × 6.022 × 10²³",
+        example: "How many moles are in 54 grams of Water (H₂O)? Molar mass M = 18 g/mol. Moles n = 54 / 18 = 3 moles. Particle count = 3 × 6.022 × 10²³ = 1.8066 × 10²⁴ molecules."
       }
     ],
     didYouKnow: "The word 'Atom' comes from the Greek word 'Atomos', meaning indivisible! Maharishi Kanad in ancient India named the smallest indivisible particle 'Parmanu'.",
-    visualContext: "typesofnumbers"
+    visualContext: "chemistry_atoms"
   },
   g1_evs_family: {
     chapterId: "g1_evs_family",

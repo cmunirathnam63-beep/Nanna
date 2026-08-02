@@ -447,6 +447,104 @@ export const TOPIC_QUIZZES: Record<string, TopicQuizData> = {
     ]
   },
 
+  g6_phys_temp: {
+    chapterId: "g6_phys_temp",
+    chapterTitle: "Temperature and its Measurement",
+    mcqs: [
+      {
+        id: "m1",
+        question: "What is the normal temperature of a healthy human body?",
+        options: ["A) 37°C (98.6°F)", "B) 100°C (212°F)", "C) 0°C (32°F)", "D) 42°C (107.6°F)"],
+        correctAnswer: "A",
+        hint: "37 degrees on the Celsius scale corresponds to 98.6 degrees on the Fahrenheit scale.",
+        explanation: "The normal human body temperature is approximately 37°C or 98.6°F."
+      },
+      {
+        id: "m2",
+        question: "Why does a clinical thermometer have a kink (constriction) in its capillary tube near the bulb?",
+        options: ["A) To make the thermometer look pretty", "B) To prevent the mercury level from falling on its own after removing from mouth", "C) To make mercury flow faster", "D) To increase the boiling point of mercury"],
+        correctAnswer: "B",
+        hint: "It holds the mercury column in place long enough for a accurate reading.",
+        explanation: "The kink prevents mercury from flowing back into the bulb when taken out of the mouth, allowing accurate reading."
+      },
+      {
+        id: "m3",
+        question: "What is the standard measurement range of a laboratory thermometer?",
+        options: ["A) 35°C to 42°C", "B) -10°C to 110°C", "C) 0°C to 37°C", "D) 100°C to 200°C"],
+        correctAnswer: "B",
+        hint: "Laboratory thermometers measure both freezing ice and boiling water.",
+        explanation: "A standard laboratory thermometer has a range from -10°C to 110°C."
+      },
+      {
+        id: "m4",
+        question: "What is the SI unit of temperature?",
+        options: ["A) Degree Celsius (°C)", "B) Degree Fahrenheit (°F)", "C) Kelvin (K)", "D) Joule (J)"],
+        correctAnswer: "C",
+        hint: "The International System of Units uses absolute temperature scale.",
+        explanation: "Kelvin (K) is the official SI unit of temperature."
+      }
+    ],
+    assertionReasons: [
+      {
+        id: "ar1",
+        assertion: "Assertion (A): We cannot rely on our sense of touch to measure hotness or coldness accurately.",
+        reason: "Reason (R): Sense of touch is relative and affected by previous thermal conditions of the skin.",
+        options: STANDARD_AR_OPTIONS,
+        correctAnswer: "A",
+        explanation: "Both statements are true and Reason (R) correctly explains why touch is unreliable."
+      }
+    ]
+  },
+
+  g6_phys_beyond_earth: {
+    chapterId: "g6_phys_beyond_earth",
+    chapterTitle: "Beyond Earth",
+    mcqs: [
+      {
+        id: "m1",
+        question: "Which celestial body is located at the center of our Solar System?",
+        options: ["A) Earth", "B) Moon", "C) Sun", "D) Jupiter"],
+        correctAnswer: "C",
+        hint: "All 8 planets revolve around this glowing ball of hot gas.",
+        explanation: "The Sun is at the center of the Solar System and exerts gravitational pull on all planets."
+      },
+      {
+        id: "m2",
+        question: "What motion of the Earth causes Day and Night?",
+        options: ["A) Revolution around the Sun", "B) Rotation on its own axis", "C) Tilt of the orbit", "D) Precession"],
+        correctAnswer: "B",
+        hint: "Earth spins on its axis once every 24 hours.",
+        explanation: "Earth's rotation on its axis once every 24 hours causes day for the hemisphere facing the Sun and night for the other."
+      },
+      {
+        id: "m3",
+        question: "Which constellation is also known as the 'Saptarishi' or Great Bear?",
+        options: ["A) Orion", "B) Cassiopeia", "C) Ursa Major", "D) Leo"],
+        correctAnswer: "C",
+        hint: "It contains seven prominent stars forming a ladle or big dipper shape.",
+        explanation: "Ursa Major is known as Saptarishi in India."
+      },
+      {
+        id: "m4",
+        question: "Which planet is known as the 'Red Planet'?",
+        options: ["A) Venus", "B) Mars", "C) Jupiter", "D) Mercury"],
+        correctAnswer: "B",
+        hint: "Iron oxide dust on its surface gives it a reddish appearance.",
+        explanation: "Mars appears red due to iron oxide minerals on its surface."
+      }
+    ],
+    assertionReasons: [
+      {
+        id: "ar1",
+        assertion: "Assertion (A): The Moon changes its shape every night.",
+        reason: "Reason (R): The Moon produces its own light that glows brighter during full moon.",
+        options: STANDARD_AR_OPTIONS,
+        correctAnswer: "C",
+        explanation: "Assertion is TRUE (we see changing illuminated portions/phases of the Moon). Reason is FALSE because the Moon is non-luminous and reflects sunlight."
+      }
+    ]
+  },
+
   g9_physics_motion: {
     chapterId: "g9_physics_motion",
     chapterTitle: "Motion (Grade 9)",

@@ -48,7 +48,7 @@ export default function VisualTools({ chapterId, subject = "maths", grade, initi
     return <ChemistryVisualLab chapterId={chapterId} />;
   }
 
-  if (chapterId?.startsWith("g9_phys_") || chapterId?.startsWith("g9_physics_")) {
+  if (chapterId?.startsWith("g9_phys_") || chapterId?.startsWith("g9_physics_") || chapterId?.startsWith("g6_phys_")) {
     return <PhysicsVisualLab chapterId={chapterId} />;
   }
 
@@ -2057,7 +2057,1558 @@ function getNumberFactors(num: number): number[] {
 // SUBJECT-SPECIFIC LABS
 // ==========================================
 
+export function Grade6MotionVisualLab() {
+  const [activeTab, setActiveTab] = useState<"concept" | "types" | "quiz">("concept");
+
+  // Concept Tab State
+  const [isCarMoving, setIsCarMoving] = useState<boolean>(true);
+  const [simTime, setSimTime] = useState<number>(0);
+  const [speedMultiplier, setSpeedMultiplier] = useState<number>(1);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+
+  // Types Tab State
+  const [selectedType, setSelectedType] = useState<"rectilinear" | "circular" | "rotational" | "periodic" | "combination">("rectilinear");
+
+  // Game Tab State
+  const [gameIndex, setGameIndex] = useState<number>(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [score, setScore] = useState<number>(0);
+  const [showExplanation, setShowExplanation] = useState<boolean>(false);
+
+  // Animation Loop
+  useEffect(() => {
+    let animId: number;
+    if (!isPaused) {
+      let lastTime = Date.now();
+      const tick = () => {
+        const now = Date.now();
+        const delta = (now - lastTime) / 1000;
+        lastTime = now;
+        setSimTime(prev => prev + delta * speedMultiplier);
+        animId = requestAnimationFrame(tick);
+      };
+      animId = requestAnimationFrame(tick);
+    }
+    return () => cancelAnimationFrame(animId);
+  }, [isPaused, speedMultiplier]);
+
+  // Concept Tab Calculations
+  const carX = isCarMoving ? ((simTime * 15) % 80) + 10 : 25;
+  const distanceFromTree = Number(Math.abs(carX - 20).toFixed(1));
+
+  // Types Tab Animations
+  const rectilinearX = ((simTime * 20) % 80) + 10;
+  const circularAngle = simTime * 2.5; // radians
+  const circularX = 50 + 35 * Math.cos(circularAngle);
+  const circularY = 50 + 35 * Math.sin(circularAngle);
+  const rotationalAngle = (simTime * 250) % 360;
+  const periodicAngle = Math.sin(simTime * 3.5) * 35; // degrees oscillation
+  const combinationX = ((simTime * 18) % 80) + 10;
+  const combinationRot = (simTime * 600) % 360;
+
+  // Game Questions
+  const gameQuestions = [
+    {
+      id: 1,
+      scenario: "Marching soldiers moving on a straight parade ground during a ceremonial parade.",
+      icon: "🎖️",
+      options: [
+        { id: "rectilinear", label: "Straight Line (Rectilinear)" },
+        { id: "circular", label: "Circular Motion" },
+        { id: "periodic", label: "Periodic Motion" },
+        { id: "rotational", label: "Rotational Motion" }
+      ],
+      correct: "rectilinear",
+      explanation: "The soldiers move along a straight line path, which is the definition of Rectilinear Motion!"
+    },
+    {
+      id: 2,
+      scenario: "The movement of blades of an electric ceiling fan turning at high speed.",
+      icon: "💨",
+      options: [
+        { id: "rectilinear", label: "Rectilinear Motion" },
+        { id: "circular", label: "Circular Motion (Fan Blades)" },
+        { id: "periodic", label: "Periodic Motion" },
+        { id: "combination", label: "Combination Motion" }
+      ],
+      correct: "circular",
+      explanation: "Any fixed point or tip on a fan blade moves along a circular path around the central motor hub at a fixed distance, exhibiting Circular Motion!"
+    },
+    {
+      id: 3,
+      scenario: "A child swinging back and forth on a playground swing.",
+      icon: "🎠",
+      options: [
+        { id: "rectilinear", label: "Rectilinear Motion" },
+        { id: "rotational", label: "Rotational Motion" },
+        { id: "periodic", label: "Periodic Motion" },
+        { id: "circular", label: "Circular Motion" }
+      ],
+      correct: "periodic",
+      explanation: "The swing repeats its back-and-forth movement at regular intervals of time, which is Periodic Motion!"
+    },
+    {
+      id: 4,
+      scenario: "A wooden top ('lattu') spinning continuously on its pointed tip.",
+      icon: "🛞",
+      options: [
+        { id: "rectilinear", label: "Rectilinear Motion" },
+        { id: "rotational", label: "Rotational Motion" },
+        { id: "periodic", label: "Periodic Motion" },
+        { id: "circular", label: "Circular Motion" }
+      ],
+      correct: "rotational",
+      explanation: "The top spins continuously around its own internal central axis without moving away as a whole, which is Rotational Motion!"
+    },
+    {
+      id: 5,
+      scenario: "A bicycle wheel rolling forward along a straight city road.",
+      icon: "🚲",
+      options: [
+        { id: "rectilinear", label: "Rectilinear Motion only" },
+        { id: "rotational", label: "Rotational Motion only" },
+        { id: "combination", label: "Combination Motion (Rectilinear + Rotational)" },
+        { id: "periodic", label: "Periodic Motion" }
+      ],
+      correct: "combination",
+      explanation: "The bicycle travels forward in a straight path (Rectilinear) while its wheels spin continuously on their axles (Rotational) — a classic Combination Motion!"
+    },
+    {
+      id: 6,
+      scenario: "An apple falling straight down from a high tree branch under gravity.",
+      icon: "🍎",
+      options: [
+        { id: "rectilinear", label: "Rectilinear Motion" },
+        { id: "circular", label: "Circular Motion" },
+        { id: "rotational", label: "Rotational Motion" },
+        { id: "periodic", label: "Periodic Motion" }
+      ],
+      correct: "rectilinear",
+      explanation: "The falling apple moves in a straight vertical path downwards under gravity, exhibiting Rectilinear Motion!"
+    },
+    {
+      id: 7,
+      scenario: "A grandfather clock pendulum swinging left and right continuously.",
+      icon: "🕰️",
+      options: [
+        { id: "rectilinear", label: "Rectilinear Motion" },
+        { id: "circular", label: "Circular Motion" },
+        { id: "periodic", label: "Periodic Motion" },
+        { id: "rotational", label: "Rotational Motion" }
+      ],
+      correct: "periodic",
+      explanation: "The pendulum takes equal intervals of time for each complete left-and-right swing, making it Periodic Motion!"
+    }
+  ];
+
+  const handleAnswerClick = (optionId: string) => {
+    if (showExplanation) return;
+    setSelectedAnswer(optionId);
+    setShowExplanation(true);
+    if (optionId === gameQuestions[gameIndex].correct) {
+      setScore(prev => prev + 1);
+    }
+  };
+
+  const handleNextQuestion = () => {
+    setSelectedAnswer(null);
+    setShowExplanation(false);
+    setGameIndex(prev => (prev + 1) % gameQuestions.length);
+  };
+
+  const currentQ = gameQuestions[gameIndex];
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="g6_motion_interactive_lab">
+      {/* Title Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-xs gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-black uppercase text-sky-600 bg-sky-50 px-2.5 py-0.5 rounded-md border border-sky-100 font-mono">
+              Grade 6 Physics • Chapter 5
+            </span>
+            <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-100">
+              Curiosity Science
+            </span>
+          </div>
+          <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
+            🌌 Motion Definition & Types of Motion Interactive Lab
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Understand rest vs motion relative to a reference point, explore 5 types of motion with live animated models, and test your skills!
+          </p>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 self-stretch md:self-auto justify-stretch">
+          <button
+            onClick={() => setActiveTab("concept")}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+              activeTab === "concept"
+                ? "bg-white text-sky-700 shadow-xs border border-slate-200"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>🎯 1. What is Motion?</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("types")}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+              activeTab === "types"
+                ? "bg-white text-sky-700 shadow-xs border border-slate-200"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>🌀 2. Types of Motion</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("quiz")}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+              activeTab === "quiz"
+                ? "bg-white text-emerald-700 shadow-xs border border-slate-200"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>🎮 3. Motion Quiz</span>
+          </button>
+        </div>
+      </div>
+
+      {/* TAB 1: CONCEPT OF MOTION & REFERENCE POINT */}
+      {activeTab === "concept" && (
+        <div className="space-y-6">
+          {/* Controls Bar */}
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-4 shadow-xs">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-black uppercase text-slate-500 tracking-wider">Object State:</span>
+              <button
+                onClick={() => setIsCarMoving(true)}
+                className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer border flex items-center gap-2 ${
+                  isCarMoving
+                    ? "bg-sky-600 text-white border-sky-700 shadow-xs"
+                    : "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200"
+                }`}
+              >
+                <span>🚗 In Motion (Moving)</span>
+              </button>
+              <button
+                onClick={() => setIsCarMoving(false)}
+                className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer border flex items-center gap-2 ${
+                  !isCarMoving
+                    ? "bg-rose-600 text-white border-rose-700 shadow-xs"
+                    : "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200"
+                }`}
+              >
+                <span>🛑 At Rest (Stationary)</span>
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsPaused(!isPaused)}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 cursor-pointer"
+              >
+                {isPaused ? "▶️ Resume Time" : "⏸️ Pause Simulation"}
+              </button>
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                <span>Speed:</span>
+                {[1, 2, 3].map(sp => (
+                  <button
+                    key={sp}
+                    onClick={() => setSpeedMultiplier(sp)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-extrabold font-mono border ${
+                      speedMultiplier === sp
+                        ? "bg-sky-100 text-sky-800 border-sky-300"
+                        : "bg-white text-slate-500 border-slate-200"
+                    }`}
+                  >
+                    {sp}x
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive Visual Canvas */}
+          <div className="bg-gradient-to-b from-sky-100 via-sky-50 to-emerald-100 rounded-2xl border border-sky-200 p-6 overflow-hidden relative shadow-inner">
+            {/* Sky & Clouds */}
+            <div className="flex justify-between items-center text-sky-300 opacity-60 mb-8">
+              <span className="text-2xl animate-pulse">☁️</span>
+              <span className="text-3xl">☁️</span>
+              <span className="text-2xl">☁️</span>
+            </div>
+
+            {/* Stage Items */}
+            <div className="relative h-44 w-full bg-emerald-200/50 rounded-xl border-b-4 border-emerald-600 flex items-end px-4 overflow-hidden">
+              {/* Distance Scale Markers along Road */}
+              <div className="absolute top-2 left-0 right-0 px-4 flex justify-between text-[10px] font-black text-slate-500 font-mono">
+                <span>0m</span>
+                <span>20m (Tree Ref)</span>
+                <span>40m</span>
+                <span>60m</span>
+                <span>80m</span>
+              </div>
+
+              {/* Reference Point: Fixed Tree at X = 20m */}
+              <div
+                className="absolute bottom-6 flex flex-col items-center z-10"
+                style={{ left: "20%" }}
+              >
+                <div className="bg-amber-100/90 text-amber-900 border border-amber-300 text-[9px] font-black px-2 py-0.5 rounded-full shadow-xs mb-1 uppercase tracking-wider font-mono">
+                  📍 Stationary Reference Point
+                </div>
+                <span className="text-5xl filter drop-shadow-md">🌳</span>
+                <span className="text-[10px] font-extrabold text-slate-800 bg-white/80 px-1.5 py-0.2 rounded border border-slate-300 mt-0.5">
+                  Oak Tree (X = 20m)
+                </span>
+              </div>
+
+              {/* Moving / Rest Object: Car */}
+              <div
+                className="absolute bottom-6 flex flex-col items-center transition-all duration-100 z-20"
+                style={{ left: `${carX}%` }}
+              >
+                <div className={`text-[9px] font-black px-2 py-0.5 rounded-full shadow-xs mb-1 uppercase tracking-wider font-mono border ${
+                  isCarMoving ? "bg-sky-600 text-white border-sky-700 animate-bounce" : "bg-rose-100 text-rose-800 border-rose-300"
+                }`}>
+                  {isCarMoving ? "🏎️ IN MOTION" : "🛑 AT REST"}
+                </div>
+                <span className="text-5xl filter drop-shadow-md">🚗</span>
+                <span className="text-[10px] font-black text-slate-800 bg-white px-2 py-0.5 rounded-md border border-slate-300 shadow-2xs font-mono">
+                  Car (X = {carX.toFixed(1)}m)
+                </span>
+              </div>
+
+              {/* Distance Arrow Line between Tree and Car */}
+              <div
+                className="absolute bottom-2 h-1 bg-amber-500 rounded-full border-t border-amber-600 transition-all duration-100 flex items-center justify-center"
+                style={{
+                  left: `${Math.min(20, carX)}%`,
+                  width: `${Math.abs(carX - 20)}%`
+                }}
+              >
+                <span className="text-[9px] font-black text-amber-900 bg-amber-100 border border-amber-300 px-1.5 rounded-full font-mono shadow-xs -mt-5">
+                  d = {distanceFromTree}m
+                </span>
+              </div>
+            </div>
+
+            {/* Live Physics Metrics Panel */}
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Clock Time Elapsed</span>
+                <span className="text-xl font-black text-slate-800 font-mono mt-1">
+                  ⏱️ {simTime.toFixed(1)} s
+                </span>
+                <span className="text-[10px] text-slate-500">Continuous passing of time</span>
+              </div>
+
+              <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Position vs Tree</span>
+                <span className="text-xl font-black text-amber-600 font-mono mt-1">
+                  📍 {carX.toFixed(1)} meters
+                </span>
+                <span className="text-[10px] text-slate-500">Distance from Tree = {distanceFromTree} m</span>
+              </div>
+
+              <div className={`p-3.5 rounded-xl border shadow-xs flex flex-col justify-between ${
+                isCarMoving ? "bg-sky-50 border-sky-200 text-sky-900" : "bg-rose-50 border-rose-200 text-rose-900"
+              }`}>
+                <span className="text-[10px] font-black uppercase tracking-wider opacity-80">Scientific Conclusion</span>
+                <span className="text-sm font-extrabold mt-1">
+                  {isCarMoving ? "✅ Object is IN MOTION!" : "🛑 Object is AT REST!"}
+                </span>
+                <span className="text-[11px] leading-tight opacity-90 mt-1">
+                  {isCarMoving
+                    ? "Car's position changes continuously with passing time relative to the stationary tree."
+                    : "Car's position remains constant (X = 25m) as time passes relative to the stationary tree."}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* NCERT Explanation Box */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-3">
+            <h4 className="font-extrabold text-sm text-slate-800 flex items-center gap-2">
+              <span>💡 Essential Concept: What is Motion in Physics?</span>
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-600">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-150">
+                <p className="font-bold text-slate-800 mb-1">1. Motion Definition:</p>
+                <p>An object is said to be <strong>in motion</strong> if its position changes continuously over time with respect to a stationary reference point (surroundings).</p>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-150">
+                <p className="font-bold text-slate-800 mb-1">2. Reference Point (Frame of Reference):</p>
+                <p>A fixed object (like a roadside tree, house, or electric pole) used as a baseline to determine if another object has changed position.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: TYPES OF MOTION INTERACTIVE EXPLORER */}
+      {activeTab === "types" && (
+        <div className="space-y-6">
+          {/* Motion Type Selector Buttons */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+            {[
+              { id: "rectilinear", label: "Straight Line", sub: "Rectilinear", icon: "📐" },
+              { id: "circular", label: "Circular", sub: "Round & Round", icon: "⭕" },
+              { id: "rotational", label: "Rotational", sub: "Spinning Axis", icon: "🌀" },
+              { id: "periodic", label: "Periodic", sub: "To & Fro", icon: "⏱️" },
+              { id: "combination", label: "Combination", sub: "Multi-Motion", icon: "⚙️" }
+            ].map(type => (
+              <button
+                key={type.id}
+                onClick={() => setSelectedType(type.id as any)}
+                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
+                  selectedType === type.id
+                    ? "bg-sky-600 text-white border-sky-700 shadow-md ring-2 ring-sky-300"
+                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                }`}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl">{type.icon}</span>
+                  {selectedType === type.id && (
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                  )}
+                </div>
+                <div>
+                  <div className="font-extrabold text-xs leading-tight">{type.label}</div>
+                  <div className={`text-[10px] font-medium ${selectedType === type.id ? "text-sky-100" : "text-slate-500"}`}>
+                    {type.sub}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Interactive Simulation Display for Selected Type */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            {/* Visual Canvas (8 cols) */}
+            <div className="md:col-span-7 bg-slate-900 rounded-2xl p-6 h-64 flex flex-col items-center justify-center relative overflow-hidden border border-slate-800 shadow-inner">
+              
+              {/* 1. RECTILINEAR MOTION VISUAL */}
+              {selectedType === "rectilinear" && (
+                <div className="w-full h-full flex flex-col items-center justify-center relative">
+                  <span className="absolute top-2 left-2 text-[10px] font-mono text-sky-400 bg-sky-950/80 px-2 py-0.5 rounded border border-sky-800">
+                    Path: Perfectly Straight Line
+                  </span>
+
+                  {/* Straight Dashed Track */}
+                  <div className="w-full h-1 bg-sky-500/30 relative flex items-center">
+                    <div className="w-full border-t-2 border-dashed border-sky-400/80"></div>
+                    {/* Direction Arrow */}
+                    <span className="absolute right-0 text-sky-400 font-black text-xs">➔</span>
+                  </div>
+
+                  {/* Moving Car */}
+                  <div
+                    className="absolute transition-all duration-75 flex flex-col items-center"
+                    style={{ left: `${rectilinearX}%`, transform: "translate(-50%, -10px)" }}
+                  >
+                    <span className="text-4xl filter drop-shadow-md">🏎️</span>
+                    <span className="text-[9px] font-black text-sky-300 bg-slate-800/90 px-1.5 rounded font-mono mt-1 border border-slate-700">
+                      V = Constant
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* 2. CIRCULAR MOTION VISUAL */}
+              {selectedType === "circular" && (
+                <div className="w-full h-full flex items-center justify-center relative">
+                  <span className="absolute top-2 left-2 text-[10px] font-mono text-amber-400 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-800">
+                    Path: Circular Orbit (Fixed Radius R)
+                  </span>
+
+                  {/* Center Pivot Pin */}
+                  <div className="w-3 h-3 bg-amber-500 rounded-full border-2 border-white z-10"></div>
+
+                  {/* Dashed Circle Guide */}
+                  <div className="absolute w-36 h-36 rounded-full border-2 border-dashed border-amber-500/50 flex items-center justify-center"></div>
+
+                  {/* Tether String Line */}
+                  <div
+                    className="absolute h-0.5 bg-amber-400/60 origin-left"
+                    style={{
+                      left: "50%",
+                      top: "50%",
+                      width: "70px",
+                      transform: `rotate(${circularAngle * (180 / Math.PI)}deg)`
+                    }}
+                  />
+
+                  {/* Revolving Stone / Clock Hand */}
+                  <div
+                    className="absolute flex items-center justify-center transition-all duration-75"
+                    style={{
+                      left: `${circularX}%`,
+                      top: `${circularY}%`,
+                      transform: "translate(-50%, -50%)"
+                    }}
+                  >
+                    <span className="text-3xl filter drop-shadow-md">🪨</span>
+                  </div>
+                </div>
+              )}
+
+              {/* 3. ROTATIONAL MOTION VISUAL */}
+              {selectedType === "rotational" && (
+                <div className="w-full h-full flex flex-col items-center justify-center relative">
+                  <span className="absolute top-2 left-2 text-[10px] font-mono text-purple-400 bg-purple-950/80 px-2 py-0.5 rounded border border-purple-800">
+                    Path: Spinning on Internal Axis
+                  </span>
+
+                  {/* Axis Rod */}
+                  <div className="absolute h-40 w-1 bg-purple-400/40 rounded-full"></div>
+
+                  {/* Spinning Top / Globe */}
+                  <div
+                    className="transition-transform duration-75 text-6xl filter drop-shadow-xl z-10"
+                    style={{ transform: `rotate(${rotationalAngle}deg)` }}
+                  >
+                    🌍
+                  </div>
+
+                  {/* Circular Spin Arrow */}
+                  <div className="absolute bottom-4 text-purple-300 text-xs font-mono font-bold animate-pulse">
+                    ↺ Spinning around Axis Rod
+                  </div>
+                </div>
+              )}
+
+              {/* 4. PERIODIC MOTION VISUAL */}
+              {selectedType === "periodic" && (
+                <div className="w-full h-full flex flex-col items-center justify-center relative">
+                  <span className="absolute top-2 left-2 text-[10px] font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">
+                    Path: To-and-Fro Oscillation (Equal Time T)
+                  </span>
+
+                  {/* Top Stand Ceiling */}
+                  <div className="absolute top-8 w-32 h-2 bg-slate-700 rounded-full"></div>
+
+                  {/* Pendulum Arm */}
+                  <div
+                    className="origin-top flex flex-col items-center transition-transform duration-75"
+                    style={{
+                      top: "38px",
+                      transform: `rotate(${periodicAngle}deg)`
+                    }}
+                  >
+                    <div className="w-1 h-28 bg-emerald-400"></div>
+                    <div className="w-8 h-8 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-900 shadow-lg -mt-1">
+                      🕰️
+                    </div>
+                  </div>
+
+                  {/* Dotted Oscillation Arc */}
+                  <div className="absolute bottom-6 text-[10px] font-mono text-emerald-300 bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">
+                    T = Equal Time Interval (Oscillation)
+                  </div>
+                </div>
+              )}
+
+              {/* 5. COMBINATION MOTION VISUAL */}
+              {selectedType === "combination" && (
+                <div className="w-full h-full flex flex-col items-center justify-center relative">
+                  <span className="absolute top-2 left-2 text-[10px] font-mono text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-800">
+                    Path: Rectilinear (Forward) + Rotational (Spinning)
+                  </span>
+
+                  {/* Ground Line */}
+                  <div className="w-full h-1 bg-amber-500/40 absolute bottom-12"></div>
+
+                  {/* Rolling Bicycle Wheel */}
+                  <div
+                    className="absolute bottom-12 transition-all duration-75 flex flex-col items-center"
+                    style={{ left: `${combinationX}%`, transform: "translateX(-50%)" }}
+                  >
+                    <div
+                      className="text-5xl filter drop-shadow-md transition-transform duration-75"
+                      style={{ transform: `rotate(${combinationRot}deg)` }}
+                    >
+                      ⚙️
+                    </div>
+                    <span className="text-[9px] font-black text-amber-300 bg-slate-800 px-1.5 rounded font-mono mt-2 border border-slate-700">
+                      Translational + Spin
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Explanation & Real-life Examples (5 cols) */}
+            <div className="md:col-span-5 space-y-4">
+              {selectedType === "rectilinear" && (
+                <>
+                  <div className="inline-block px-2.5 py-1 rounded-md bg-sky-50 text-sky-700 border border-sky-200 font-mono text-xs font-bold">
+                    📐 Rectilinear Motion
+                  </div>
+                  <h3 className="text-base font-extrabold text-slate-800">Motion Along a Straight Line</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    An object moves in a straight path in a single direction. The distance traveled equals the displacement.
+                  </p>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5 text-xs">
+                    <span className="font-extrabold text-slate-800 block">Real-life Examples:</span>
+                    <ul className="list-disc list-inside text-slate-600 space-y-1 font-medium">
+                      <li>Marching soldiers on a parade ground</li>
+                      <li>Sprinter running on a 100m straight track</li>
+                      <li>Apple or stone falling vertically down</li>
+                      <li>Train moving on a straight railway track</li>
+                    </ul>
+                  </div>
+                </>
+              )}
+
+              {selectedType === "circular" && (
+                <>
+                  <div className="inline-block px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200 font-mono text-xs font-bold">
+                    ⭕ Circular Motion
+                  </div>
+                  <h3 className="text-base font-extrabold text-slate-800">Motion Along a Circular Path</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    An object travels around a circular track where its distance from a fixed center point remains constant.
+                  </p>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5 text-xs">
+                    <span className="font-extrabold text-slate-800 block">Real-life Examples:</span>
+                    <ul className="list-disc list-inside text-slate-600 space-y-1 font-medium">
+                      <li>Tips of hands of a clock moving around dial</li>
+                      <li>Blades of an electric ceiling fan turning</li>
+                      <li>Stone tied to a string and swung in a circle</li>
+                      <li>Merry-go-round horse moving in a circle</li>
+                    </ul>
+                  </div>
+                </>
+              )}
+
+              {selectedType === "rotational" && (
+                <>
+                  <div className="inline-block px-2.5 py-1 rounded-md bg-purple-50 text-purple-700 border border-purple-200 font-mono text-xs font-bold">
+                    🌀 Rotational Motion
+                  </div>
+                  <h3 className="text-base font-extrabold text-slate-800">Spinning Around Its Own Axis</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    An entire object turns or spins on its own internal central line (axis) without changing its overall location as a whole.
+                  </p>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5 text-xs">
+                    <span className="font-extrabold text-slate-800 block">Real-life Examples:</span>
+                    <ul className="list-disc list-inside text-slate-600 space-y-1 font-medium">
+                      <li>Spinning top ('lattu') spinning on its tip</li>
+                      <li>Potter's wheel spinning to shape clay</li>
+                      <li>Earth spinning on its axis (causing day & night)</li>
+                      <li>Giant Ferris wheel spinning on its central axle</li>
+                    </ul>
+                  </div>
+                </>
+              )}
+
+              {selectedType === "periodic" && (
+                <>
+                  <div className="inline-block px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono text-xs font-bold">
+                    ⏱️ Periodic Motion
+                  </div>
+                  <h3 className="text-base font-extrabold text-slate-800">Repeating at Equal Time Intervals</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Motion that repeats itself over and over again after equal intervals of time (fixed time period T).
+                  </p>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5 text-xs">
+                    <span className="font-extrabold text-slate-800 block">Real-life Examples:</span>
+                    <ul className="list-disc list-inside text-slate-600 space-y-1 font-medium">
+                      <li>Swinging pendulum of a grandfather clock</li>
+                      <li>Child swinging on a playground swing</li>
+                      <li>Vibration of a plucked guitar string</li>
+                      <li>Heartbeats in a healthy human body</li>
+                    </ul>
+                  </div>
+                </>
+              )}
+
+              {selectedType === "combination" && (
+                <>
+                  <div className="inline-block px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 border border-rose-200 font-mono text-xs font-bold">
+                    ⚙️ Combination Motion
+                  </div>
+                  <h3 className="text-base font-extrabold text-slate-800">Two or More Motions Together</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    An object exhibits multiple fundamental types of motion simultaneously at the same time.
+                  </p>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5 text-xs">
+                    <span className="font-extrabold text-slate-800 block">Real-life Examples:</span>
+                    <ul className="list-disc list-inside text-slate-600 space-y-1 font-medium">
+                      <li>Rolling Bicycle Wheel (Rectilinear + Rotational)</li>
+                      <li>Planet Earth (Rotational on axis + Circular around Sun)</li>
+                      <li>Sewing Machine Needle (Rotational wheel + Periodic needle)</li>
+                      <li>Drill Bit drilling into wood (Rotational + Linear)</li>
+                    </ul>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: MOTION CLASSIFICATION GAME */}
+      {activeTab === "quiz" && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-xs">
+          {/* Header Score Tracker */}
+          <div className="flex justify-between items-center border-b border-slate-150 pb-4">
+            <div>
+              <span className="text-[10px] font-black uppercase text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-100 font-mono">
+                Question {gameIndex + 1} of {gameQuestions.length}
+              </span>
+              <h3 className="text-base font-extrabold text-slate-800 mt-1">
+                Classify the Type of Motion!
+              </h3>
+            </div>
+            <div className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-1.5 rounded-xl font-mono text-xs font-black">
+              Score: {score} / {gameQuestions.length}
+            </div>
+          </div>
+
+          {/* Scenario Card */}
+          <div className="p-5 bg-gradient-to-r from-sky-50 to-indigo-50 rounded-2xl border border-sky-100 flex items-center gap-4">
+            <span className="text-4xl p-3 bg-white rounded-2xl shadow-xs border border-sky-100">{currentQ.icon}</span>
+            <div>
+              <span className="text-[10px] font-black uppercase text-sky-600 tracking-wider">Everyday Scenario:</span>
+              <p className="text-sm font-extrabold text-slate-800 mt-0.5 leading-snug">
+                "{currentQ.scenario}"
+              </p>
+            </div>
+          </div>
+
+          {/* Answer Option Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {currentQ.options.map(opt => {
+              const isSelected = selectedAnswer === opt.id;
+              const isCorrect = opt.id === currentQ.correct;
+              
+              let btnStyle = "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100";
+              if (showExplanation) {
+                if (isCorrect) {
+                  btnStyle = "bg-emerald-600 text-white border-emerald-700 shadow-md";
+                } else if (isSelected) {
+                  btnStyle = "bg-rose-600 text-white border-rose-700";
+                } else {
+                  btnStyle = "bg-slate-100 text-slate-400 border-slate-200 opacity-60";
+                }
+              }
+
+              return (
+                <button
+                  key={opt.id}
+                  onClick={() => handleAnswerClick(opt.id)}
+                  disabled={showExplanation}
+                  className={`p-4 rounded-xl border text-left text-xs font-extrabold transition-all cursor-pointer flex justify-between items-center ${btnStyle}`}
+                >
+                  <span>{opt.label}</span>
+                  {showExplanation && isCorrect && <span>✅</span>}
+                  {showExplanation && isSelected && !isCorrect && <span>❌</span>}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Explanation Box after Answer */}
+          {showExplanation && (
+            <div className={`p-4 rounded-xl border text-xs leading-relaxed space-y-2 animate-fadeIn ${
+              selectedAnswer === currentQ.correct ? "bg-emerald-50 border-emerald-200 text-emerald-900" : "bg-rose-50 border-rose-200 text-rose-900"
+            }`}>
+              <p className="font-extrabold">
+                {selectedAnswer === currentQ.correct ? "🎉 Correct Answer!" : "❌ Incorrect Choice!"}
+              </p>
+              <p>{currentQ.explanation}</p>
+              <div className="pt-2">
+                <button
+                  onClick={handleNextQuestion}
+                  className="px-5 py-2 rounded-xl bg-slate-900 text-white text-xs font-extrabold hover:bg-slate-800 cursor-pointer shadow-xs"
+                >
+                  Next Question ➔
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function Grade6TemperatureVisualLab() {
+  const [activeTab, setActiveTab] = useState<"sim" | "scales" | "quiz">("sim");
+
+  // Simulation State
+  const [tempCelsius, setTempCelsius] = useState<number>(37);
+  const [thermometerType, setThermometerType] = useState<"clinical" | "lab" | "digital">("clinical");
+
+  // Conversions
+  const tempFahrenheit = Number(((tempCelsius * 9) / 5 + 32).toFixed(1));
+  const tempKelvin = Number((tempCelsius + 273.15).toFixed(1));
+
+  // Limits based on type
+  const minTemp = thermometerType === "clinical" ? 35 : -10;
+  const maxTemp = thermometerType === "clinical" ? 42 : 110;
+
+  const handleTypeChange = (type: "clinical" | "lab" | "digital") => {
+    setThermometerType(type);
+    if (type === "clinical") {
+      setTempCelsius(37);
+    } else if (type === "lab") {
+      setTempCelsius(25);
+    } else {
+      setTempCelsius(37);
+    }
+  };
+
+  const setPreset = (degC: number) => {
+    let clamped = degC;
+    if (thermometerType === "clinical") {
+      clamped = Math.max(35, Math.min(42, degC));
+    } else {
+      clamped = Math.max(-10, Math.min(110, degC));
+    }
+    setTempCelsius(clamped);
+  };
+
+  // Quiz State
+  const [quizIdx, setQuizIdx] = useState<number>(0);
+  const [selectedAns, setSelectedAns] = useState<string | null>(null);
+  const [score, setScore] = useState<number>(0);
+  const [showExp, setShowExp] = useState<boolean>(false);
+
+  const questions = [
+    {
+      q: "What is the normal human body temperature on the Celsius scale?",
+      options: ["37°C", "98.6°C", "100°C", "0°C"],
+      correct: "37°C",
+      exp: "Normal human body temperature is 37°C (which equals 98.6°F)."
+    },
+    {
+      q: "Why is a constriction ('kink') present in a clinical thermometer?",
+      options: [
+        "To make mercury expand faster",
+        "To prevent mercury level from falling on its own when removed from mouth",
+        "To measure negative temperatures",
+        "To make the tube stronger"
+      ],
+      correct: "To prevent mercury level from falling on its own when removed from mouth",
+      exp: "The kink breaks the continuous column of mercury when cooling starts, holding the reading steady until shaken down!"
+    },
+    {
+      q: "What is the standard measurement range of a Laboratory Thermometer?",
+      options: ["35°C to 42°C", "-10°C to 110°C", "0°C to 100°F", "20°C to 50°C"],
+      correct: "-10°C to 110°C",
+      exp: "A laboratory thermometer spans from freezing ice (-10°C) up to boiling water (110°C)."
+    },
+    {
+      q: "What is the official SI unit of temperature?",
+      options: ["Degree Celsius (°C)", "Degree Fahrenheit (°F)", "Kelvin (K)", "Joule (J)"],
+      correct: "Kelvin (K)",
+      exp: "Kelvin (K) is the SI unit of temperature used internationally in scientific research."
+    }
+  ];
+
+  const handleQuizAnswer = (opt: string) => {
+    if (showExp) return;
+    setSelectedAns(opt);
+    setShowExp(true);
+    if (opt === questions[quizIdx].correct) {
+      setScore(s => s + 1);
+    }
+  };
+
+  const mercuryHeightPercent = Math.max(5, Math.min(95, ((tempCelsius - minTemp) / (maxTemp - minTemp)) * 90 + 5));
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="g6_temp_lab">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-xs gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-black uppercase text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-100 font-mono">
+              Grade 6 Physics • Chapter 7
+            </span>
+            <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-100">
+              Curiosity Science
+            </span>
+          </div>
+          <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
+            🌡️ Temperature and its Measurement Studio
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Explore clinical, laboratory & digital thermometers, live temperature scale conversions (°C, °F, K), and clinical kink mechanics!
+          </p>
+        </div>
+
+        {/* Tab Controls */}
+        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 self-stretch md:self-auto justify-stretch">
+          <button
+            onClick={() => setActiveTab("sim")}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+              activeTab === "sim" ? "bg-white text-rose-700 shadow-xs border border-slate-200" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🎯 1. Thermometer Simulator
+          </button>
+          <button
+            onClick={() => setActiveTab("scales")}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+              activeTab === "scales" ? "bg-white text-rose-700 shadow-xs border border-slate-200" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            📊 2. Scales & Precautions
+          </button>
+          <button
+            onClick={() => setActiveTab("quiz")}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+              activeTab === "quiz" ? "bg-white text-emerald-700 shadow-xs border border-slate-200" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🎮 3. Temperature Quiz
+          </button>
+        </div>
+      </div>
+
+      {activeTab === "sim" && (
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          {/* Controls & Presets (5 cols) */}
+          <div className="md:col-span-5 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-5">
+            <div>
+              <label className="block text-xs font-black uppercase text-slate-500 tracking-wider mb-2">1. Select Thermometer Type</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: "clinical", label: "Clinical", range: "35°C–42°C", icon: "🩺" },
+                  { id: "lab", label: "Laboratory", range: "-10°C–110°C", icon: "🧪" },
+                  { id: "digital", label: "Digital", range: "0°C–50°C", icon: "📟" }
+                ].map(t => (
+                  <button
+                    key={t.id}
+                    onClick={() => handleTypeChange(t.id as any)}
+                    className={`p-2.5 rounded-xl border text-center transition cursor-pointer ${
+                      thermometerType === t.id
+                        ? "bg-rose-600 text-white border-rose-700 shadow-xs font-extrabold"
+                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    <span className="block text-xl">{t.icon}</span>
+                    <span className="block text-xs font-bold mt-1">{t.label}</span>
+                    <span className={`block text-[9px] ${thermometerType === t.id ? "text-rose-100" : "text-slate-400"}`}>{t.range}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Slider */}
+            <div>
+              <div className="flex justify-between items-center text-xs font-black uppercase text-slate-600 tracking-wider mb-2">
+                <span>2. Adjust Temperature</span>
+                <span className="text-rose-600 font-mono text-sm">{tempCelsius}°C</span>
+              </div>
+              <input
+                type="range"
+                min={minTemp}
+                max={maxTemp}
+                step={0.5}
+                value={tempCelsius}
+                onChange={e => setTempCelsius(Number(e.target.value))}
+                className="w-full accent-rose-500 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <div className="flex justify-between text-[10px] font-bold text-slate-400 mt-1 font-mono">
+                <span>Min: {minTemp}°C</span>
+                <span>Max: {maxTemp}°C</span>
+              </div>
+            </div>
+
+            {/* Quick Presets */}
+            <div>
+              <span className="block text-xs font-black uppercase text-slate-500 tracking-wider mb-2">3. Quick Benchmarks</span>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {thermometerType === "clinical" ? (
+                  <>
+                    <button onClick={() => setPreset(35.5)} className="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 font-bold text-slate-700 text-left cursor-pointer">
+                      ❄️ Low Temp (35.5°C)
+                    </button>
+                    <button onClick={() => setPreset(37)} className="p-2 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 font-extrabold text-emerald-800 text-left cursor-pointer">
+                      💚 Normal Body (37.0°C)
+                    </button>
+                    <button onClick={() => setPreset(38.5)} className="p-2 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 font-extrabold text-amber-800 text-left cursor-pointer">
+                      🤒 Mild Fever (38.5°C)
+                    </button>
+                    <button onClick={() => setPreset(40.5)} className="p-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 font-extrabold text-rose-800 text-left cursor-pointer">
+                      🔥 High Fever (40.5°C)
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => setPreset(0)} className="p-2 rounded-xl border border-sky-200 bg-sky-50 hover:bg-sky-100 font-extrabold text-sky-800 text-left cursor-pointer">
+                      🧊 Freezing Water (0°C)
+                    </button>
+                    <button onClick={() => setPreset(25)} className="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 font-bold text-slate-700 text-left cursor-pointer">
+                      🏠 Room Temp (25°C)
+                    </button>
+                    <button onClick={() => setPreset(37)} className="p-2 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 font-extrabold text-emerald-800 text-left cursor-pointer">
+                      💚 Body Temp (37°C)
+                    </button>
+                    <button onClick={() => setPreset(100)} className="p-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 font-extrabold text-rose-800 text-left cursor-pointer">
+                      ♨️ Boiling Water (100°C)
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Scale Conversion Panel */}
+            <div className="bg-slate-900 text-white p-4 rounded-xl space-y-2 border border-slate-800">
+              <span className="text-[10px] font-black uppercase tracking-wider text-rose-400 block font-mono">Live Temperature Conversions</span>
+              <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
+                <div className="bg-slate-800 p-2 rounded-lg border border-slate-700">
+                  <span className="text-[9px] text-slate-400 block">Celsius</span>
+                  <span className="text-sm font-black text-white">{tempCelsius}°C</span>
+                </div>
+                <div className="bg-slate-800 p-2 rounded-lg border border-slate-700">
+                  <span className="text-[9px] text-slate-400 block">Fahrenheit</span>
+                  <span className="text-sm font-black text-amber-400">{tempFahrenheit}°F</span>
+                </div>
+                <div className="bg-slate-800 p-2 rounded-lg border border-slate-700">
+                  <span className="text-[9px] text-slate-400 block">Kelvin (SI)</span>
+                  <span className="text-sm font-black text-sky-400">{tempKelvin} K</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Thermometer Visual Stage (7 cols) */}
+          <div className="md:col-span-7 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col items-center justify-between min-h-[380px]">
+            <div className="w-full flex justify-between items-center text-xs">
+              <span className="font-extrabold text-slate-800">
+                Visualizing: {thermometerType === "clinical" ? "Clinical Glass Thermometer" : thermometerType === "lab" ? "Laboratory Glass Thermometer" : "Digital Thermometer"}
+              </span>
+              {thermometerType === "clinical" && (
+                <span className="bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full">
+                  ⚡ Features Kink (Constriction)
+                </span>
+              )}
+            </div>
+
+            {/* Thermometer Visual */}
+            {thermometerType !== "digital" ? (
+              <div className="relative my-4 flex flex-col items-center">
+                {/* Scale Capillary Glass Tube */}
+                <div className="w-10 h-64 bg-slate-100 border-2 border-slate-300 rounded-t-full relative flex flex-col items-center overflow-hidden shadow-inner">
+                  {/* Capillary Inner Bore */}
+                  <div className="w-2.5 h-full bg-slate-200/80 relative flex items-end">
+                    {/* Mercury Liquid Column */}
+                    <div
+                      className="w-full bg-gradient-to-t from-rose-600 to-rose-400 transition-all duration-300 rounded-t-sm"
+                      style={{ height: `${mercuryHeightPercent}%` }}
+                    />
+                  </div>
+
+                  {/* Kink Visual if Clinical */}
+                  {thermometerType === "clinical" && (
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-4 h-1.5 bg-amber-400 rounded border border-amber-600 z-10 text-[7px] font-black text-amber-900 text-center leading-none flex items-center justify-center shadow-xs">
+                      KINK
+                    </div>
+                  )}
+
+                  {/* Tick Marks on Glass */}
+                  <div className="absolute top-2 bottom-6 left-1 right-1 flex flex-col justify-between text-[8px] font-mono font-bold text-slate-400 pointer-events-none">
+                    <span>{maxTemp}°</span>
+                    <span>{((maxTemp + minTemp) / 2).toFixed(0)}°</span>
+                    <span>{minTemp}°</span>
+                  </div>
+                </div>
+
+                {/* Bulb at bottom */}
+                <div className="w-14 h-14 bg-rose-600 rounded-full border-2 border-slate-300 -mt-2 shadow-md flex items-center justify-center">
+                  <span className="text-white text-[9px] font-black font-mono">BULB</span>
+                </div>
+              </div>
+            ) : (
+              /* Digital Thermometer Visual */
+              <div className="my-8 w-72 bg-slate-800 p-4 rounded-3xl border-4 border-slate-600 shadow-2xl flex items-center justify-between">
+                <div className="w-8 h-8 bg-slate-400 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-black text-slate-800 font-mono">
+                  SENSOR
+                </div>
+                {/* LCD Display */}
+                <div className="bg-lime-200 border-2 border-slate-900 px-4 py-2 rounded-xl font-mono text-center shadow-inner">
+                  <span className="text-2xl font-black text-slate-900">{tempCelsius.toFixed(1)}</span>
+                  <span className="text-xs font-bold text-slate-700 ml-1">°C</span>
+                </div>
+                <div className="w-4 h-4 bg-rose-500 rounded-full border border-white"></div>
+              </div>
+            )}
+
+            {/* Explanation Note */}
+            <div className="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600">
+              <span className="font-extrabold text-slate-800 block mb-0.5">Key Observation:</span>
+              {thermometerType === "clinical" && (
+                <p>The clinical thermometer ranges from 35°C to 42°C because human body temperature rarely drops below 35°C or rises above 42°C. The kink prevents mercury from dropping on cooling when taken out of mouth.</p>
+              )}
+              {thermometerType === "lab" && (
+                <p>The laboratory thermometer ranges from -10°C to 110°C to measure freezing ice and boiling liquids. It has NO kink and MUST be read while immersed in the substance!</p>
+              )}
+              {thermometerType === "digital" && (
+                <p>Digital thermometers use an electronic thermistor sensor instead of liquid mercury, completely eliminating mercury toxicity hazards.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "scales" && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+          <h3 className="text-base font-extrabold text-slate-800">📊 Temperature Scales & Usage Precautions</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-600">
+            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <span className="font-extrabold text-slate-800 text-sm block">1. Scale Formulas & Benchmarks</span>
+              <ul className="space-y-1.5 list-disc list-inside">
+                <li><strong>Freezing Point of Water:</strong> 0°C = 32°F = 273.15 K</li>
+                <li><strong>Normal Human Body Temp:</strong> 37°C = 98.6°F = 310.15 K</li>
+                <li><strong>Boiling Point of Water:</strong> 100°C = 212°F = 373.15 K</li>
+                <li><strong>Celsius to Fahrenheit:</strong> F = (C × 9/5) + 32</li>
+                <li><strong>Celsius to Kelvin:</strong> K = C + 273.15</li>
+              </ul>
+            </div>
+            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <span className="font-extrabold text-slate-800 text-sm block">2. Essential Handling Precautions</span>
+              <ul className="space-y-1.5 list-disc list-inside">
+                <li>Wash thermometer with antiseptic solution before & after use.</li>
+                <li>Ensure mercury is below 35°C before taking clinical reading.</li>
+                <li>Keep line of sight level with top of mercury meniscus to prevent <strong>parallax error</strong>.</li>
+                <li>Do NOT hold the thermometer by its glass bulb while taking or reading temperature.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "quiz" && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-5">
+          <div className="flex justify-between items-center border-b pb-3">
+            <span className="text-xs font-black uppercase text-rose-600 font-mono">Question {quizIdx + 1} of {questions.length}</span>
+            <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Score: {score} / {questions.length}</span>
+          </div>
+
+          <p className="text-sm font-extrabold text-slate-800">{questions[quizIdx].q}</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {questions[quizIdx].options.map(opt => (
+              <button
+                key={opt}
+                onClick={() => handleQuizAnswer(opt)}
+                disabled={showExp}
+                className={`p-3.5 rounded-xl border text-left text-xs font-extrabold transition cursor-pointer ${
+                  showExp
+                    ? opt === questions[quizIdx].correct
+                      ? "bg-emerald-600 text-white border-emerald-700"
+                      : opt === selectedAns
+                      ? "bg-rose-600 text-white border-rose-700"
+                      : "bg-slate-100 text-slate-400 border-slate-200"
+                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                }`}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+
+          {showExp && (
+            <div className={`p-4 rounded-xl border text-xs leading-relaxed space-y-2 ${selectedAns === questions[quizIdx].correct ? "bg-emerald-50 text-emerald-900 border-emerald-200" : "bg-rose-50 text-rose-900 border-rose-200"}`}>
+              <p className="font-extrabold">{selectedAns === questions[quizIdx].correct ? "✅ Correct!" : "❌ Incorrect!"}</p>
+              <p>{questions[quizIdx].exp}</p>
+              <button
+                onClick={() => {
+                  setSelectedAns(null);
+                  setShowExp(false);
+                  setQuizIdx(i => (i + 1) % questions.length);
+                }}
+                className="mt-2 px-4 py-1.5 bg-slate-900 text-white font-extrabold rounded-lg text-xs cursor-pointer"
+              >
+                Next Question ➔
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function Grade6BeyondEarthVisualLab() {
+  const [activeTab, setActiveTab] = useState<"solar" | "moon" | "quiz">("solar");
+
+  // Solar System State
+  const [selectedPlanet, setSelectedPlanet] = useState<string>("earth");
+  const [orbitSpeed, setOrbitSpeed] = useState<number>(1);
+  const [simTime, setSimTime] = useState<number>(0);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+
+  // Moon Phase State
+  const [moonPhaseIdx, setMoonPhaseIdx] = useState<number>(4); // 4 = Full Moon
+
+  // Solar animation loop
+  useEffect(() => {
+    let anim: number;
+    if (!isPaused) {
+      let last = Date.now();
+      const tick = () => {
+        const now = Date.now();
+        setSimTime(p => p + ((now - last) / 1000) * orbitSpeed);
+        last = now;
+        anim = requestAnimationFrame(tick);
+      };
+      anim = requestAnimationFrame(tick);
+    }
+    return () => cancelAnimationFrame(anim);
+  }, [isPaused, orbitSpeed]);
+
+  const planetsData = [
+    { id: "mercury", name: "Mercury 🔴", color: "bg-slate-400", size: "w-3 h-3", dist: 22, speed: 4.1, period: "88 days", type: "Inner Rocky", facts: "Closest planet to the Sun! Has extreme temperatures from 430°C in day to -180°C at night." },
+    { id: "venus", name: "Venus 🟡", color: "bg-amber-300", size: "w-4 h-4", dist: 32, speed: 1.6, period: "225 days", type: "Inner Rocky", facts: "Hottest planet in the Solar System due to dense carbon dioxide greenhouse atmosphere (~465°C)." },
+    { id: "earth", name: "Earth 🌍", color: "bg-sky-500", size: "w-5 h-5", dist: 44, speed: 1.0, period: "365.25 days", type: "Inner Rocky", facts: "Our home planet! Only known planet with liquid oceans, oxygen atmosphere, and life." },
+    { id: "mars", name: "Mars 🔴", color: "bg-rose-500", size: "w-4 h-4", dist: 56, speed: 0.5, period: "687 days", type: "Inner Rocky", facts: "Known as the Red Planet due to iron oxide rust dust on its surface. Home to Olympus Mons volcano." },
+    { id: "jupiter", name: "Jupiter 🟠", color: "bg-amber-600", size: "w-8 h-8", dist: 70, speed: 0.2, period: "12 years", type: "Outer Gas Giant", facts: "Largest planet in the Solar System! Great Red Spot is a giant storm larger than Earth." },
+    { id: "saturn", name: "Saturn 🪐", color: "bg-yellow-500", size: "w-7 h-7", dist: 82, speed: 0.1, period: "29.5 years", type: "Outer Gas Giant", facts: "Famous for its spectacular, wide planetary rings composed of ice, dust, and rock chunks." },
+    { id: "uranus", name: "Uranus 🟢", color: "bg-cyan-400", size: "w-5 h-5", dist: 92, speed: 0.05, period: "84 years", type: "Outer Ice Giant", facts: "An ice giant that rotates completely on its side with an axial tilt of 98 degrees!" },
+    { id: "neptune", name: "Neptune 🔵", color: "bg-indigo-600", size: "w-5 h-5", dist: 102, speed: 0.03, period: "165 years", type: "Outer Ice Giant", facts: "Farthest known planet from the Sun with supersonic winds reaching over 2,000 km/h." }
+  ];
+
+  const moonPhases = [
+    { name: "New Moon (Amavasya)", icon: "🌑", illuminated: "0%", desc: "Moon is between Earth and Sun. Its dark side faces Earth so it is not visible." },
+    { name: "Waxing Crescent", icon: "🌒", illuminated: "25%", desc: "A thin silver crescent appears on the right side as illuminated fraction grows." },
+    { name: "First Quarter", icon: "🌓", illuminated: "50%", desc: "Half of the Moon's disk is illuminated on the right side." },
+    { name: "Waxing Gibbous", icon: "🌔", illuminated: "75%", desc: "More than half of the Moon is illuminated as it approaches Full Moon." },
+    { name: "Full Moon (Poornima)", icon: "🌕", illuminated: "100%", desc: "Earth is between Sun and Moon. The entire visible disk glows brightly!" },
+    { name: "Waning Gibbous", icon: "🌖", illuminated: "75%", desc: "The illuminated portion begins to decrease ('waning') on the right side." },
+    { name: "Third Quarter", icon: "🌗", illuminated: "50%", desc: "Half of the Moon's disk is illuminated on the left side." },
+    { name: "Waning Crescent", icon: "🌘", illuminated: "25%", desc: "A thin crescent remains on the left side before returning to New Moon." }
+  ];
+
+  const selectedPlanetInfo = planetsData.find(p => p.id === selectedPlanet) || planetsData[2];
+
+  // Quiz State
+  const [qIdx, setQIdx] = useState<number>(0);
+  const [selectedAns, setSelectedAns] = useState<string | null>(null);
+  const [score, setScore] = useState<number>(0);
+  const [showExp, setShowExp] = useState<boolean>(false);
+
+  const questions = [
+    {
+      q: "What motion of the Earth causes Day and Night?",
+      options: ["Rotation on its axis (24 hours)", "Revolution around the Sun (365 days)", "Precession", "Lunar orbit"],
+      correct: "Rotation on its axis (24 hours)",
+      exp: "Earth's rotation on its axis once every 24 hours causes day for the side facing the Sun and night for the other."
+    },
+    {
+      q: "Which planet is known as the 'Red Planet'?",
+      options: ["Venus", "Mars", "Jupiter", "Mercury"],
+      correct: "Mars",
+      exp: "Mars looks red because its surface soil contains abundant iron oxide (rust) dust!"
+    },
+    {
+      q: "Why does the Moon show changing phases in the night sky?",
+      options: [
+        "The Moon produces its own light that changes color",
+        "The Moon reflects sunlight as it orbits around Earth",
+        "Clouds block the Moon differently every night",
+        "The Earth casts a shadow on the Moon every night"
+      ],
+      correct: "The Moon reflects sunlight as it orbits around Earth",
+      exp: "The Moon is non-luminous and reflects sunlight. As it orbits Earth, different fractions of its illuminated half face us!"
+    },
+    {
+      q: "Which constellation is also known as 'Saptarishi' or Great Bear?",
+      options: ["Orion", "Ursa Major", "Cassiopeia", "Leo"],
+      correct: "Ursa Major",
+      exp: "Ursa Major contains seven prominent stars forming a ladle shape, called Saptarishi in India."
+    }
+  ];
+
+  const handleQuizAnswer = (opt: string) => {
+    if (showExp) return;
+    setSelectedAns(opt);
+    setShowExp(true);
+    if (opt === questions[qIdx].correct) {
+      setScore(s => s + 1);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="g6_beyond_earth_lab">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-xs gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-black uppercase text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-100 font-mono">
+              Grade 6 Physics • Chapter 12
+            </span>
+            <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-100">
+              Curiosity Astronomy
+            </span>
+          </div>
+          <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
+            🪐 Beyond Earth: Solar System & Moon Phases Studio
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Explore planet orbits, Earth rotation & day/night cycle, Moon phases, and stargazing constellations!
+          </p>
+        </div>
+
+        {/* Tab Controls */}
+        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 self-stretch md:self-auto justify-stretch">
+          <button
+            onClick={() => setActiveTab("solar")}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+              activeTab === "solar" ? "bg-white text-indigo-700 shadow-xs border border-slate-200" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🪐 1. Solar System
+          </button>
+          <button
+            onClick={() => setActiveTab("moon")}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+              activeTab === "moon" ? "bg-white text-indigo-700 shadow-xs border border-slate-200" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🌕 2. Moon Phases
+          </button>
+          <button
+            onClick={() => setActiveTab("quiz")}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+              activeTab === "quiz" ? "bg-white text-emerald-700 shadow-xs border border-slate-200" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🎮 3. Space Quiz
+          </button>
+        </div>
+      </div>
+
+      {activeTab === "solar" && (
+        <div className="space-y-6">
+          {/* Simulation Controls Bar */}
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-4 shadow-xs">
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
+              <span>Orbit Speed:</span>
+              {[1, 2, 5].map(sp => (
+                <button
+                  key={sp}
+                  onClick={() => setOrbitSpeed(sp)}
+                  className={`px-3 py-1 rounded-lg text-xs font-extrabold font-mono border cursor-pointer ${
+                    orbitSpeed === sp ? "bg-indigo-600 text-white border-indigo-700" : "bg-slate-100 text-slate-600 border-slate-200"
+                  }`}
+                >
+                  {sp}x
+                </button>
+              ))}
+              <button
+                onClick={() => setIsPaused(!isPaused)}
+                className="ml-2 px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 cursor-pointer"
+              >
+                {isPaused ? "▶️ Resume" : "⏸️ Pause"}
+              </button>
+            </div>
+
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {planetsData.map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => setSelectedPlanet(p.id)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition border cursor-pointer ${
+                    selectedPlanet === p.id
+                      ? "bg-indigo-600 text-white border-indigo-700 shadow-xs"
+                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                  }`}
+                >
+                  {p.name.split(" ")[0]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Orrery Visual Canvas */}
+          <div className="bg-slate-950 rounded-2xl border border-slate-800 p-6 h-80 relative flex items-center justify-center overflow-hidden shadow-2xl">
+            {/* Stars background */}
+            <div className="absolute inset-0 opacity-40 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+
+            {/* Central Sun */}
+            <div className="w-14 h-14 bg-gradient-to-r from-amber-400 via-orange-500 to-yellow-300 rounded-full shadow-[0_0_50px_rgba(251,191,36,0.8)] z-10 flex items-center justify-center border-2 border-amber-200 animate-pulse">
+              <span className="text-[10px] font-black text-amber-950 uppercase font-mono">SUN</span>
+            </div>
+
+            {/* Planet Orbits */}
+            {planetsData.map(p => {
+              const angle = simTime * p.speed * 0.5;
+              const x = Math.cos(angle) * (p.dist * 1.3);
+              const y = Math.sin(angle) * (p.dist * 0.7);
+              const isSelected = p.id === selectedPlanet;
+
+              return (
+                <React.Fragment key={p.id}>
+                  {/* Dotted Orbit Path */}
+                  <div
+                    className="absolute rounded-full border border-dashed border-slate-800 pointer-events-none"
+                    style={{
+                      width: `${p.dist * 2.6}px`,
+                      height: `${p.dist * 1.4}px`
+                    }}
+                  />
+
+                  {/* Planet Body */}
+                  <div
+                    onClick={() => setSelectedPlanet(p.id)}
+                    className={`absolute flex flex-col items-center justify-center cursor-pointer transition-transform duration-75 z-20 ${
+                      isSelected ? "scale-125 z-30" : "hover:scale-110"
+                    }`}
+                    style={{
+                      transform: `translate(${x}px, ${y}px)`
+                    }}
+                  >
+                    <div className={`${p.size} ${p.color} rounded-full border border-white/80 shadow-lg ${isSelected ? "ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-950" : ""}`} />
+                    <span className="text-[8px] font-extrabold text-slate-300 bg-slate-900/90 px-1.5 rounded border border-slate-800 mt-1 whitespace-nowrap">
+                      {p.name.split(" ")[0]}
+                    </span>
+                  </div>
+                </React.Fragment>
+              );
+            })}
+          </div>
+
+          {/* Selected Planet Info Card */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <span className="text-[10px] font-black uppercase text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 font-mono">
+                {selectedPlanetInfo.type}
+              </span>
+              <h3 className="text-base font-extrabold text-slate-800 mt-1">{selectedPlanetInfo.name}</h3>
+              <p className="text-xs text-slate-500 mt-0.5">Orbital Period: <strong>{selectedPlanetInfo.period}</strong></p>
+            </div>
+            <div className="md:col-span-2 bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs text-slate-600">
+              <span className="font-extrabold text-slate-800 block mb-1">Key Scientific Facts:</span>
+              <p>{selectedPlanetInfo.facts}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "moon" && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+          <div className="flex justify-between items-center border-b pb-4">
+            <div>
+              <h3 className="text-base font-extrabold text-slate-800">🌕 Phases of the Moon Simulator</h3>
+              <p className="text-xs text-slate-500">The Moon orbits Earth every ~29.5 days. Select a phase to see how sunlight illuminates its surface!</p>
+            </div>
+            <span className="text-xs font-mono font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
+              Cycle: 29.5 Days
+            </span>
+          </div>
+
+          {/* Moon Phase Selector Buttons */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2">
+            {moonPhases.map((phase, idx) => (
+              <button
+                key={phase.name}
+                onClick={() => setMoonPhaseIdx(idx)}
+                className={`p-3 rounded-xl border text-center transition cursor-pointer flex flex-col items-center justify-between gap-1 ${
+                  moonPhaseIdx === idx
+                    ? "bg-indigo-600 text-white border-indigo-700 shadow-md ring-2 ring-indigo-300"
+                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                }`}
+              >
+                <span className="text-3xl">{phase.icon}</span>
+                <span className="text-[10px] font-extrabold leading-tight">{phase.name.split(" ")[0]}</span>
+                <span className={`text-[8px] font-mono ${moonPhaseIdx === idx ? "text-indigo-200" : "text-slate-400"}`}>{phase.illuminated}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Active Moon Phase Card */}
+          <div className="p-6 bg-slate-900 text-white rounded-2xl border border-slate-800 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            <div className="md:col-span-4 flex flex-col items-center justify-center p-4 bg-slate-950 rounded-xl border border-slate-800">
+              <span className="text-7xl filter drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]">{moonPhases[moonPhaseIdx].icon}</span>
+              <span className="text-sm font-black text-amber-300 mt-2">{moonPhases[moonPhaseIdx].name}</span>
+              <span className="text-[10px] text-slate-400 font-mono mt-0.5">Illuminated Fraction: {moonPhases[moonPhaseIdx].illuminated}</span>
+            </div>
+            <div className="md:col-span-8 space-y-3 text-xs">
+              <span className="text-[10px] font-black text-indigo-400 uppercase tracking-wider block font-mono">Phase Explanation</span>
+              <p className="text-slate-300 leading-relaxed text-sm font-medium">{moonPhases[moonPhaseIdx].desc}</p>
+              <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-xs text-slate-300">
+                <strong className="text-amber-300">NCERT Concept:</strong> The Moon does not produce its own light. We only see the part of the Moon that reflects light from the Sun towards Earth.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "quiz" && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-5">
+          <div className="flex justify-between items-center border-b pb-3">
+            <span className="text-xs font-black uppercase text-indigo-600 font-mono">Question {qIdx + 1} of {questions.length}</span>
+            <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Score: {score} / {questions.length}</span>
+          </div>
+
+          <p className="text-sm font-extrabold text-slate-800">{questions[qIdx].q}</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {questions[qIdx].options.map(opt => (
+              <button
+                key={opt}
+                onClick={() => handleQuizAnswer(opt)}
+                disabled={showExp}
+                className={`p-3.5 rounded-xl border text-left text-xs font-extrabold transition cursor-pointer ${
+                  showExp
+                    ? opt === questions[qIdx].correct
+                      ? "bg-emerald-600 text-white border-emerald-700"
+                      : opt === selectedAns
+                      ? "bg-rose-600 text-white border-rose-700"
+                      : "bg-slate-100 text-slate-400 border-slate-200"
+                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                }`}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+
+          {showExp && (
+            <div className={`p-4 rounded-xl border text-xs leading-relaxed space-y-2 ${selectedAns === questions[qIdx].correct ? "bg-emerald-50 text-emerald-900 border-emerald-200" : "bg-rose-50 text-rose-900 border-rose-200"}`}>
+              <p className="font-extrabold">{selectedAns === questions[qIdx].correct ? "✅ Correct!" : "❌ Incorrect!"}</p>
+              <p>{questions[qIdx].exp}</p>
+              <button
+                onClick={() => {
+                  setSelectedAns(null);
+                  setShowExp(false);
+                  setQIdx(i => (i + 1) % questions.length);
+                }}
+                className="mt-2 px-4 py-1.5 bg-slate-900 text-white font-extrabold rounded-lg text-xs cursor-pointer"
+              >
+                Next Question ➔
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function PhysicsVisualLab({ chapterId }: { chapterId?: string }) {
+  // Check if Grade 6 Motion
+  if (chapterId === "g6_phys_motion" || chapterId === "motion" || chapterId?.includes("g6_phys_motion")) {
+    return <Grade6MotionVisualLab />;
+  }
+
+  // Check if Grade 6 Temperature
+  if (chapterId === "g6_phys_temp" || chapterId?.includes("temp")) {
+    return <Grade6TemperatureVisualLab />;
+  }
+
+  // Check if Grade 6 Beyond Earth
+  if (chapterId === "g6_phys_beyond_earth" || chapterId?.includes("beyond_earth") || chapterId?.includes("earth")) {
+    return <Grade6BeyondEarthVisualLab />;
+  }
+
   // Grade 6 Electricity states
   const [circuitClosed, setCircuitClosed] = useState<boolean>(true);
   const [testMaterial, setTestMaterial] = useState<"copper" | "iron" | "wood" | "rubber">("copper");
@@ -2610,12 +4161,105 @@ export function PhysicsVisualLab({ chapterId }: { chapterId?: string }) {
 }
 
 export function ChemistryVisualLab({ chapterId }: { chapterId?: string }) {
-  const [activeTab, setActiveTab] = useState<"atom_builder" | "rutherford" | "models" | "isotopes" | "hierarchy">("atom_builder");
+  type ChemTab = "formula_crisscross" | "laws_combination" | "molecular_mass" | "mole_concept" | "atom_builder" | "rutherford" | "models" | "isotopes" | "hierarchy";
 
-  // 1. ATOM BUILDER STATE
+  const [activeTab, setActiveTab] = useState<ChemTab>(() => {
+    if (chapterId === "g9_chem_atoms") return "formula_crisscross";
+    if (chapterId === "g9_chem_matter") return "hierarchy";
+    return "atom_builder";
+  });
+
+  // ==================== CHAPTER 3: ATOMS & MOLECULES STATE ====================
+  // 1. Formula Criss-Cross State
+  const CATIONS_LIST = [
+    { id: "Na", name: "Sodium", symbol: "Na", valency: 1, charge: "+1", poly: false },
+    { id: "K", name: "Potassium", symbol: "K", valency: 1, charge: "+1", poly: false },
+    { id: "Ca", name: "Calcium", symbol: "Ca", valency: 2, charge: "+2", poly: false },
+    { id: "Mg", name: "Magnesium", symbol: "Mg", valency: 2, charge: "+2", poly: false },
+    { id: "Al", name: "Aluminium", symbol: "Al", valency: 3, charge: "+3", poly: false },
+    { id: "Fe", name: "Iron (III)", symbol: "Fe", valency: 3, charge: "+3", poly: false },
+    { id: "NH4", name: "Ammonium", symbol: "NH₄", valency: 1, charge: "+1", poly: true },
+    { id: "H", name: "Hydrogen", symbol: "H", valency: 1, charge: "+1", poly: false },
+    { id: "Cu", name: "Copper (II)", symbol: "Cu", valency: 2, charge: "+2", poly: false },
+    { id: "Zn", name: "Zinc", symbol: "Zn", valency: 2, charge: "+2", poly: false },
+    { id: "Ba", name: "Barium", symbol: "Ba", valency: 2, charge: "+2", poly: false },
+  ];
+
+  const ANIONS_LIST = [
+    { id: "Cl", name: "Chloride", symbol: "Cl", valency: 1, charge: "-1", poly: false },
+    { id: "O", name: "Oxide", symbol: "O", valency: 2, charge: "-2", poly: false },
+    { id: "SO4", name: "Sulphate", symbol: "SO₄", valency: 2, charge: "-2", poly: true },
+    { id: "NO3", name: "Nitrate", symbol: "NO₃", valency: 1, charge: "-1", poly: true },
+    { id: "CO3", name: "Carbonate", symbol: "CO₃", valency: 2, charge: "-2", poly: true },
+    { id: "OH", name: "Hydroxide", symbol: "OH", valency: 1, charge: "-1", poly: true },
+    { id: "PO4", name: "Phosphate", symbol: "PO₄", valency: 3, charge: "-3", poly: true },
+    { id: "S", name: "Sulphide", symbol: "S", valency: 2, charge: "-2", poly: false },
+    { id: "HCO3", name: "Hydrogen Carbonate", symbol: "HCO₃", valency: 1, charge: "-1", poly: true },
+  ];
+
+  const [selectedCation, setSelectedCation] = useState(CATIONS_LIST[0]); // Na+
+  const [selectedAnion, setSelectedAnion] = useState(ANIONS_LIST[0]); // Cl-
+
+  const getFormulaDetails = (cat: typeof CATIONS_LIST[0], an: typeof ANIONS_LIST[0]) => {
+    const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+    const common = gcd(cat.valency, an.valency);
+    const catSub = an.valency / common;
+    const anSub = cat.valency / common;
+
+    const catFormatted = catSub === 1 ? cat.symbol : (cat.poly ? `(${cat.symbol})${catSub}` : `${cat.symbol}${catSub}`);
+    const anFormatted = anSub === 1 ? an.symbol : (an.poly ? `(${an.symbol})${anSub}` : `${an.symbol}${anSub}`);
+
+    const formula = `${catFormatted}${anFormatted}`;
+    const name = `${cat.name} ${an.name}`;
+
+    return { formula, catSub, anSub, name, rawCatSub: an.valency, rawAnSub: cat.valency, simplified: common > 1 };
+  };
+
+  // 2. Laws of Combination State
+  const [reactantMassGrams, setReactantMassGrams] = useState<number>(20);
+  const [combLawTab, setCombLawTab] = useState<"conservation" | "proportions">("conservation");
+  const [waterSampleMass, setWaterSampleMass] = useState<number>(18);
+
+  // 3. Molecular Mass Calculator State
+  const PRESET_MOLECULES = [
+    { name: "Water", formula: "H₂O", parts: [{ name: "Hydrogen", sym: "H", count: 2, mass: 1 }, { name: "Oxygen", sym: "O", count: 1, mass: 16 }] },
+    { name: "Sulphuric Acid", formula: "H₂SO₄", parts: [{ name: "Hydrogen", sym: "H", count: 2, mass: 1 }, { name: "Sulphur", sym: "S", count: 1, mass: 32 }, { name: "Oxygen", sym: "O", count: 4, mass: 16 }] },
+    { name: "Nitric Acid", formula: "HNO₃", parts: [{ name: "Hydrogen", sym: "H", count: 1, mass: 1 }, { name: "Nitrogen", sym: "N", count: 1, mass: 14 }, { name: "Oxygen", sym: "O", count: 3, mass: 16 }] },
+    { name: "Glucose", formula: "C₆H₁₂O₆", parts: [{ name: "Carbon", sym: "C", count: 6, mass: 12 }, { name: "Hydrogen", sym: "H", count: 12, mass: 1 }, { name: "Oxygen", sym: "O", count: 6, mass: 16 }] },
+    { name: "Sodium Chloride", formula: "NaCl", parts: [{ name: "Sodium", sym: "Na", count: 1, mass: 23 }, { name: "Chlorine", sym: "Cl", count: 1, mass: 35.5 }] },
+    { name: "Calcium Carbonate", formula: "CaCO₃", parts: [{ name: "Calcium", sym: "Ca", count: 1, mass: 40 }, { name: "Carbon", sym: "C", count: 1, mass: 12 }, { name: "Oxygen", sym: "O", count: 3, mass: 16 }] },
+    { name: "Ammonia", formula: "NH₃", parts: [{ name: "Nitrogen", sym: "N", count: 1, mass: 14 }, { name: "Hydrogen", sym: "H", count: 3, mass: 1 }] },
+    { name: "Carbon Dioxide", formula: "CO₂", parts: [{ name: "Carbon", sym: "C", count: 1, mass: 12 }, { name: "Oxygen", sym: "O", count: 2, mass: 16 }] }
+  ];
+  const [activeMoleculeIdx, setActiveMoleculeIdx] = useState<number>(1); // H2SO4 default
+
+  // 4. Mole Concept State
+  const MOLE_SUBSTANCES = [
+    { name: "Water (H₂O)", molarMass: 18, unitAtoms: 3 },
+    { name: "Carbon (C)", molarMass: 12, unitAtoms: 1 },
+    { name: "Oxygen Gas (O₂)", molarMass: 32, unitAtoms: 2 },
+    { name: "Sodium Chloride (NaCl)", molarMass: 58.5, unitAtoms: 2 },
+    { name: "Carbon Dioxide (CO₂)", molarMass: 44, unitAtoms: 3 },
+    { name: "Glucose (C₆H₁₂O₆)", molarMass: 180, unitAtoms: 24 },
+  ];
+  const [selectedSubstanceIdx, setSelectedSubstanceIdx] = useState<number>(0);
+  const [moleGivenGrams, setMoleGivenGrams] = useState<number>(36);
+
+  // ==================== CHAPTER 4: INSIDE ATOM STATE ====================
+  // 1. ATOM BUILDER & ELECTRON DISTRIBUTION STATE
   const [protons, setProtons] = useState<number>(6); // Default Carbon
   const [neutrons, setNeutrons] = useState<number>(6);
   const [electrons, setElectrons] = useState<number>(6);
+  const [atomSubTab, setAtomSubTab] = useState<"sandbox" | "rules" | "matrix" | "practice">("sandbox");
+  const [selectedRuleShell, setSelectedRuleShell] = useState<number>(1); // 1: K, 2: L, 3: M, 4: N
+
+  // Electron Distribution Practice Game State
+  const [practiceZ, setPracticeZ] = useState<number>(11); // e.g. Sodium (Na, Z=11)
+  const [userK, setUserK] = useState<number>(0);
+  const [userL, setUserL] = useState<number>(0);
+  const [userM, setUserM] = useState<number>(0);
+  const [userN, setUserN] = useState<number>(0);
+  const [practiceFeedback, setPracticeFeedback] = useState<{ isCorrect: boolean; msg: string } | null>(null);
 
   // 2. RUTHERFORD EXPERIMENT STATE
   const [rutherfordFired, setRutherfordFired] = useState<number>(0);
@@ -2632,6 +4276,43 @@ export function ChemistryVisualLab({ chapterId }: { chapterId?: string }) {
 
   // 4. ISOTOPES & ISOBARS STATE
   const [cl35Percent, setCl35Percent] = useState<number>(75);
+  const [selectedIsoCategory, setSelectedIsoCategory] = useState<"hydrogen" | "carbon" | "uranium" | "isobar_ca_ar" | "isobar_c14_n14">("hydrogen");
+  const [isoQuizIdx, setIsoQuizIdx] = useState<number>(0);
+  const [isoQuizUserAnswer, setIsoQuizUserAnswer] = useState<string | null>(null);
+  const [isoQuizScore, setIsoQuizScore] = useState<number>(0);
+
+  const ISO_QUIZ_QUESTIONS = [
+    {
+      pair: ["¹²₆C (Carbon-12)", "¹⁴₆C (Carbon-14)"],
+      type: "isotope",
+      title: "Carbon-12 vs Carbon-14",
+      explanation: "Both atoms have Z = 6 (6 Protons), but Carbon-12 has 6 Neutrons while Carbon-14 has 8 Neutrons. Same element with different neutron counts → ISOTOPES!"
+    },
+    {
+      pair: ["⁴⁰₂₀Ca (Calcium-40)", "⁴⁰₁₈Ar (Argon-40)"],
+      type: "isobar",
+      title: "Calcium-40 vs Argon-40",
+      explanation: "Calcium has Z = 20 and Argon has Z = 18 (different elements & protons), but both have Mass Number A = 40! Different elements with same total mass number → ISOBARS!"
+    },
+    {
+      pair: ["³⁵₁₇Cl (Chlorine-35)", "³⁷₁₇Cl (Chlorine-37)"],
+      type: "isotope",
+      title: "Chlorine-35 vs Chlorine-37",
+      explanation: "Both have Atomic Number Z = 17 (17 Protons), but Chlorine-35 has 18 Neutrons and Chlorine-37 has 20 Neutrons. Same element → ISOTOPES!"
+    },
+    {
+      pair: ["¹⁴₆C (Carbon-14)", "¹⁴₇N (Nitrogen-14)"],
+      type: "isobar",
+      title: "Carbon-14 vs Nitrogen-14",
+      explanation: "Carbon has Z = 6 (6 Protons) and Nitrogen has Z = 7 (7 Protons), but both have total Mass Number A = 14! Same mass number → ISOBARS!"
+    },
+    {
+      pair: ["²³⁵₉₂U (Uranium-235)", "²³⁸₉₂U (Uranium-238)"],
+      type: "isotope",
+      title: "Uranium-235 vs Uranium-238",
+      explanation: "Both have Atomic Number Z = 92 (92 Protons), but ²³⁵U has 143 Neutrons and ²³⁸U has 146 Neutrons. Same element → ISOTOPES!"
+    }
+  ];
 
   // Periodic Table Elements Data (Z = 1 to 20)
   const ELEMENTS_20 = [
@@ -2778,7 +4459,7 @@ export function ChemistryVisualLab({ chapterId }: { chapterId?: string }) {
               : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
           }`}
         >
-          <span>⚛️ Atom & Shell Sandbox</span>
+          <span>⚛️ Interactive Bohr Model & Electron Shells</span>
         </button>
 
         <button
@@ -2829,271 +4510,762 @@ export function ChemistryVisualLab({ chapterId }: { chapterId?: string }) {
       {/* ==================== TAB 1: ATOM & SHELL SANDBOX ==================== */}
       {activeTab === "atom_builder" && (
         <div className="space-y-5 animate-fade-in">
-          {/* Quick Preset Buttons */}
-          <div className="bg-white p-3.5 rounded-xl border border-slate-200 flex flex-wrap items-center gap-2">
-            <span className="text-xs font-black uppercase text-slate-500 mr-2">Quick Presets:</span>
-            {[
-              { label: "1H (Hydrogen)", p: 1, n: 0, e: 1 },
-              { label: "2He (Helium)", p: 2, n: 2, e: 2 },
-              { label: "6C (Carbon)", p: 6, n: 6, e: 6 },
-              { label: "8O (Oxygen)", p: 8, n: 8, e: 8 },
-              { label: "11Na (Sodium)", p: 11, n: 12, e: 11 },
-              { label: "17Cl (Chlorine)", p: 17, n: 18, e: 17 },
-              { label: "18Ar (Argon)", p: 18, n: 22, e: 18 },
-              { label: "20Ca (Calcium)", p: 20, n: 20, e: 20 }
-            ].map((preset, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  setProtons(preset.p);
-                  setNeutrons(preset.n);
-                  setElectrons(preset.e);
-                }}
-                className="text-xs font-bold bg-slate-100 hover:bg-purple-100 hover:text-purple-800 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 transition cursor-pointer active:scale-95"
-              >
-                {preset.label}
-              </button>
-            ))}
+          {/* Sub-navigation bar inside Atom Builder */}
+          <div className="flex flex-wrap gap-2 border-b border-purple-200/80 pb-3">
+            <button
+              onClick={() => setAtomSubTab("sandbox")}
+              className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center gap-1.5 ${
+                atomSubTab === "sandbox"
+                  ? "bg-purple-600 text-white shadow-xs"
+                  : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+              }`}
+            >
+              <span>⚛️ Interactive Atom Sandbox</span>
+            </button>
+
+            <button
+              onClick={() => setAtomSubTab("rules")}
+              className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center gap-1.5 ${
+                atomSubTab === "rules"
+                  ? "bg-purple-600 text-white shadow-xs"
+                  : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+              }`}
+            >
+              <span>⚡ Bohr-Bury Scheme (2n² Rule)</span>
+            </button>
+
+            <button
+              onClick={() => setAtomSubTab("matrix")}
+              className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center gap-1.5 ${
+                atomSubTab === "matrix"
+                  ? "bg-purple-600 text-white shadow-xs"
+                  : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+              }`}
+            >
+              <span>📊 First 20 Elements Shell Table (Z=1 to 20)</span>
+            </button>
+
+            <button
+              onClick={() => setAtomSubTab("practice")}
+              className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center gap-1.5 ${
+                atomSubTab === "practice"
+                  ? "bg-purple-600 text-white shadow-xs"
+                  : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+              }`}
+            >
+              <span>🎮 Shell Distribution Practice Game</span>
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            {/* Column 1: Controls */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-2xs">
-              <span className="text-xs font-black uppercase text-slate-700 tracking-wider block border-b pb-2">
-                1. Adjust Subatomic Particles
-              </span>
-
-              {/* Protons Control */}
-              <div className="p-3 bg-orange-50/60 border border-orange-200 rounded-xl space-y-2">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <span className="text-xs font-extrabold text-orange-900 block">🔴 Protons (p⁺)</span>
-                    <span className="text-[10px] text-orange-700 font-medium">Atomic Number Z = {protons} | Charge: +1</span>
-                  </div>
-                  <span className="font-mono font-black text-base text-orange-900">{protons}</span>
-                </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="20"
-                  value={protons}
-                  onChange={(e) => setProtons(Number(e.target.value))}
-                  className="w-full accent-orange-600 cursor-pointer"
-                />
+          {/* SUB-VIEW 1: SANDBOX */}
+          {atomSubTab === "sandbox" && (
+            <div className="space-y-5 animate-fade-in">
+              {/* Quick Preset Buttons */}
+              <div className="bg-white p-3.5 rounded-xl border border-slate-200 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-black uppercase text-slate-500 mr-2">Quick Presets:</span>
+                {[
+                  { label: "1H (Hydrogen)", p: 1, n: 0, e: 1 },
+                  { label: "2He (Helium)", p: 2, n: 2, e: 2 },
+                  { label: "6C (Carbon)", p: 6, n: 6, e: 6 },
+                  { label: "8O (Oxygen)", p: 8, n: 8, e: 8 },
+                  { label: "11Na (Sodium)", p: 11, n: 12, e: 11 },
+                  { label: "17Cl (Chlorine)", p: 17, n: 18, e: 17 },
+                  { label: "18Ar (Argon)", p: 18, n: 22, e: 18 },
+                  { label: "20Ca (Calcium)", p: 20, n: 20, e: 20 }
+                ].map((preset, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setProtons(preset.p);
+                      setNeutrons(preset.n);
+                      setElectrons(preset.e);
+                    }}
+                    className="text-xs font-bold bg-slate-100 hover:bg-purple-100 hover:text-purple-800 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 transition cursor-pointer active:scale-95"
+                  >
+                    {preset.label}
+                  </button>
+                ))}
               </div>
 
-              {/* Neutrons Control */}
-              <div className="p-3 bg-slate-100/80 border border-slate-200 rounded-xl space-y-2">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <span className="text-xs font-extrabold text-slate-800 block">⚪ Neutrons (n⁰)</span>
-                    <span className="text-[10px] text-slate-600 font-medium">Mass Contribution | Charge: 0</span>
-                  </div>
-                  <span className="font-mono font-black text-base text-slate-800">{neutrons}</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="25"
-                  value={neutrons}
-                  onChange={(e) => setNeutrons(Number(e.target.value))}
-                  className="w-full accent-slate-600 cursor-pointer"
-                />
-              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                {/* Column 1: Controls */}
+                <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-2xs">
+                  <span className="text-xs font-black uppercase text-slate-700 tracking-wider block border-b pb-2">
+                    1. Adjust Subatomic Particles
+                  </span>
 
-              {/* Electrons Control */}
-              <div className="p-3 bg-sky-50/60 border border-sky-200 rounded-xl space-y-2">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <span className="text-xs font-extrabold text-sky-900 block">🔵 Electrons (e⁻)</span>
-                    <span className="text-[10px] text-sky-700 font-medium">Orbital Shells | Charge: -1</span>
+                  {/* Protons Control */}
+                  <div className="p-3 bg-orange-50/60 border border-orange-200 rounded-xl space-y-2">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-xs font-extrabold text-orange-900 block">🔴 Protons (p⁺)</span>
+                        <span className="text-[10px] text-orange-700 font-medium">Atomic Number Z = {protons} | Charge: +1</span>
+                      </div>
+                      <span className="font-mono font-black text-base text-orange-900">{protons}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="20"
+                      value={protons}
+                      onChange={(e) => setProtons(Number(e.target.value))}
+                      className="w-full accent-orange-600 cursor-pointer"
+                    />
                   </div>
-                  <span className="font-mono font-black text-base text-sky-900">{electrons}</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="20"
-                  value={electrons}
-                  onChange={(e) => setElectrons(Number(e.target.value))}
-                  className="w-full accent-sky-600 cursor-pointer"
-                />
-              </div>
 
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setElectrons(protons); // Make neutral
-                  }}
-                  className="flex-1 py-2 text-[11px] font-extrabold text-purple-800 bg-purple-50 border border-purple-200 hover:bg-purple-100 rounded-xl transition cursor-pointer"
-                >
-                  ⚖️ Make Neutral Atom (e⁻ = p⁺)
-                </button>
+                  {/* Neutrons Control */}
+                  <div className="p-3 bg-slate-100/80 border border-slate-200 rounded-xl space-y-2">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-xs font-extrabold text-slate-800 block">⚪ Neutrons (n⁰)</span>
+                        <span className="text-[10px] text-slate-600 font-medium">Mass Contribution | Charge: 0</span>
+                      </div>
+                      <span className="font-mono font-black text-base text-slate-800">{neutrons}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="25"
+                      value={neutrons}
+                      onChange={(e) => setNeutrons(Number(e.target.value))}
+                      className="w-full accent-slate-600 cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Electrons Control */}
+                  <div className="p-3 bg-sky-50/60 border border-sky-200 rounded-xl space-y-2">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-xs font-extrabold text-sky-900 block">🔵 Electrons (e⁻)</span>
+                        <span className="text-[10px] text-sky-700 font-medium">Orbital Shells | Charge: -1</span>
+                      </div>
+                      <span className="font-mono font-black text-base text-sky-900">{electrons}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="20"
+                      value={electrons}
+                      onChange={(e) => setElectrons(Number(e.target.value))}
+                      className="w-full accent-sky-600 cursor-pointer"
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        setElectrons(protons); // Make neutral
+                      }}
+                      className="flex-1 py-2 text-[11px] font-extrabold text-purple-800 bg-purple-50 border border-purple-200 hover:bg-purple-100 rounded-xl transition cursor-pointer"
+                    >
+                      ⚖️ Make Neutral Atom (e⁻ = p⁺)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Column 2: Bohr Shell Orbital Diagram */}
+                <div className="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col items-center justify-between min-h-[320px] relative shadow-2xs">
+                  <div className="w-full flex justify-between items-center border-b pb-2">
+                    <span className="text-xs font-black uppercase text-purple-900 tracking-wider">
+                      2. Bohr Atomic Orbital Model
+                    </span>
+                    <span className="text-[10px] font-mono font-extrabold bg-purple-100 text-purple-900 px-2 py-0.5 rounded-full">
+                      Bohr-Bury Rule (2n²)
+                    </span>
+                  </div>
+
+                  {/* Orbit Visual Stage */}
+                  <div className="relative w-64 h-64 flex items-center justify-center my-4">
+                    {/* Shell N (n=4) */}
+                    {shells.n > 0 && (
+                      <div className="absolute w-60 h-60 rounded-full border-2 border-dashed border-emerald-300 animate-spin" style={{ animationDuration: "35s" }}>
+                        <span className="absolute -top-3 left-1/2 -ml-2 text-[9px] font-bold text-emerald-600 bg-white px-1">N (n=4)</span>
+                        {Array.from({ length: shells.n }).map((_, i) => (
+                          <div
+                            key={`n-${i}`}
+                            className="absolute w-3.5 h-3.5 bg-emerald-500 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
+                            style={{
+                              top: `${50 - 48 * Math.cos((2 * Math.PI * i) / shells.n)}%`,
+                              left: `${50 + 48 * Math.sin((2 * Math.PI * i) / shells.n)}%`
+                            }}
+                          >
+                            e⁻
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Shell M (n=3) */}
+                    {(shells.m > 0 || shells.n > 0) && (
+                      <div className="absolute w-48 h-48 rounded-full border-2 border-dashed border-amber-300 animate-spin" style={{ animationDuration: "25s" }}>
+                        <span className="absolute -top-3 left-1/2 -ml-2 text-[9px] font-bold text-amber-600 bg-white px-1">M (n=3)</span>
+                        {Array.from({ length: shells.m }).map((_, i) => (
+                          <div
+                            key={`m-${i}`}
+                            className="absolute w-3.5 h-3.5 bg-amber-500 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
+                            style={{
+                              top: `${50 - 48 * Math.cos((2 * Math.PI * i) / shells.m)}%`,
+                              left: `${50 + 48 * Math.sin((2 * Math.PI * i) / shells.m)}%`
+                            }}
+                          >
+                            e⁻
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Shell L (n=2) */}
+                    {(shells.l > 0 || shells.m > 0) && (
+                      <div className="absolute w-36 h-36 rounded-full border-2 border-dashed border-purple-300 animate-spin" style={{ animationDuration: "18s" }}>
+                        <span className="absolute -top-3 left-1/2 -ml-2 text-[9px] font-bold text-purple-600 bg-white px-1">L (n=2)</span>
+                        {Array.from({ length: shells.l }).map((_, i) => (
+                          <div
+                            key={`l-${i}`}
+                            className="absolute w-3.5 h-3.5 bg-purple-600 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
+                            style={{
+                              top: `${50 - 48 * Math.cos((2 * Math.PI * i) / shells.l)}%`,
+                              left: `${50 + 48 * Math.sin((2 * Math.PI * i) / shells.l)}%`
+                            }}
+                          >
+                            e⁻
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Shell K (n=1) */}
+                    <div className="absolute w-24 h-24 rounded-full border-2 border-dashed border-sky-400 animate-spin" style={{ animationDuration: "12s" }}>
+                      <span className="absolute -top-3 left-1/2 -ml-2 text-[9px] font-bold text-sky-600 bg-white px-1">K (n=1)</span>
+                      {Array.from({ length: shells.k }).map((_, i) => (
+                        <div
+                          key={`k-${i}`}
+                          className="absolute w-3.5 h-3.5 bg-sky-500 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
+                          style={{
+                            top: `${50 - 48 * Math.cos((2 * Math.PI * i) / Math.max(1, shells.k))}%`,
+                            left: `${50 + 48 * Math.sin((2 * Math.PI * i) / Math.max(1, shells.k))}%`
+                          }}
+                        >
+                          e⁻
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Dense Central Nucleus */}
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-rose-500 border-2 border-white flex flex-col items-center justify-center text-white z-10 shadow-md p-1">
+                      <span className="text-[9px] font-black leading-none">{protons}p⁺</span>
+                      <span className="text-[8px] font-bold leading-none opacity-90">{neutrons}n⁰</span>
+                    </div>
+                  </div>
+
+                  {/* Shell Count Summary Pills */}
+                  <div className="flex gap-2 text-[10px] font-mono font-bold text-slate-700">
+                    <span className="bg-sky-50 text-sky-800 border border-sky-200 px-2 py-0.5 rounded">K: {shells.k}/2</span>
+                    <span className="bg-purple-50 text-purple-800 border border-purple-200 px-2 py-0.5 rounded">L: {shells.l}/8</span>
+                    <span className="bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded">M: {shells.m}/8</span>
+                    <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded">N: {shells.n}/2</span>
+                  </div>
+                </div>
+
+                {/* Column 3: Chemical Properties & Valency Card */}
+                <div className="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col justify-between shadow-2xs space-y-4">
+                  <span className="text-xs font-black uppercase text-slate-700 tracking-wider block border-b pb-2">
+                    3. Element & Valency Analysis
+                  </span>
+
+                  <div className="flex items-center gap-4 bg-purple-50 border border-purple-200 p-3 rounded-xl">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white flex flex-col items-center justify-center font-black shadow-md shrink-0">
+                      <span className="text-xs font-mono opacity-80 leading-none">Z = {protons}</span>
+                      <span className="text-2xl leading-none font-sans">{currentElement.symbol}</span>
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-base text-purple-950">{currentElement.name}</h4>
+                      <p className="text-[11px] text-purple-800/90 leading-snug">{currentElement.desc}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-0.5">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Configuration</span>
+                      <span className="text-sm font-black font-mono text-purple-900">
+                        {[shells.k, shells.l, shells.m, shells.n].filter((s) => s > 0).join(", ")}
+                      </span>
+                    </div>
+
+                    <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-0.5">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Valency</span>
+                      <span className="text-sm font-black font-mono text-emerald-700">{valency}</span>
+                    </div>
+
+                    <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-0.5">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Mass Number (A = p+n)</span>
+                      <span className="text-sm font-black font-mono text-slate-800">{totalMass} u</span>
+                    </div>
+
+                    <div className={`border p-2.5 rounded-xl space-y-0.5 ${netCharge > 0 ? "bg-orange-50 border-orange-200 text-orange-900" : netCharge < 0 ? "bg-sky-50 border-sky-200 text-sky-900" : "bg-emerald-50 border-emerald-200 text-emerald-900"}`}>
+                      <span className="text-[9px] font-bold opacity-80 uppercase tracking-widest block">Net Charge</span>
+                      <span className="text-sm font-black font-mono">
+                        {netCharge > 0 ? `+${netCharge} (Cation)` : netCharge < 0 ? `${netCharge} (Anion)` : "0 (Neutral)"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Octet Status Box */}
+                  <div className={`p-3 rounded-xl border text-xs flex items-center gap-2 ${isOuterShellFull ? "bg-emerald-50 border-emerald-200 text-emerald-900" : "bg-amber-50 border-amber-200 text-amber-900"}`}>
+                    <span className="text-lg">{isOuterShellFull ? "🛡️" : "⚡"}</span>
+                    <div>
+                      <span className="font-extrabold block">
+                        {isOuterShellFull ? "Stable Octet / Duplet Achieved!" : "Chemically Reactive (Incomplete Octet)"}
+                      </span>
+                      <span className="text-[10px] leading-snug block opacity-90">
+                        {isOuterShellFull
+                          ? "Outer shell is completely full like a noble gas. Very low chemical reactivity."
+                          : `Needs to ${outerShellElectrons <= 4 ? `lose ${outerShellElectrons} e⁻` : `gain ${8 - outerShellElectrons} e⁻`} to form a stable octet.`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+          )}
 
-            {/* Column 2: Bohr Shell Orbital Diagram */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col items-center justify-between min-h-[320px] relative shadow-2xs">
-              <div className="w-full flex justify-between items-center border-b pb-2">
-                <span className="text-xs font-black uppercase text-purple-900 tracking-wider">
-                  2. Bohr Atomic Orbital Model
+          {/* SUB-VIEW 2: BOHR-BURY RULES & 2n² CALCULATOR */}
+          {atomSubTab === "rules" && (
+            <div className="space-y-6 animate-fade-in">
+              {/* Rules Summary Banner */}
+              <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white p-5 rounded-2xl shadow-md space-y-3">
+                <span className="text-xs font-black uppercase text-purple-300 tracking-wider block">
+                  📘 The Three Fundamental Rules of the Bohr-Bury Scheme
                 </span>
-                <span className="text-[10px] font-mono font-extrabold bg-purple-100 text-purple-900 px-2 py-0.5 rounded-full">
-                  Bohr-Bury Rule (2n²)
-                </span>
+                <p className="text-xs text-purple-100 leading-relaxed max-w-3xl">
+                  In 1921, Niels Bohr and Charles Bury proposed three strict rules governing how electrons fill discrete stationary energy orbits (K, L, M, N...) around an atomic nucleus:
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-2">
+                  <div className="bg-white/10 backdrop-blur-xs p-3.5 rounded-xl border border-purple-400/30 space-y-1">
+                    <span className="font-extrabold text-amber-300 text-sm block">1️⃣ The 2n² Formula Rule</span>
+                    <p className="text-[11px] text-purple-100 leading-snug">
+                      The maximum number of electrons that can be accommodated in energy shell level <b>n</b> is given by formula <b>2n²</b>.
+                    </p>
+                  </div>
+
+                  <div className="bg-white/10 backdrop-blur-xs p-3.5 rounded-xl border border-purple-400/30 space-y-1">
+                    <span className="font-extrabold text-amber-300 text-sm block">2️⃣ The Outermost Octet Rule</span>
+                    <p className="text-[11px] text-purple-100 leading-snug">
+                      The maximum capacity of the outermost valence shell is <b>8 electrons</b> (Octet Rule), regardless of higher theoretical capacity!
+                    </p>
+                  </div>
+
+                  <div className="bg-white/10 backdrop-blur-xs p-3.5 rounded-xl border border-purple-400/30 space-y-1">
+                    <span className="font-extrabold text-amber-300 text-sm block">3️⃣ Step-Wise Filling Rule</span>
+                    <p className="text-[11px] text-purple-100 leading-snug">
+                      Electrons cannot enter a outer shell unless all inner shells are completely filled (step-wise filling).
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              {/* Orbit Visual Stage */}
-              <div className="relative w-64 h-64 flex items-center justify-center my-4">
-                {/* Shell N (n=4) */}
-                {shells.n > 0 && (
-                  <div className="absolute w-60 h-60 rounded-full border-2 border-dashed border-emerald-300 animate-spin" style={{ animationDuration: "35s" }}>
-                    <span className="absolute -top-3 left-1/2 -ml-2 text-[9px] font-bold text-emerald-600 bg-white px-1">N (n=4)</span>
-                    {Array.from({ length: shells.n }).map((_, i) => (
-                      <div
-                        key={`n-${i}`}
-                        className="absolute w-3.5 h-3.5 bg-emerald-500 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
-                        style={{
-                          top: `${50 - 48 * Math.cos((2 * Math.PI * i) / shells.n)}%`,
-                          left: `${50 + 48 * Math.sin((2 * Math.PI * i) / shells.n)}%`
-                        }}
-                      >
-                        e⁻
-                      </div>
-                    ))}
+              {/* Interactive 2n² Shell Capacity Calculator */}
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-2xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-3">
+                  <div>
+                    <span className="text-xs font-black uppercase text-purple-900 tracking-wider block">
+                      🧮 Interactive Shell Capacity Calculator (2n²)
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-medium">
+                      Select an energy shell level (n = 1, 2, 3, 4) to calculate max electron capacity:
+                    </span>
                   </div>
-                )}
+                </div>
 
-                {/* Shell M (n=3) */}
-                {(shells.m > 0 || shells.n > 0) && (
-                  <div className="absolute w-48 h-48 rounded-full border-2 border-dashed border-amber-300 animate-spin" style={{ animationDuration: "25s" }}>
-                    <span className="absolute -top-3 left-1/2 -ml-2 text-[9px] font-bold text-amber-600 bg-white px-1">M (n=3)</span>
-                    {Array.from({ length: shells.m }).map((_, i) => (
-                      <div
-                        key={`m-${i}`}
-                        className="absolute w-3.5 h-3.5 bg-amber-500 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
-                        style={{
-                          top: `${50 - 48 * Math.cos((2 * Math.PI * i) / shells.m)}%`,
-                          left: `${50 + 48 * Math.sin((2 * Math.PI * i) / shells.m)}%`
-                        }}
-                      >
-                        e⁻
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Shell L (n=2) */}
-                {(shells.l > 0 || shells.m > 0) && (
-                  <div className="absolute w-36 h-36 rounded-full border-2 border-dashed border-purple-300 animate-spin" style={{ animationDuration: "18s" }}>
-                    <span className="absolute -top-3 left-1/2 -ml-2 text-[9px] font-bold text-purple-600 bg-white px-1">L (n=2)</span>
-                    {Array.from({ length: shells.l }).map((_, i) => (
-                      <div
-                        key={`l-${i}`}
-                        className="absolute w-3.5 h-3.5 bg-purple-600 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
-                        style={{
-                          top: `${50 - 48 * Math.cos((2 * Math.PI * i) / shells.l)}%`,
-                          left: `${50 + 48 * Math.sin((2 * Math.PI * i) / shells.l)}%`
-                        }}
-                      >
-                        e⁻
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Shell K (n=1) */}
-                <div className="absolute w-24 h-24 rounded-full border-2 border-dashed border-sky-400 animate-spin" style={{ animationDuration: "12s" }}>
-                  <span className="absolute -top-3 left-1/2 -ml-2 text-[9px] font-bold text-sky-600 bg-white px-1">K (n=1)</span>
-                  {Array.from({ length: shells.k }).map((_, i) => (
-                    <div
-                      key={`k-${i}`}
-                      className="absolute w-3.5 h-3.5 bg-sky-500 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
-                      style={{
-                        top: `${50 - 48 * Math.cos((2 * Math.PI * i) / Math.max(1, shells.k))}%`,
-                        left: `${50 + 48 * Math.sin((2 * Math.PI * i) / Math.max(1, shells.k))}%`
-                      }}
+                {/* Shell Selector Buttons */}
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { n: 1, label: "K Shell (n = 1)", color: "sky" },
+                    { n: 2, label: "L Shell (n = 2)", color: "purple" },
+                    { n: 3, label: "M Shell (n = 3)", color: "amber" },
+                    { n: 4, label: "N Shell (n = 4)", color: "emerald" }
+                  ].map((s) => (
+                    <button
+                      key={s.n}
+                      onClick={() => setSelectedRuleShell(s.n)}
+                      className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer ${
+                        selectedRuleShell === s.n
+                          ? "bg-purple-600 text-white shadow-2xs scale-105"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
                     >
-                      e⁻
-                    </div>
+                      {s.label}
+                    </button>
                   ))}
                 </div>
 
-                {/* Dense Central Nucleus */}
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-rose-500 border-2 border-white flex flex-col items-center justify-center text-white z-10 shadow-md p-1">
-                  <span className="text-[9px] font-black leading-none">{protons}p⁺</span>
-                  <span className="text-[8px] font-bold leading-none opacity-90">{neutrons}n⁰</span>
-                </div>
-              </div>
+                {/* Calculation Detail Display */}
+                {(() => {
+                  const n = selectedRuleShell;
+                  const shellName = n === 1 ? "K" : n === 2 ? "L" : n === 3 ? "M" : "N";
+                  const maxCap = 2 * n * n;
 
-              {/* Shell Count Summary Pills */}
-              <div className="flex gap-2 text-[10px] font-mono font-bold text-slate-700">
-                <span className="bg-sky-50 text-sky-800 border border-sky-200 px-2 py-0.5 rounded">K: {shells.k}/2</span>
-                <span className="bg-purple-50 text-purple-800 border border-purple-200 px-2 py-0.5 rounded">L: {shells.l}/8</span>
-                <span className="bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded">M: {shells.m}/8</span>
-                <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded">N: {shells.n}/2</span>
-              </div>
-            </div>
+                  return (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-center bg-purple-50/60 p-5 rounded-xl border border-purple-200">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl font-black font-mono text-purple-950">
+                            {shellName} Shell (n = {n})
+                          </span>
+                          <span className="bg-purple-200 text-purple-900 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
+                            Energy Level {n}
+                          </span>
+                        </div>
 
-            {/* Column 3: Chemical Properties & Valency Card */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col justify-between shadow-2xs space-y-4">
-              <span className="text-xs font-black uppercase text-slate-700 tracking-wider block border-b pb-2">
-                3. Element & Valency Analysis
-              </span>
+                        <div className="bg-white p-3.5 rounded-xl border border-purple-200 font-mono text-xs space-y-1.5 text-slate-800">
+                          <div><b>Formula:</b> Max Capacity = 2 × n²</div>
+                          <div><b>Substitution:</b> 2 × ({n})² = 2 × {n * n}</div>
+                          <div className="text-sm font-black text-purple-900 bg-purple-100 p-1.5 rounded text-center mt-1">
+                            ✨ Maximum Capacity = {maxCap} Electrons!
+                          </div>
+                        </div>
 
-              <div className="flex items-center gap-4 bg-purple-50 border border-purple-200 p-3 rounded-xl">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white flex flex-col items-center justify-center font-black shadow-md shrink-0">
-                  <span className="text-xs font-mono opacity-80 leading-none">Z = {protons}</span>
-                  <span className="text-2xl leading-none font-sans">{currentElement.symbol}</span>
-                </div>
-                <div>
-                  <h4 className="font-extrabold text-base text-purple-950">{currentElement.name}</h4>
-                  <p className="text-[11px] text-purple-800/90 leading-snug">{currentElement.desc}</p>
-                </div>
-              </div>
+                        <p className="text-xs text-slate-600 leading-relaxed">
+                          {n === 1 && "The K shell is closest to the nucleus and has the lowest energy. It holds a maximum of 2 electrons (forming a stable duplet like Helium)."}
+                          {n === 2 && "The L shell is the 2nd energy level. It holds up to 8 electrons (e.g. full in Neon with 2,8)."}
+                          {n === 3 && "The M shell is the 3rd energy level. Theoretically holds up to 18 electrons (2×3²=18). For the first 20 elements, it fills up to 8 electrons before Potassium and Calcium start filling the N shell."}
+                          {n === 4 && "The N shell is the 4th energy level. Theoretically holds up to 32 electrons (2×4²=32)."}
+                        </p>
+                      </div>
 
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-0.5">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Configuration</span>
-                  <span className="text-sm font-black font-mono text-purple-900">
-                    {[shells.k, shells.l, shells.m, shells.n].filter((s) => s > 0).join(", ")}
-                  </span>
-                </div>
-
-                <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-0.5">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Valency</span>
-                  <span className="text-sm font-black font-mono text-emerald-700">{valency}</span>
-                </div>
-
-                <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-0.5">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Mass Number (A = p+n)</span>
-                  <span className="text-sm font-black font-mono text-slate-800">{totalMass} u</span>
-                </div>
-
-                <div className={`border p-2.5 rounded-xl space-y-0.5 ${netCharge > 0 ? "bg-orange-50 border-orange-200 text-orange-900" : netCharge < 0 ? "bg-sky-50 border-sky-200 text-sky-900" : "bg-emerald-50 border-emerald-200 text-emerald-900"}`}>
-                  <span className="text-[9px] font-bold opacity-80 uppercase tracking-widest block">Net Charge</span>
-                  <span className="text-sm font-black font-mono">
-                    {netCharge > 0 ? `+${netCharge} (Cation)` : netCharge < 0 ? `${netCharge} (Anion)` : "0 (Neutral)"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Octet Status Box */}
-              <div className={`p-3 rounded-xl border text-xs flex items-center gap-2 ${isOuterShellFull ? "bg-emerald-50 border-emerald-200 text-emerald-900" : "bg-amber-50 border-amber-200 text-amber-900"}`}>
-                <span className="text-lg">{isOuterShellFull ? "🛡️" : "⚡"}</span>
-                <div>
-                  <span className="font-extrabold block">
-                    {isOuterShellFull ? "Stable Octet / Duplet Achieved!" : "Chemically Reactive (Incomplete Octet)"}
-                  </span>
-                  <span className="text-[10px] leading-snug block opacity-90">
-                    {isOuterShellFull
-                      ? "Outer shell is completely full like a noble gas. Very low chemical reactivity."
-                      : `Needs to ${outerShellElectrons <= 4 ? `lose ${outerShellElectrons} e⁻` : `gain ${8 - outerShellElectrons} e⁻`} to form a stable octet.`}
-                  </span>
-                </div>
+                      {/* Visual Orbit Graphic */}
+                      <div className="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-purple-200 shadow-2xs">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Visual Shell Representation</span>
+                        <div className="relative w-44 h-44 flex items-center justify-center">
+                          <div className="w-40 h-40 rounded-full border-2 border-dashed border-purple-400 animate-spin flex items-center justify-center" style={{ animationDuration: "20s" }}>
+                            {Array.from({ length: Math.min(18, maxCap) }).map((_, i) => (
+                              <div
+                                key={i}
+                                className="absolute w-3.5 h-3.5 bg-purple-600 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-bold"
+                                style={{
+                                  top: `${50 - 46 * Math.cos((2 * Math.PI * i) / Math.min(18, maxCap))}%`,
+                                  left: `${50 + 46 * Math.sin((2 * Math.PI * i) / Math.min(18, maxCap))}%`
+                                }}
+                              >
+                                e⁻
+                              </div>
+                            ))}
+                          </div>
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-rose-500 text-white flex items-center justify-center font-black text-[10px] z-10 shadow-xs">
+                            Nucleus
+                          </div>
+                        </div>
+                        <span className="text-[11px] font-extrabold text-purple-900 mt-2">
+                          Showing max {Math.min(18, maxCap)} electron orbitals
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
-          </div>
+          )}
+
+          {/* SUB-VIEW 3: FIRST 20 ELEMENTS SHELL MATRIX TABLE */}
+          {atomSubTab === "matrix" && (
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-2xs animate-fade-in">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-3">
+                <div>
+                  <span className="text-xs font-black uppercase text-purple-900 tracking-wider block">
+                    📊 Complete Electron Shell Configuration Table (Z = 1 to 20)
+                  </span>
+                  <span className="text-[11px] text-slate-500">
+                    Click "Load in Sandbox" on any element to visualize its Bohr orbits live!
+                  </span>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left border-collapse">
+                  <thead>
+                    <tr className="bg-purple-900 text-white font-black">
+                      <th className="p-2.5 border border-purple-800">Z</th>
+                      <th className="p-2.5 border border-purple-800">Element</th>
+                      <th className="p-2.5 border border-purple-800">Symbol</th>
+                      <th className="p-2.5 border border-purple-800 bg-sky-800 text-center">K (n=1)</th>
+                      <th className="p-2.5 border border-purple-800 bg-purple-800 text-center">L (n=2)</th>
+                      <th className="p-2.5 border border-purple-800 bg-amber-800 text-center">M (n=3)</th>
+                      <th className="p-2.5 border border-purple-800 bg-emerald-800 text-center">N (n=4)</th>
+                      <th className="p-2.5 border border-purple-800 text-center">Valence e⁻</th>
+                      <th className="p-2.5 border border-purple-800 text-center">Valency</th>
+                      <th className="p-2.5 border border-purple-800 text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 text-[11px]">
+                    {ELEMENTS_20.slice(1).map((el) => {
+                      const dist = calculateBohrDistribution(el.z);
+                      const valenceE = dist.n > 0 ? dist.n : dist.m > 0 ? dist.m : dist.l > 0 ? dist.l : dist.k;
+                      const isFull = (el.z === 2) || valenceE === 8;
+                      const elemVal = isFull ? 0 : valenceE <= 4 ? valenceE : 8 - valenceE;
+                      const isSelected = protons === el.z;
+
+                      return (
+                        <tr
+                          key={el.z}
+                          className={`hover:bg-purple-50/80 transition ${
+                            isSelected ? "bg-purple-100/90 font-extrabold text-purple-950" : "even:bg-slate-50/50"
+                          }`}
+                        >
+                          <td className="p-2 border border-slate-200 font-mono font-bold">{el.z}</td>
+                          <td className="p-2 border border-slate-200 font-bold">{el.name}</td>
+                          <td className="p-2 border border-slate-200 font-mono font-black text-purple-900">{el.symbol}</td>
+                          <td className="p-2 border border-slate-200 text-center font-mono bg-sky-50">{dist.k}</td>
+                          <td className="p-2 border border-slate-200 text-center font-mono bg-purple-50">{dist.l || "-"}</td>
+                          <td className="p-2 border border-slate-200 text-center font-mono bg-amber-50">{dist.m || "-"}</td>
+                          <td className="p-2 border border-slate-200 text-center font-mono bg-emerald-50">{dist.n || "-"}</td>
+                          <td className="p-2 border border-slate-200 text-center font-mono font-bold text-slate-800">{valenceE}</td>
+                          <td className="p-2 border border-slate-200 text-center font-mono font-black text-emerald-700">{elemVal}</td>
+                          <td className="p-1.5 border border-slate-200 text-center">
+                            <button
+                              onClick={() => {
+                                setProtons(el.z);
+                                setElectrons(el.z);
+                                setNeutrons(el.z);
+                                setAtomSubTab("sandbox");
+                              }}
+                              className="px-2 py-1 bg-purple-600 hover:bg-purple-700 text-white font-bold text-[10px] rounded-md transition cursor-pointer"
+                            >
+                              ⚛️ View Orbits
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* SUB-VIEW 4: INTERACTIVE ELECTRON DISTRIBUTION PRACTICE GAME */}
+          {atomSubTab === "practice" && (
+            <div className="bg-gradient-to-br from-purple-950 via-indigo-950 to-slate-900 text-white p-5 rounded-2xl space-y-5 shadow-lg animate-fade-in">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-purple-700/60 pb-3">
+                <div>
+                  <span className="text-xs font-black uppercase text-amber-300 tracking-wider block">
+                    🎮 Interactive Shell Distribution Practice Challenge
+                  </span>
+                  <span className="text-[11px] text-purple-200">
+                    Manually fill the K, L, M, and N shells according to the 2n² and step-wise filling rules!
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => {
+                    const randZ = Math.floor(Math.random() * 20) + 1;
+                    setPracticeZ(randZ);
+                    setUserK(0);
+                    setUserL(0);
+                    setUserM(0);
+                    setUserN(0);
+                    setPracticeFeedback(null);
+                  }}
+                  className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-purple-950 font-black text-xs rounded-xl transition cursor-pointer shadow-xs"
+                >
+                  🎲 Random Element Challenge
+                </button>
+              </div>
+
+              {/* Element Selection & Target Prompt */}
+              {(() => {
+                const targetElem = ELEMENTS_20[practiceZ] || ELEMENTS_20[11];
+                const expected = calculateBohrDistribution(practiceZ);
+
+                return (
+                  <div className="space-y-4">
+                    {/* Element Selector Dropdown */}
+                    <div className="flex flex-wrap items-center gap-3 bg-white/10 p-3.5 rounded-xl border border-purple-400/30">
+                      <span className="text-xs font-extrabold text-purple-200">Select Target Element:</span>
+                      <select
+                        value={practiceZ}
+                        onChange={(e) => {
+                          setPracticeZ(Number(e.target.value));
+                          setUserK(0);
+                          setUserL(0);
+                          setUserM(0);
+                          setUserN(0);
+                          setPracticeFeedback(null);
+                        }}
+                        className="bg-purple-900 text-white font-mono font-black text-xs px-3 py-1.5 rounded-lg border border-purple-400/50 cursor-pointer"
+                      >
+                        {ELEMENTS_20.slice(1).map((e) => (
+                          <option key={e.z} value={e.z}>
+                            Z = {e.z}: {e.name} ({e.symbol})
+                          </option>
+                        ))}
+                      </select>
+
+                      <span className="text-xs font-extrabold text-amber-300 ml-auto">
+                        Total Target Electrons to Fill: <span className="font-mono text-base font-black bg-black/40 px-2 py-0.5 rounded border border-amber-400/40">{practiceZ} e⁻</span>
+                      </span>
+                    </div>
+
+                    {/* Interactive Shell Fill Bucket Controls */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {/* K Shell */}
+                      <div className="bg-sky-950/80 border-2 border-sky-400/50 p-4 rounded-xl text-center space-y-2">
+                        <span className="text-xs font-black text-sky-300 block uppercase">K Shell (n = 1)</span>
+                        <span className="text-[10px] text-sky-200 block">Max capacity: 2 e⁻</span>
+                        <div className="text-2xl font-mono font-black text-sky-400 my-1">{userK} / 2</div>
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() => setUserK(prev => Math.max(0, prev - 1))}
+                            className="w-8 h-8 rounded-lg bg-sky-800 hover:bg-sky-700 text-white font-black text-sm flex items-center justify-center cursor-pointer active:scale-95"
+                          >
+                            -
+                          </button>
+                          <button
+                            onClick={() => setUserK(prev => Math.min(2, prev + 1))}
+                            className="w-8 h-8 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-black text-sm flex items-center justify-center cursor-pointer active:scale-95"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* L Shell */}
+                      <div className="bg-purple-950/80 border-2 border-purple-400/50 p-4 rounded-xl text-center space-y-2">
+                        <span className="text-xs font-black text-purple-300 block uppercase">L Shell (n = 2)</span>
+                        <span className="text-[10px] text-purple-200 block">Max capacity: 8 e⁻</span>
+                        <div className="text-2xl font-mono font-black text-purple-400 my-1">{userL} / 8</div>
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() => setUserL(prev => Math.max(0, prev - 1))}
+                            className="w-8 h-8 rounded-lg bg-purple-800 hover:bg-purple-700 text-white font-black text-sm flex items-center justify-center cursor-pointer active:scale-95"
+                          >
+                            -
+                          </button>
+                          <button
+                            onClick={() => setUserL(prev => Math.min(8, prev + 1))}
+                            className="w-8 h-8 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-black text-sm flex items-center justify-center cursor-pointer active:scale-95"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* M Shell */}
+                      <div className="bg-amber-950/80 border-2 border-amber-400/50 p-4 rounded-xl text-center space-y-2">
+                        <span className="text-xs font-black text-amber-300 block uppercase">M Shell (n = 3)</span>
+                        <span className="text-[10px] text-amber-200 block">Max capacity: 8 e⁻ (Z≤20)</span>
+                        <div className="text-2xl font-mono font-black text-amber-400 my-1">{userM} / 8</div>
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() => setUserM(prev => Math.max(0, prev - 1))}
+                            className="w-8 h-8 rounded-lg bg-amber-800 hover:bg-amber-700 text-white font-black text-sm flex items-center justify-center cursor-pointer active:scale-95"
+                          >
+                            -
+                          </button>
+                          <button
+                            onClick={() => setUserM(prev => Math.min(8, prev + 1))}
+                            className="w-8 h-8 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-black text-sm flex items-center justify-center cursor-pointer active:scale-95"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* N Shell */}
+                      <div className="bg-emerald-950/80 border-2 border-emerald-400/50 p-4 rounded-xl text-center space-y-2">
+                        <span className="text-xs font-black text-emerald-300 block uppercase">N Shell (n = 4)</span>
+                        <span className="text-[10px] text-emerald-200 block">Max capacity: 2 e⁻ (Z≤20)</span>
+                        <div className="text-2xl font-mono font-black text-emerald-400 my-1">{userN} / 2</div>
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() => setUserN(prev => Math.max(0, prev - 1))}
+                            className="w-8 h-8 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-black text-sm flex items-center justify-center cursor-pointer active:scale-95"
+                          >
+                            -
+                          </button>
+                          <button
+                            onClick={() => setUserN(prev => Math.min(2, prev + 1))}
+                            className="w-8 h-8 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm flex items-center justify-center cursor-pointer active:scale-95"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action & Feedback Row */}
+                    <div className="flex flex-wrap items-center gap-3 pt-2">
+                      <button
+                        onClick={() => {
+                          const totalPlaced = userK + userL + userM + userN;
+                          if (totalPlaced !== practiceZ) {
+                            setPracticeFeedback({
+                              isCorrect: false,
+                              msg: `Total placed electrons is ${totalPlaced}, but ${targetElem.name} (Z = ${practiceZ}) needs exactly ${practiceZ} electrons!`
+                            });
+                          } else if (practiceZ > 2 && userK < 2) {
+                            setPracticeFeedback({
+                              isCorrect: false,
+                              msg: `Step-wise rule violated! K shell must be completely filled with 2 electrons before electrons can enter the L shell.`
+                            });
+                          } else if (practiceZ > 10 && userL < 8) {
+                            setPracticeFeedback({
+                              isCorrect: false,
+                              msg: `Step-wise rule violated! L shell must be completely filled with 8 electrons before electrons can enter the M shell.`
+                            });
+                          } else if (practiceZ > 18 && userM < 8) {
+                            setPracticeFeedback({
+                              isCorrect: false,
+                              msg: `Step-wise rule violated! M shell must hold 8 electrons before N shell starts filling.`
+                            });
+                          } else {
+                            const configStr = [userK, userL, userM, userN].filter(x => x > 0).join(", ");
+                            setPracticeFeedback({
+                              isCorrect: true,
+                              msg: `🎉 Excellent! Correct Bohr-Bury distribution for ${targetElem.name} (${targetElem.symbol}): ${configStr}.`
+                            });
+                          }
+                        }}
+                        className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl transition cursor-pointer shadow-md"
+                      >
+                        ✅ Verify My Shell Distribution
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setUserK(expected.k);
+                          setUserL(expected.l);
+                          setUserM(expected.m);
+                          setUserN(expected.n);
+                          const configStr = [expected.k, expected.l, expected.m, expected.n].filter(x => x > 0).join(", ");
+                          setPracticeFeedback({
+                            isCorrect: true,
+                            msg: `💡 Auto-filled correct distribution for ${targetElem.name}: ${configStr}`
+                          });
+                        }}
+                        className="py-3 px-4 bg-purple-700 hover:bg-purple-600 text-white font-bold text-xs rounded-xl transition cursor-pointer"
+                      >
+                        💡 Auto Fill Correct Answer
+                      </button>
+                    </div>
+
+                    {/* Feedback Message Banner */}
+                    {practiceFeedback && (
+                      <div className={`p-4 rounded-xl border text-xs font-medium space-y-1 animate-fade-in ${
+                        practiceFeedback.isCorrect
+                          ? "bg-emerald-950/90 border-emerald-400 text-emerald-200"
+                          : "bg-rose-950/90 border-rose-400 text-rose-200"
+                      }`}>
+                        <div className="flex items-center gap-2 font-black text-sm">
+                          <span>{practiceFeedback.isCorrect ? "🎉 Correct!" : "⚠️ Needs Correction"}</span>
+                        </div>
+                        <p className="leading-relaxed text-[11px]">{practiceFeedback.msg}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
         </div>
       )}
 
@@ -3471,124 +5643,525 @@ export function ChemistryVisualLab({ chapterId }: { chapterId?: string }) {
 
       {/* ==================== TAB 4: ISOTOPES & ISOBARS ==================== */}
       {activeTab === "isotopes" && (
-        <div className="space-y-5 animate-fade-in">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            {/* Isotopes Explorer */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-2xs">
-              <span className="text-xs font-black uppercase text-purple-900 tracking-wider block border-b pb-2">
-                1. Isotopes (Same Atomic Number Z, Different Mass Number A)
-              </span>
-
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Atoms of the same element having identical protons but different neutrons.
-              </p>
-
-              {/* Hydrogen Isotopes Visual Cards */}
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="bg-sky-50 border border-sky-200 p-3 rounded-xl">
-                  <span className="font-mono text-xs font-black text-sky-900 block">¹₁H (Protium)</span>
-                  <span className="text-[10px] text-sky-700 block mt-1">1 Proton (p⁺)</span>
-                  <span className="text-[10px] text-sky-700 block">0 Neutrons (n⁰)</span>
-                  <span className="text-[9px] font-bold text-sky-900 bg-sky-200 px-1.5 py-0.5 rounded block mt-2">Mass A = 1 u</span>
-                </div>
-
-                <div className="bg-purple-50 border border-purple-200 p-3 rounded-xl">
-                  <span className="font-mono text-xs font-black text-purple-900 block">²₁H (Deuterium)</span>
-                  <span className="text-[10px] text-purple-700 block mt-1">1 Proton (p⁺)</span>
-                  <span className="text-[10px] text-purple-700 block">1 Neutron (n⁰)</span>
-                  <span className="text-[9px] font-bold text-purple-900 bg-purple-200 px-1.5 py-0.5 rounded block mt-2">Mass A = 2 u</span>
-                </div>
-
-                <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl">
-                  <span className="font-mono text-xs font-black text-amber-900 block">³₁H (Tritium)</span>
-                  <span className="text-[10px] text-amber-700 block mt-1">1 Proton (p⁺)</span>
-                  <span className="text-[10px] text-amber-700 block">2 Neutrons (n⁰)</span>
-                  <span className="text-[9px] font-bold text-amber-900 bg-amber-200 px-1.5 py-0.5 rounded block mt-2">Mass A = 3 u</span>
-                </div>
+        <div className="space-y-6 animate-fade-in">
+          {/* Golden Memory Tricks Header */}
+          <div className="bg-gradient-to-r from-amber-50 via-purple-50 to-sky-50 border-2 border-purple-200 p-4 rounded-2xl shadow-2xs space-y-3">
+            <span className="text-xs font-black uppercase text-purple-900 tracking-wider flex items-center gap-2">
+              <span>🧠</span> Golden Mnemonics: How to Never Confuse Isotopes & Isobars!
+            </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div className="bg-white/90 p-3.5 rounded-xl border border-purple-200 shadow-2xs space-y-1">
+                <span className="font-extrabold text-purple-950 text-sm block">
+                  ⚛️ ISOTO<span className="text-purple-600 underline decoration-2">P</span>ES: <span className="text-purple-700">P = Same Protons!</span>
+                </span>
+                <p className="text-slate-600 leading-relaxed text-[11px]">
+                  Atoms of the <b>SAME element</b> with identical Atomic Number Z (Protons), but <b>DIFFERENT Mass Number A (Neutrons)</b>.
+                  <br />
+                  <span className="text-purple-800 font-bold">✨ Same chemical properties, slightly different physical mass!</span>
+                </p>
               </div>
 
-              {/* Fractional Atomic Mass Calculator for Chlorine */}
-              <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl space-y-2">
-                <span className="text-xs font-extrabold text-slate-800 block">
-                  🧮 Chlorine Average Atomic Mass Calculator:
+              <div className="bg-white/90 p-3.5 rounded-xl border border-sky-200 shadow-2xs space-y-1">
+                <span className="font-extrabold text-sky-950 text-sm block">
+                  ⚖️ ISOB<span className="text-sky-600 underline decoration-2">A</span>RS: <span className="text-sky-700">A = Same Mass Number A!</span>
                 </span>
-                <p className="text-[11px] text-slate-600">
-                  Chlorine occurs in nature as ³⁵Cl ({cl35Percent}%) and ³⁷Cl ({cl37Percent}%):
+                <p className="text-slate-600 leading-relaxed text-[11px]">
+                  Atoms of <b>DIFFERENT elements</b> with different Atomic Number Z (Protons), but <b>IDENTICAL Mass Number A</b>.
+                  <br />
+                  <span className="text-sky-800 font-bold">✨ Completely different chemical elements with equal total nucleons!</span>
                 </p>
+              </div>
+            </div>
+          </div>
 
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-bold text-slate-600">³⁵Cl: {cl35Percent}%</span>
-                  <input
-                    type="range"
-                    min="10"
-                    max="90"
-                    value={cl35Percent}
-                    onChange={(e) => setCl35Percent(Number(e.target.value))}
-                    className="flex-1 accent-purple-600 cursor-pointer"
-                  />
-                  <span className="text-[10px] font-bold text-slate-600">³⁷Cl: {cl37Percent}%</span>
+          {/* Interactive Pair Visual Selector */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-2xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-3">
+              <span className="text-xs font-black uppercase text-purple-900 tracking-wider">
+                🔬 Interactive Atomic Comparison Studio
+              </span>
+              <span className="text-[11px] font-bold text-slate-500">
+                Select a pair to inspect nuclear particles side-by-side:
+              </span>
+            </div>
+
+            {/* Category Toggle Buttons */}
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setSelectedIsoCategory("hydrogen")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer ${
+                  selectedIsoCategory === "hydrogen"
+                    ? "bg-purple-600 text-white shadow-2xs"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                🧪 Hydrogen Isotopes (¹H, ²H, ³H)
+              </button>
+              <button
+                onClick={() => setSelectedIsoCategory("carbon")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer ${
+                  selectedIsoCategory === "carbon"
+                    ? "bg-purple-600 text-white shadow-2xs"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                ⚛️ Carbon Isotopes (¹²C, ¹³C, ¹⁴C)
+              </button>
+              <button
+                onClick={() => setSelectedIsoCategory("uranium")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer ${
+                  selectedIsoCategory === "uranium"
+                    ? "bg-purple-600 text-white shadow-2xs"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                ☢️ Uranium Isotopes (²³⁵U, ²³⁸U)
+              </button>
+              <button
+                onClick={() => setSelectedIsoCategory("isobar_ca_ar")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer ${
+                  selectedIsoCategory === "isobar_ca_ar"
+                    ? "bg-sky-600 text-white shadow-2xs"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                ⚖️ Calcium & Argon Isobars (⁴⁰Ca, ⁴⁰Ar)
+              </button>
+              <button
+                onClick={() => setSelectedIsoCategory("isobar_c14_n14")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer ${
+                  selectedIsoCategory === "isobar_c14_n14"
+                    ? "bg-sky-600 text-white shadow-2xs"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                ⚡ Carbon-14 & Nitrogen-14 Isobars
+              </button>
+            </div>
+
+            {/* Render Selected Interactive Visual Cards */}
+            {selectedIsoCategory === "hydrogen" && (
+              <div className="space-y-3">
+                <div className="p-3 bg-purple-50 rounded-xl border border-purple-200 text-xs text-purple-900 font-extrabold flex items-center justify-between">
+                  <span>Isotope Family: Hydrogen (Z = 1)</span>
+                  <span className="text-[10px] bg-purple-200 text-purple-900 px-2 py-0.5 rounded-full uppercase">Same Element (Z = 1)</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="bg-sky-50 border-2 border-sky-200 p-4 rounded-xl text-center space-y-2">
+                    <span className="text-xl font-black font-mono text-sky-900 block">¹₁H</span>
+                    <span className="text-xs font-bold text-sky-800 block">Protium (Ordinary Hydrogen)</span>
+                    <div className="bg-white p-2.5 rounded-lg border border-sky-200 text-left text-[11px] space-y-1 font-mono text-slate-700">
+                      <div><b>Protons (p⁺):</b> <span className="text-rose-600 font-bold">1</span></div>
+                      <div><b>Neutrons (n⁰):</b> <span className="text-sky-600 font-bold">0</span></div>
+                      <div><b>Electrons (e⁻):</b> <span className="text-purple-600 font-bold">1</span></div>
+                      <div><b>Atomic No. (Z):</b> <span className="font-bold">1</span></div>
+                      <div><b>Mass No. (A):</b> <span className="font-bold text-sky-900">1 u</span></div>
+                    </div>
+                    <span className="text-[10px] text-sky-700 block font-semibold">99.98% abundance in nature</span>
+                  </div>
+
+                  <div className="bg-purple-50 border-2 border-purple-200 p-4 rounded-xl text-center space-y-2">
+                    <span className="text-xl font-black font-mono text-purple-900 block">²₁H</span>
+                    <span className="text-xs font-bold text-purple-800 block">Deuterium (Heavy Hydrogen)</span>
+                    <div className="bg-white p-2.5 rounded-lg border border-purple-200 text-left text-[11px] space-y-1 font-mono text-slate-700">
+                      <div><b>Protons (p⁺):</b> <span className="text-rose-600 font-bold">1</span></div>
+                      <div><b>Neutrons (n⁰):</b> <span className="text-sky-600 font-bold">1 (+1 extra!)</span></div>
+                      <div><b>Electrons (e⁻):</b> <span className="text-purple-600 font-bold">1</span></div>
+                      <div><b>Atomic No. (Z):</b> <span className="font-bold">1</span></div>
+                      <div><b>Mass No. (A):</b> <span className="font-bold text-purple-900">2 u</span></div>
+                    </div>
+                    <span className="text-[10px] text-purple-700 block font-semibold">Used in Heavy Water (D₂O) reactors</span>
+                  </div>
+
+                  <div className="bg-amber-50 border-2 border-amber-200 p-4 rounded-xl text-center space-y-2">
+                    <span className="text-xl font-black font-mono text-amber-900 block">³₁H</span>
+                    <span className="text-xs font-bold text-amber-800 block">Tritium (Radioactive Hydrogen)</span>
+                    <div className="bg-white p-2.5 rounded-lg border border-amber-200 text-left text-[11px] space-y-1 font-mono text-slate-700">
+                      <div><b>Protons (p⁺):</b> <span className="text-rose-600 font-bold">1</span></div>
+                      <div><b>Neutrons (n⁰):</b> <span className="text-sky-600 font-bold">2 (+2 extra!)</span></div>
+                      <div><b>Electrons (e⁻):</b> <span className="text-purple-600 font-bold">1</span></div>
+                      <div><b>Atomic No. (Z):</b> <span className="font-bold">1</span></div>
+                      <div><b>Mass No. (A):</b> <span className="font-bold text-amber-900">3 u</span></div>
+                    </div>
+                    <span className="text-[10px] text-amber-700 block font-semibold">Radioactive tracer & self-luminous dials</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {selectedIsoCategory === "carbon" && (
+              <div className="space-y-3">
+                <div className="p-3 bg-purple-50 rounded-xl border border-purple-200 text-xs text-purple-900 font-extrabold flex items-center justify-between">
+                  <span>Isotope Family: Carbon (Z = 6)</span>
+                  <span className="text-[10px] bg-purple-200 text-purple-900 px-2 py-0.5 rounded-full uppercase">Same Element (Z = 6)</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="bg-slate-50 border-2 border-slate-200 p-4 rounded-xl text-center space-y-2">
+                    <span className="text-xl font-black font-mono text-slate-900 block">¹²₆C</span>
+                    <span className="text-xs font-bold text-slate-800 block">Carbon-12 (Standard Reference)</span>
+                    <div className="bg-white p-2.5 rounded-lg border border-slate-200 text-left text-[11px] space-y-1 font-mono text-slate-700">
+                      <div><b>Protons (p⁺):</b> <span className="text-rose-600 font-bold">6</span></div>
+                      <div><b>Neutrons (n⁰):</b> <span className="text-sky-600 font-bold">6</span></div>
+                      <div><b>Electrons (e⁻):</b> <span className="text-purple-600 font-bold">6</span></div>
+                      <div><b>Atomic No. (Z):</b> <span className="font-bold">6</span></div>
+                      <div><b>Mass No. (A):</b> <span className="font-bold text-slate-900">12 u</span></div>
+                    </div>
+                    <span className="text-[10px] text-slate-600 block font-semibold">98.9% natural abundance</span>
+                  </div>
+
+                  <div className="bg-purple-50 border-2 border-purple-200 p-4 rounded-xl text-center space-y-2">
+                    <span className="text-xl font-black font-mono text-purple-900 block">¹³₆C</span>
+                    <span className="text-xs font-bold text-purple-800 block">Carbon-13 (Stable Isotope)</span>
+                    <div className="bg-white p-2.5 rounded-lg border border-purple-200 text-left text-[11px] space-y-1 font-mono text-slate-700">
+                      <div><b>Protons (p⁺):</b> <span className="text-rose-600 font-bold">6</span></div>
+                      <div><b>Neutrons (n⁰):</b> <span className="text-sky-600 font-bold">7 (+1 extra!)</span></div>
+                      <div><b>Electrons (e⁻):</b> <span className="text-purple-600 font-bold">6</span></div>
+                      <div><b>Atomic No. (Z):</b> <span className="font-bold">6</span></div>
+                      <div><b>Mass No. (A):</b> <span className="font-bold text-purple-900">13 u</span></div>
+                    </div>
+                    <span className="text-[10px] text-purple-700 block font-semibold">1.1% natural abundance (NMR study)</span>
+                  </div>
+
+                  <div className="bg-rose-50 border-2 border-rose-200 p-4 rounded-xl text-center space-y-2">
+                    <span className="text-xl font-black font-mono text-rose-900 block">¹⁴₆C</span>
+                    <span className="text-xs font-bold text-rose-800 block">Carbon-14 (Radioactive)</span>
+                    <div className="bg-white p-2.5 rounded-lg border border-rose-200 text-left text-[11px] space-y-1 font-mono text-slate-700">
+                      <div><b>Protons (p⁺):</b> <span className="text-rose-600 font-bold">6</span></div>
+                      <div><b>Neutrons (n⁰):</b> <span className="text-sky-600 font-bold">8 (+2 extra!)</span></div>
+                      <div><b>Electrons (e⁻):</b> <span className="text-purple-600 font-bold">6</span></div>
+                      <div><b>Atomic No. (Z):</b> <span className="font-bold">6</span></div>
+                      <div><b>Mass No. (A):</b> <span className="font-bold text-rose-900">14 u</span></div>
+                    </div>
+                    <span className="text-[10px] text-rose-700 block font-semibold">Used for Carbon Dating ancient fossils</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {selectedIsoCategory === "uranium" && (
+              <div className="space-y-3">
+                <div className="p-3 bg-purple-50 rounded-xl border border-purple-200 text-xs text-purple-900 font-extrabold flex items-center justify-between">
+                  <span>Isotope Family: Uranium (Z = 92)</span>
+                  <span className="text-[10px] bg-purple-200 text-purple-900 px-2 py-0.5 rounded-full uppercase">Same Element (Z = 92)</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-amber-50 border-2 border-amber-200 p-4 rounded-xl space-y-2 text-center">
+                    <span className="text-2xl font-black font-mono text-amber-950 block">²³⁵₉₂U</span>
+                    <span className="text-xs font-bold text-amber-800 block">Uranium-235 (Fissile Nuclear Fuel)</span>
+                    <div className="bg-white p-3 rounded-lg border border-amber-200 text-left text-[11px] space-y-1 font-mono text-slate-700">
+                      <div><b>Protons (p⁺):</b> <span className="text-rose-600 font-bold">92</span></div>
+                      <div><b>Neutrons (n⁰):</b> <span className="text-sky-600 font-bold">143 (235 - 92)</span></div>
+                      <div><b>Electrons (e⁻):</b> <span className="text-purple-600 font-bold">92</span></div>
+                      <div><b>Atomic No. (Z):</b> <span className="font-bold">92</span></div>
+                      <div><b>Mass No. (A):</b> <span className="font-bold text-amber-950">235 u</span></div>
+                    </div>
+                    <span className="text-[10px] text-amber-800 block font-bold bg-amber-100 p-1 rounded">
+                      ☢️ Undergoes nuclear fission in atomic power stations to generate electricity!
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-50 border-2 border-slate-200 p-4 rounded-xl space-y-2 text-center">
+                    <span className="text-2xl font-black font-mono text-slate-900 block">²³⁸₉₂U</span>
+                    <span className="text-xs font-bold text-slate-800 block">Uranium-238 (Abundant Natural Uranium)</span>
+                    <div className="bg-white p-3 rounded-lg border border-slate-200 text-left text-[11px] space-y-1 font-mono text-slate-700">
+                      <div><b>Protons (p⁺):</b> <span className="text-rose-600 font-bold">92</span></div>
+                      <div><b>Neutrons (n⁰):</b> <span className="text-sky-600 font-bold">146 (+3 extra neutrons!)</span></div>
+                      <div><b>Electrons (e⁻):</b> <span className="text-purple-600 font-bold">92</span></div>
+                      <div><b>Atomic No. (Z):</b> <span className="font-bold">92</span></div>
+                      <div><b>Mass No. (A):</b> <span className="font-bold text-slate-900">238 u</span></div>
+                    </div>
+                    <span className="text-[10px] text-slate-700 block font-bold bg-slate-200 p-1 rounded">
+                      🌍 Makes up 99.28% of natural uranium found in Earth's crust.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {selectedIsoCategory === "isobar_ca_ar" && (
+              <div className="space-y-3">
+                <div className="p-3 bg-sky-50 rounded-xl border border-sky-200 text-xs text-sky-900 font-extrabold flex items-center justify-between">
+                  <span>Isobar Pair: Calcium (Ca) & Argon (Ar)</span>
+                  <span className="text-[10px] bg-sky-200 text-sky-900 px-2 py-0.5 rounded-full uppercase">IDENTICAL MASS NUMBER (A = 40)</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-emerald-50 border-2 border-emerald-300 p-4 rounded-xl text-center space-y-2">
+                    <span className="text-2xl font-black font-mono text-emerald-950 block">⁴⁰₂₀Ca</span>
+                    <span className="text-xs font-bold text-emerald-900 block">Calcium (Reactive Metal)</span>
+                    <div className="bg-white p-3 rounded-lg border border-emerald-200 text-left text-[11px] space-y-1 font-mono text-slate-700">
+                      <div><b>Protons (p⁺):</b> <span className="text-rose-600 font-bold">20</span></div>
+                      <div><b>Neutrons (n⁰):</b> <span className="text-sky-600 font-bold">20 (40 - 20)</span></div>
+                      <div><b>Electrons (e⁻):</b> <span className="text-purple-600 font-bold">20</span></div>
+                      <div><b>Atomic No. (Z):</b> <span className="text-emerald-700 font-bold">20</span></div>
+                      <div className="bg-emerald-100 p-1 rounded"><b>Mass No. (A):</b> <span className="font-black text-emerald-950">40 u</span></div>
+                    </div>
+                  </div>
+
+                  <div className="bg-teal-50 border-2 border-teal-300 p-4 rounded-xl text-center space-y-2">
+                    <span className="text-2xl font-black font-mono text-teal-950 block">⁴⁰₁₈Ar</span>
+                    <span className="text-xs font-bold text-teal-900 block">Argon (Inert Noble Gas)</span>
+                    <div className="bg-white p-3 rounded-lg border border-teal-200 text-left text-[11px] space-y-1 font-mono text-slate-700">
+                      <div><b>Protons (p⁺):</b> <span className="text-rose-600 font-bold">18</span></div>
+                      <div><b>Neutrons (n⁰):</b> <span className="text-sky-600 font-bold">22 (40 - 18)</span></div>
+                      <div><b>Electrons (e⁻):</b> <span className="text-purple-600 font-bold">18</span></div>
+                      <div><b>Atomic No. (Z):</b> <span className="text-teal-700 font-bold">18</span></div>
+                      <div className="bg-teal-100 p-1 rounded"><b>Mass No. (A):</b> <span className="font-black text-teal-950">40 u</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-3 bg-sky-100/60 border border-sky-300 rounded-xl text-xs text-sky-950 font-medium">
+                  💡 <b>Notice the Isobar Contrast:</b> Calcium is a solid reactive metal while Argon is an unreactive gas! Though chemically totally different (Z=20 vs Z=18), both have <b>exactly identical total mass A = 40 u</b>.
+                </div>
+              </div>
+            )}
+
+            {selectedIsoCategory === "isobar_c14_n14" && (
+              <div className="space-y-3">
+                <div className="p-3 bg-sky-50 rounded-xl border border-sky-200 text-xs text-sky-900 font-extrabold flex items-center justify-between">
+                  <span>Isobar Pair: Carbon-14 (C) & Nitrogen-14 (N)</span>
+                  <span className="text-[10px] bg-sky-200 text-sky-900 px-2 py-0.5 rounded-full uppercase">IDENTICAL MASS NUMBER (A = 14)</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-rose-50 border-2 border-rose-300 p-4 rounded-xl text-center space-y-2">
+                    <span className="text-2xl font-black font-mono text-rose-950 block">¹⁴₆C</span>
+                    <span className="text-xs font-bold text-rose-900 block">Carbon-14 (Non-metal Element)</span>
+                    <div className="bg-white p-3 rounded-lg border border-rose-200 text-left text-[11px] space-y-1 font-mono text-slate-700">
+                      <div><b>Protons (p⁺):</b> <span className="text-rose-600 font-bold">6</span></div>
+                      <div><b>Neutrons (n⁰):</b> <span className="text-sky-600 font-bold">8</span></div>
+                      <div><b>Electrons (e⁻):</b> <span className="text-purple-600 font-bold">6</span></div>
+                      <div><b>Atomic No. (Z):</b> <span className="font-bold text-rose-700">6</span></div>
+                      <div className="bg-rose-100 p-1 rounded"><b>Mass No. (A):</b> <span className="font-black text-rose-950">14 u</span></div>
+                    </div>
+                  </div>
+
+                  <div className="bg-indigo-50 border-2 border-indigo-300 p-4 rounded-xl text-center space-y-2">
+                    <span className="text-2xl font-black font-mono text-indigo-950 block">¹⁴₇N</span>
+                    <span className="text-xs font-bold text-indigo-900 block">Nitrogen-14 (Atmospheric Gas)</span>
+                    <div className="bg-white p-3 rounded-lg border border-indigo-200 text-left text-[11px] space-y-1 font-mono text-slate-700">
+                      <div><b>Protons (p⁺):</b> <span className="text-rose-600 font-bold">7</span></div>
+                      <div><b>Neutrons (n⁰):</b> <span className="text-sky-600 font-bold">7</span></div>
+                      <div><b>Electrons (e⁻):</b> <span className="text-purple-600 font-bold">7</span></div>
+                      <div><b>Atomic No. (Z):</b> <span className="font-bold text-indigo-700">7</span></div>
+                      <div className="bg-indigo-100 p-1 rounded"><b>Mass No. (A):</b> <span className="font-black text-indigo-950">14 u</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Side-by-Side Summary Comparison Table */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-3 shadow-2xs">
+            <span className="text-xs font-black uppercase text-purple-900 tracking-wider block border-b pb-2">
+              📊 Side-by-Side Quick Summary Comparison
+            </span>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-100 text-slate-800">
+                    <th className="p-2.5 border border-slate-200">Feature</th>
+                    <th className="p-2.5 border border-slate-200 text-purple-900 bg-purple-50 font-black">Isotopes (e.g. ³⁵Cl & ³⁷Cl)</th>
+                    <th className="p-2.5 border border-slate-200 text-sky-900 bg-sky-50 font-black">Isobars (e.g. ⁴⁰Ca & ⁴⁰Ar)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 text-[11px]">
+                  <tr>
+                    <td className="p-2 border border-slate-200 font-extrabold text-slate-800">Atomic Number Z (Protons)</td>
+                    <td className="p-2 border border-slate-200 text-purple-800 font-extrabold bg-purple-50/50">✅ SAME (Identical Z)</td>
+                    <td className="p-2 border border-slate-200 text-rose-700 font-extrabold bg-sky-50/50">❌ DIFFERENT</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 border border-slate-200 font-extrabold text-slate-800">Mass Number A (Protons + Neutrons)</td>
+                    <td className="p-2 border border-slate-200 text-rose-700 font-extrabold bg-purple-50/50">❌ DIFFERENT</td>
+                    <td className="p-2 border border-slate-200 text-sky-800 font-extrabold bg-sky-50/50">✅ SAME (Identical A)</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 border border-slate-200 font-extrabold text-slate-800">Chemical Properties</td>
+                    <td className="p-2 border border-slate-200 text-purple-900 bg-purple-50/50"><b>Identical</b> (same valence electrons)</td>
+                    <td className="p-2 border border-slate-200 text-sky-900 bg-sky-50/50"><b>Different</b> (different elements)</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 border border-slate-200 font-extrabold text-slate-800">Physical Properties (Mass, Density)</td>
+                    <td className="p-2 border border-slate-200 text-purple-900 bg-purple-50/50"><b>Slightly Different</b> (different masses)</td>
+                    <td className="p-2 border border-slate-200 text-sky-900 bg-sky-50/50"><b>Completely Different</b></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Interactive Self-Test Practice Challenge */}
+          <div className="bg-gradient-to-br from-purple-900 to-indigo-950 text-white p-5 rounded-2xl space-y-4 shadow-md">
+            <div className="flex items-center justify-between border-b border-purple-700/60 pb-3">
+              <div>
+                <span className="text-xs font-black uppercase text-purple-300 tracking-wider block">
+                  🎯 Interactive Self-Test Challenge: "Isotope or Isobar?"
+                </span>
+                <span className="text-[11px] text-purple-200">
+                  Test your understanding instantly! Question {isoQuizIdx + 1} of {ISO_QUIZ_QUESTIONS.length}
+                </span>
+              </div>
+              <div className="bg-purple-800 px-3 py-1 rounded-full text-xs font-mono font-extrabold text-amber-300">
+                Score: {isoQuizScore} / {ISO_QUIZ_QUESTIONS.length}
+              </div>
+            </div>
+
+            {/* Current Question Display */}
+            <div className="bg-white/10 backdrop-blur-xs p-4 rounded-xl border border-purple-400/30 space-y-3">
+              <span className="text-sm font-extrabold text-amber-300 block">
+                {ISO_QUIZ_QUESTIONS[isoQuizIdx].title}
+              </span>
+              <p className="text-xs text-purple-100">
+                Inspect this pair of atoms:
+              </p>
+              <div className="flex items-center justify-center gap-6 py-2">
+                <span className="font-mono text-xl font-black text-amber-300 bg-black/40 px-4 py-2 rounded-xl border border-amber-400/40">
+                  {ISO_QUIZ_QUESTIONS[isoQuizIdx].pair[0]}
+                </span>
+                <span className="text-purple-300 font-bold text-sm">VS</span>
+                <span className="font-mono text-xl font-black text-amber-300 bg-black/40 px-4 py-2 rounded-xl border border-amber-400/40">
+                  {ISO_QUIZ_QUESTIONS[isoQuizIdx].pair[1]}
+                </span>
+              </div>
+
+              {/* Quiz Buttons */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  disabled={isoQuizUserAnswer !== null}
+                  onClick={() => {
+                    const isCorrect = ISO_QUIZ_QUESTIONS[isoQuizIdx].type === "isotope";
+                    setIsoQuizUserAnswer("isotope");
+                    if (isCorrect) setIsoQuizScore(prev => prev + 1);
+                  }}
+                  className={`flex-1 py-2.5 rounded-xl font-black text-xs transition cursor-pointer ${
+                    isoQuizUserAnswer === "isotope"
+                      ? (ISO_QUIZ_QUESTIONS[isoQuizIdx].type === "isotope" ? "bg-emerald-500 text-white" : "bg-rose-500 text-white")
+                      : "bg-purple-600 hover:bg-purple-500 text-white"
+                  }`}
+                >
+                  ⚛️ ISOTOPES (Same Z)
+                </button>
+
+                <button
+                  disabled={isoQuizUserAnswer !== null}
+                  onClick={() => {
+                    const isCorrect = ISO_QUIZ_QUESTIONS[isoQuizIdx].type === "isobar";
+                    setIsoQuizUserAnswer("isobar");
+                    if (isCorrect) setIsoQuizScore(prev => prev + 1);
+                  }}
+                  className={`flex-1 py-2.5 rounded-xl font-black text-xs transition cursor-pointer ${
+                    isoQuizUserAnswer === "isobar"
+                      ? (ISO_QUIZ_QUESTIONS[isoQuizIdx].type === "isobar" ? "bg-emerald-500 text-white" : "bg-rose-500 text-white")
+                      : "bg-sky-600 hover:bg-sky-500 text-white"
+                  }`}
+                >
+                  ⚖️ ISOBARS (Same A)
+                </button>
+              </div>
+
+              {/* Feedback Explanation */}
+              {isoQuizUserAnswer !== null && (
+                <div className="bg-black/50 p-3 rounded-xl border border-purple-400/40 space-y-2 text-xs animate-fade-in">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">
+                      {isoQuizUserAnswer === ISO_QUIZ_QUESTIONS[isoQuizIdx].type ? "🎉" : "❌"}
+                    </span>
+                    <span className={`font-black ${isoQuizUserAnswer === ISO_QUIZ_QUESTIONS[isoQuizIdx].type ? "text-emerald-400" : "text-rose-300"}`}>
+                      {isoQuizUserAnswer === ISO_QUIZ_QUESTIONS[isoQuizIdx].type ? "Correct Answer!" : `Incorrect! It is an ${ISO_QUIZ_QUESTIONS[isoQuizIdx].type.toUpperCase()}`}
+                    </span>
+                  </div>
+                  <p className="text-purple-200 text-[11px] leading-relaxed">
+                    {ISO_QUIZ_QUESTIONS[isoQuizIdx].explanation}
+                  </p>
+
+                  <div className="pt-1 flex justify-end">
+                    <button
+                      onClick={() => {
+                        setIsoQuizUserAnswer(null);
+                        setIsoQuizIdx((prev) => (prev + 1) % ISO_QUIZ_QUESTIONS.length);
+                      }}
+                      className="px-4 py-1.5 bg-amber-500 hover:bg-amber-400 text-purple-950 font-black text-xs rounded-lg transition cursor-pointer"
+                    >
+                      Next Question ➔
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Chlorine Fractional Atomic Mass & Radioactive Applications */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Fractional Atomic Mass Calculator for Chlorine */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-3 shadow-2xs">
+              <span className="text-xs font-black uppercase text-purple-900 tracking-wider block border-b pb-2">
+                🧮 Fractional Atomic Mass Calculator (Chlorine)
+              </span>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Why is Chlorine's atomic mass 35.5 u instead of a whole number? Because natural chlorine is a mixture of two isotopes: <b>³⁵Cl</b> and <b>³⁷Cl</b> in a 3:1 ratio!
+              </p>
+
+              <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl space-y-2">
+                <div className="flex items-center justify-between text-[11px] font-bold text-slate-700">
+                  <span>Isotope Abundance Slider:</span>
+                  <span className="text-purple-700 font-mono">³⁵Cl: {cl35Percent}% | ³⁷Cl: {100 - cl35Percent}%</span>
                 </div>
 
-                <div className="bg-white p-2.5 rounded-lg border border-purple-200 font-mono text-xs text-purple-950 font-extrabold text-center">
-                  Avg Mass = ({35} × {cl35Percent}% + {37} × {cl37Percent}%) / 100 = {avgChlorineMass} u
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={cl35Percent}
+                  onChange={(e) => setCl35Percent(Number(e.target.value))}
+                  className="w-full accent-purple-600 cursor-pointer"
+                />
+
+                <div className="bg-purple-50 p-3 rounded-lg border border-purple-200 font-mono text-xs text-purple-950 font-extrabold text-center space-y-1">
+                  <div>Average Mass Formula:</div>
+                  <div className="text-purple-700">({35} × {cl35Percent}% + {37} × {100 - cl35Percent}%) / 100</div>
+                  <div className="text-sm font-black text-purple-950 bg-white p-1 rounded border border-purple-300 mt-1">
+                    = {((35 * cl35Percent + 37 * (100 - cl35Percent)) / 100).toFixed(2)} u
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Isobars & Applications Explorer */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-2xs">
+            {/* Vital Applications of Radioactive Isotopes */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-3 shadow-2xs">
               <span className="text-xs font-black uppercase text-purple-900 tracking-wider block border-b pb-2">
-                2. Isobars & Medical Applications
+                💡 Vital Real-World Applications of Isotopes
               </span>
 
-              <p className="text-xs text-slate-600 leading-relaxed">
-                <b>Isobars:</b> Atoms of different elements with different Z but identical Mass Number A.
-              </p>
-
-              {/* Isobar Comparison Card */}
-              <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-xl">
-                  <span className="font-mono text-xs font-black text-emerald-900 block">₄₀₂₀Ca (Calcium)</span>
-                  <span className="text-[10px] text-emerald-700 block mt-1">Z = 20 Protons</span>
-                  <span className="text-[10px] text-emerald-700 block">Mass A = 40 u</span>
+              <div className="grid grid-cols-1 gap-2 text-xs">
+                <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-2.5">
+                  <span className="text-xl">☢️</span>
+                  <div>
+                    <span className="font-extrabold text-amber-950 block">Uranium-235 (²³⁵U)</span>
+                    <span className="text-[11px] text-amber-800">Used as fuel in nuclear reactors to generate clean electricity.</span>
+                  </div>
                 </div>
 
-                <div className="bg-teal-50 border border-teal-200 p-3 rounded-xl">
-                  <span className="font-mono text-xs font-black text-teal-900 block">₄₀₁₈Ar (Argon)</span>
-                  <span className="text-[10px] text-teal-700 block mt-1">Z = 18 Protons</span>
-                  <span className="text-[10px] text-teal-700 block">Mass A = 40 u</span>
+                <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2.5">
+                  <span className="text-xl">🩺</span>
+                  <div>
+                    <span className="font-extrabold text-rose-950 block">Cobalt-60 (⁶⁰Co)</span>
+                    <span className="text-[11px] text-rose-800">Used in radiotherapy for cancer treatment to destroy malignant tumor cells.</span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Isotope Applications Reference Cards */}
-              <div className="space-y-2 pt-2">
-                <span className="text-xs font-extrabold text-slate-800 block">
-                  💡 Vital Applications of Radioactive Isotopes:
-                </span>
-
-                <div className="grid grid-cols-1 gap-2 text-xs">
-                  <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-2">
-                    <span className="text-lg">☢️</span>
-                    <div>
-                      <span className="font-extrabold text-amber-950 block">Uranium-235 (²³⁵U)</span>
-                      <span className="text-[10px] text-amber-800">Used as fuel in nuclear reactors to generate clean electricity.</span>
-                    </div>
+                <div className="p-2.5 bg-purple-50 border border-purple-200 rounded-xl flex items-center gap-2.5">
+                  <span className="text-xl">💉</span>
+                  <div>
+                    <span className="font-extrabold text-purple-950 block">Iodine-131 (¹³¹I)</span>
+                    <span className="text-[11px] text-purple-800">Used in medical diagnosis and treatment of thyroid goitre disease.</span>
                   </div>
+                </div>
 
-                  <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2">
-                    <span className="text-lg">🩺</span>
-                    <div>
-                      <span className="font-extrabold text-rose-950 block">Cobalt-60 (⁶⁰Co)</span>
-                      <span className="text-[10px] text-rose-800">Used in radiation therapy for cancer treatment.</span>
-                    </div>
-                  </div>
-
-                  <div className="p-2.5 bg-purple-50 border border-purple-200 rounded-xl flex items-center gap-2">
-                    <span className="text-lg">💉</span>
-                    <div>
-                      <span className="font-extrabold text-purple-950 block">Iodine-131 (¹³¹I)</span>
-                      <span className="text-[10px] text-purple-800">Used in the medical diagnosis and treatment of goitre (thyroid).</span>
-                    </div>
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2.5">
+                  <span className="text-xl">🦴</span>
+                  <div>
+                    <span className="font-extrabold text-emerald-950 block">Carbon-14 (¹⁴C)</span>
+                    <span className="text-[11px] text-emerald-800">Used in Radiocarbon Dating to determine the age of ancient fossils and relics.</span>
                   </div>
                 </div>
               </div>

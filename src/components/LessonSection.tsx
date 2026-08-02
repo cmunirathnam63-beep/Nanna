@@ -1515,6 +1515,17 @@ export default function LessonSection({
           </button>
 
           <button
+            onClick={() => setActiveChapterTab("interactive")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-black transition flex items-center gap-1.5 cursor-pointer ${
+              activeChapterTab === "interactive"
+                ? "bg-purple-600 text-white shadow-2xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+            }`}
+          >
+            <span>🎨</span> <span>Visual Explore & Interactive Studio</span>
+          </button>
+
+          <button
             onClick={() => setActiveChapterTab("topic_quiz")}
             className={`px-3 py-1.5 rounded-lg text-xs font-black transition flex items-center gap-1.5 cursor-pointer ${
               activeChapterTab === "topic_quiz"
