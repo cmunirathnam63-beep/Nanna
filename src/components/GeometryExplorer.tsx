@@ -4,9 +4,9 @@ import { Sparkles, HelpCircle, Compass, Circle, Check, RotateCcw } from "lucide-
 export default function GeometryExplorer() {
   const [activeTab, setActiveTab] = useState<"lines" | "intersections" | "curves" | "polygons" | "circle">("lines");
   const [angleValue, setAngleValue] = useState<number>(60);
-  const [selectedCirclePart, setSelectedCirclePart] = useState<"center" | "radius" | "diameter" | "chord" | "arc" | "sector" | "segment">("radius");
+  const [selectedCirclePart, setSelectedCirclePart] = useState<"center" | "radius" | "diameter" | "circumference" | "area" | "semicircle" | "chord" | "arc" | "sector" | "segment">("radius");
   const [selectedPolygonType, setSelectedPolygonType] = useState<"triangle" | "quadrilateral" | "pentagon">("quadrilateral");
-  const [isParallelMode, setIsParallelMode] = useState<boolean>(false);
+  const [lineMode, setLineMode] = useState<"intersecting" | "perpendicular" | "parallel">("intersecting");
   const [quizAnswer, setQuizAnswer] = useState<string | null>(null);
   const [quizFeedback, setQuizFeedback] = useState<string | null>(null);
 
@@ -194,31 +194,39 @@ export default function GeometryExplorer() {
         </div>
       )}
 
-      {/* TAB 2: INTERSECTING & PARALLEL LINES */}
+      {/* TAB 2: INTERSECTING, PERPENDICULAR & PARALLEL LINES */}
       {activeTab === "intersections" && (
         <div className="bg-white border border-rose-200/80 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-rose-100 pb-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-rose-100 pb-3">
             <div>
-              <h4 className="font-black text-rose-950 text-base">Intersecting Lines vs Parallel Lines</h4>
-              <p className="text-xs text-slate-600">See how lines cross at a point or stay equidistant forever.</p>
+              <h4 className="font-black text-rose-950 text-base">Intersecting, Perpendicular & Parallel Lines</h4>
+              <p className="text-xs text-slate-600">Compare arbitrary crossing lines, 90° perpendicular lines (⊥), and parallel lines (∥).</p>
             </div>
 
-            <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
+            <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
               <button
-                onClick={() => setIsParallelMode(false)}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
-                  !isParallelMode ? "bg-rose-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+                onClick={() => setLineMode("intersecting")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+                  lineMode === "intersecting" ? "bg-rose-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                Crossing (Intersecting)
+                🔀 Intersecting
               </button>
               <button
-                onClick={() => setIsParallelMode(true)}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
-                  isParallelMode ? "bg-indigo-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+                onClick={() => setLineMode("perpendicular")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+                  lineMode === "perpendicular" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                Parallel (Railway Tracks)
+                📐 Perpendicular (⊥)
+              </button>
+              <button
+                onClick={() => setLineMode("parallel")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+                  lineMode === "parallel" ? "bg-indigo-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                ⏸️ Parallel (∥)
               </button>
             </div>
           </div>
@@ -227,7 +235,7 @@ export default function GeometryExplorer() {
             {/* SVG Visualizer */}
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center min-h-[220px]">
               <svg className="w-full max-w-xs h-52" viewBox="0 0 300 200">
-                {!isParallelMode ? (
+                {lineMode === "intersecting" && (
                   /* Intersecting lines */
                   <g>
                     {/* Line L1 */}
@@ -245,7 +253,36 @@ export default function GeometryExplorer() {
                       Point P (Intersection)
                     </text>
                   </g>
-                ) : (
+                )}
+
+                {lineMode === "perpendicular" && (
+                  /* Perpendicular lines */
+                  <g>
+                    {/* Line AB (Horizontal) */}
+                    <line x1="30" y1="110" x2="270" y2="110" className="stroke-emerald-600 stroke-[3.5]" />
+                    <circle cx="50" cy="110" r="3.5" className="fill-emerald-800" />
+                    <circle cx="250" cy="110" r="3.5" className="fill-emerald-800" />
+                    <text x="45" y="130" className="text-xs font-black fill-emerald-950">A</text>
+                    <text x="250" y="130" className="text-xs font-black fill-emerald-950">B</text>
+
+                    {/* Line CD (Vertical) */}
+                    <line x1="150" y1="20" x2="150" y2="180" className="stroke-emerald-600 stroke-[3.5]" />
+                    <circle cx="150" cy="35" r="3.5" className="fill-emerald-800" />
+                    <circle cx="150" cy="165" r="3.5" className="fill-emerald-800" />
+                    <text x="165" y="35" className="text-xs font-black fill-emerald-950">C</text>
+                    <text x="165" y="170" className="text-xs font-black fill-emerald-950">D</text>
+
+                    {/* Intersection Point M */}
+                    <circle cx="150" cy="110" r="5" className="fill-rose-600 stroke-2 stroke-white" />
+                    <text x="135" y="102" className="text-xs font-black fill-rose-950 font-mono">M</text>
+
+                    {/* Right Angle Square Box Marker */}
+                    <path d="M 150 90 L 170 90 L 170 110" className="stroke-rose-600 stroke-2 fill-rose-100/60" />
+                    <text x="175" y="102" className="text-[11px] font-black fill-rose-900 font-mono">90° (Right Angle)</text>
+                  </g>
+                )}
+
+                {lineMode === "parallel" && (
                   /* Parallel lines */
                   <g>
                     {/* Railway Track ties */}
@@ -280,7 +317,7 @@ export default function GeometryExplorer() {
 
             {/* Detailed Description */}
             <div className="space-y-3">
-              {!isParallelMode ? (
+              {lineMode === "intersecting" && (
                 <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 text-xs space-y-2">
                   <h5 className="font-extrabold text-rose-950 text-sm flex items-center gap-1.5">
                     <span>🔀 Intersecting Lines</span>
@@ -297,7 +334,34 @@ export default function GeometryExplorer() {
                     </ul>
                   </div>
                 </div>
-              ) : (
+              )}
+
+              {lineMode === "perpendicular" && (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-xs space-y-2">
+                  <h5 className="font-extrabold text-emerald-950 text-sm flex items-center justify-between">
+                    <span>📐 Perpendicular Lines (AB ⊥ CD)</span>
+                    <span className="text-[10px] font-mono bg-emerald-200 px-1.5 py-0.5 rounded text-emerald-950 font-black">Angle = 90°</span>
+                  </h5>
+                  <p className="text-slate-700 leading-relaxed">
+                    When two lines intersect such that the angle between them is a <strong>right angle (90°)</strong>, they are called <strong>Perpendicular Lines</strong>. Written as <strong>AB ⊥ CD</strong> (read "AB is perpendicular to CD").
+                  </p>
+                  <div className="bg-white p-2.5 rounded-lg border border-emerald-200 text-emerald-950 space-y-1.5">
+                    <p className="font-bold text-emerald-900">📏 Perpendicular Bisector:</p>
+                    <p className="text-[11px] text-slate-700 leading-snug">
+                      A line that is perpendicular to a line segment <em>AND</em> divides it into two equal halves (bisects it).
+                    </p>
+                    <p className="font-bold text-emerald-900 pt-1">Real life examples:</p>
+                    <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-800">
+                      <li>Corner lines of a book cover or chalkboard (90°)</li>
+                      <li>Horizontal and vertical window grill lines (+)</li>
+                      <li>Clock hands at exactly 3:00 or 9:00</li>
+                      <li>Plumb line used by construction workers to check vertical walls</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {lineMode === "parallel" && (
                 <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-xs space-y-2">
                   <h5 className="font-extrabold text-indigo-950 text-sm flex items-center gap-1.5">
                     <span>⏸️ Parallel Lines (l₁ ∥ l₂)</span>
@@ -533,7 +597,7 @@ export default function GeometryExplorer() {
             </div>
 
             <div className="flex flex-wrap items-center gap-1.5">
-              {(["center", "radius", "diameter", "chord", "arc", "sector", "segment"] as const).map((part) => (
+              {(["center", "radius", "diameter", "circumference", "area", "semicircle", "chord", "arc", "sector", "segment"] as const).map((part) => (
                 <button
                   key={part}
                   onClick={() => setSelectedCirclePart(part)}
@@ -553,6 +617,23 @@ export default function GeometryExplorer() {
             {/* SVG Interactive Circle */}
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center min-h-[240px]">
               <svg className="w-full max-w-xs h-60" viewBox="0 0 240 240">
+                {/* Area Shading */}
+                {selectedCirclePart === "area" && (
+                  <g>
+                    <circle cx="120" cy="120" r="80" className="fill-purple-300/70 stroke-purple-600 stroke-[3.5] animate-pulse" />
+                    <text x="120" y="125" className="text-xs font-black fill-purple-950" textAnchor="middle">Area (A) = πr²</text>
+                  </g>
+                )}
+
+                {/* Semicircle Shading */}
+                {selectedCirclePart === "semicircle" && (
+                  <g>
+                    <path d="M 40 120 A 80 80 0 0 1 200 120 Z" className="fill-teal-300/80 stroke-teal-600 stroke-[3.5] animate-pulse" />
+                    <line x1="40" y1="120" x2="200" y2="120" className="stroke-teal-800 stroke-[3.5]" />
+                    <text x="120" y="80" className="text-xs font-black fill-teal-950" textAnchor="middle">Semicircle (1/2 Circle)</text>
+                  </g>
+                )}
+
                 {/* Sector Shading */}
                 {selectedCirclePart === "sector" && (
                   <path d="M 120 120 L 120 40 A 80 80 0 0 1 190 80 Z" className="fill-amber-300/80 stroke-amber-600 stroke-2" />
@@ -565,6 +646,15 @@ export default function GeometryExplorer() {
 
                 {/* Main Circle Boundary */}
                 <circle cx="120" cy="120" r="80" className="fill-none stroke-slate-800 stroke-[2.5]" />
+
+                {/* Circumference Highlighting */}
+                {selectedCirclePart === "circumference" && (
+                  <g>
+                    <circle cx="120" cy="120" r="80" className="fill-emerald-100/40 stroke-emerald-500 stroke-[5] animate-pulse" />
+                    <circle cx="120" cy="120" r="80" className="fill-none stroke-emerald-700 stroke-2 stroke-dasharray-[6,4]" />
+                    <text x="120" y="28" className="text-[11px] font-black fill-emerald-900" textAnchor="middle">Circumference C = 2πr</text>
+                  </g>
+                )}
 
                 {/* Center Point */}
                 <circle cx="120" cy="120" r="5" className={selectedCirclePart === "center" ? "fill-rose-600 stroke-2 stroke-rose-950 animate-ping" : "fill-slate-900"} />
@@ -618,6 +708,57 @@ export default function GeometryExplorer() {
                   <span className="text-[10px] font-mono font-bold bg-rose-200 text-rose-950 px-2 py-0.5 rounded inline-block mt-1">
                     Diameter = 2 × Radius
                   </span>
+                </div>
+              )}
+
+              {selectedCirclePart === "circumference" && (
+                <div>
+                  <h5 className="font-extrabold text-emerald-950 text-sm">⭕ Circumference (C)</h5>
+                  <p className="text-slate-700 mt-1">
+                    The total perimeter or continuous distance around the outer boundary line enclosing a circle.
+                  </p>
+                  <div className="mt-2 space-y-1 bg-emerald-50 border border-emerald-200 rounded-lg p-2 text-emerald-950">
+                    <p className="text-[11px] font-mono font-black">
+                      Formula: Circumference (C) = 2 × π × r = π × d
+                    </p>
+                    <p className="text-[10px] text-slate-600">
+                      Where <strong>r</strong> is radius, <strong>d</strong> is diameter, and <strong>π (Pi)</strong> ≈ 22/7 or 3.14159.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {selectedCirclePart === "area" && (
+                <div>
+                  <h5 className="font-extrabold text-purple-950 text-sm">🟣 Area of Circle (A)</h5>
+                  <p className="text-slate-700 mt-1">
+                    The total 2D flat region or surface enclosed inside the boundary of a circle.
+                  </p>
+                  <div className="mt-2 space-y-1 bg-purple-50 border border-purple-200 rounded-lg p-2 text-purple-950">
+                    <p className="text-[11px] font-mono font-black">
+                      Formula: Area (A) = π × r² = π × r × r
+                    </p>
+                    <p className="text-[10px] text-slate-600">
+                      For radius <strong>r = 7 cm</strong>: Area = (22/7) × 7 × 7 = <strong>154 cm²</strong>.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {selectedCirclePart === "semicircle" && (
+                <div>
+                  <h5 className="font-extrabold text-teal-950 text-sm">🌓 Semicircle</h5>
+                  <p className="text-slate-700 mt-1">
+                    Exactly half of a full circle bounded by a diameter and half of the circumference arc (180° central angle).
+                  </p>
+                  <div className="mt-2 space-y-1 bg-teal-50 border border-teal-200 rounded-lg p-2 text-teal-950">
+                    <p className="text-[11px] font-mono font-black">
+                      Area = (π × r²) ÷ 2  |  Perimeter = (π × r) + d
+                    </p>
+                    <p className="text-[10px] text-slate-600">
+                      Fun Fact: Any angle inscribed inside a semicircle arc is always a <strong>Right Angle (90°)</strong>!
+                    </p>
+                  </div>
                 </div>
               )}
 

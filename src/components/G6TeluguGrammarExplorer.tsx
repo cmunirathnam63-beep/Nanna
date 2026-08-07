@@ -25,7 +25,32 @@ export default function G6TeluguGrammarExplorer({ activeChapterId }: { activeCha
     return "bhashabhagalu";
   };
 
-  const [activeTab, setActiveTab] = useState<"summary" | "bhashabhagalu" | "vibhakthulu" | "kaalaalu" | "aksharalu" | "sandhi_samasa" | "padajalam" | "lekha_rachana">(getDefaultTab());
+  const [activeTab, setActiveTab] = useState<"summary" | "bhashabhagalu" | "vibhakthulu" | "kaalaalu" | "aksharalu" | "sandhi_samasa" | "padajalam" | "lekha_rachana" | "dictation">(getDefaultTab());
+
+  // --- DICTATION & NOTEBOOK PRACTICE STATE ---
+  const notebookDictationWords = [
+    { id: "w1", telugu: "రాముడు", eng: "Raamudu", meaning: "Lord Rama / Person Name", category: "నామవాచకం", categoryEng: "Noun", color: "bg-blue-100 text-blue-900 border-blue-300" },
+    { id: "w2", telugu: "హైదరాబాద్", eng: "Hyderabad", meaning: "Capital City Name", category: "నామవాచకం", categoryEng: "Noun", color: "bg-blue-100 text-blue-900 border-blue-300" },
+    { id: "w3", telugu: "అతడు", eng: "Athadu", meaning: "He (Pronoun)", category: "సర్వనామం", categoryEng: "Pronoun", color: "bg-purple-100 text-purple-900 border-purple-300" },
+    { id: "w4", telugu: "ఆమె", eng: "Aame", meaning: "She (Pronoun)", category: "సర్వనామం", categoryEng: "Pronoun", color: "bg-purple-100 text-purple-900 border-purple-300" },
+    { id: "w5", telugu: "వారు", eng: "Vaaru", meaning: "They / Respectful (Pronoun)", category: "సర్వనామం", categoryEng: "Pronoun", color: "bg-purple-100 text-purple-900 border-purple-300" },
+    { id: "w6", telugu: "మేము", eng: "Memu", meaning: "We (Pronoun)", category: "సర్వనామం", categoryEng: "Pronoun", color: "bg-purple-100 text-purple-900 border-purple-300" },
+    { id: "w7", telugu: "వేగమైన", eng: "Vegamaina", meaning: "Fast / Speedy (Adjective)", category: "విశేషణం", categoryEng: "Adjective", color: "bg-amber-100 text-amber-900 border-amber-300" },
+    { id: "w8", telugu: "ఎర్రని", eng: "Errani", meaning: "Red in color (Adjective)", category: "విశేషణం", categoryEng: "Adjective", color: "bg-amber-100 text-amber-900 border-amber-300" },
+    { id: "w9", telugu: "తియ్యని", eng: "Thiyyani", meaning: "Sweet (Adjective)", category: "విశేషణం", categoryEng: "Adjective", color: "bg-amber-100 text-amber-900 border-amber-300" },
+    { id: "w10", telugu: "వెళ్ళెను", eng: "Vellenu", meaning: "Went (Verb)", category: "క్రియ", categoryEng: "Verb", color: "bg-rose-100 text-rose-900 border-rose-300" },
+    { id: "w11", telugu: "అడవి", eng: "Adavi", meaning: "Forest (Noun)", category: "నామవాచకం", categoryEng: "Noun", color: "bg-blue-100 text-blue-900 border-blue-300" },
+    { id: "w12", telugu: "అక్కడ", eng: "Akkada", meaning: "There / Location (Indeclinable)", category: "అవ్యయం", categoryEng: "Indeclinable", color: "bg-teal-100 text-teal-900 border-teal-300" },
+    { id: "w13", telugu: "పుస్తకం", eng: "Pusthakam", meaning: "Book (Noun)", category: "నామవాచకం", categoryEng: "Noun", color: "bg-blue-100 text-blue-900 border-blue-300" }
+  ];
+
+  const [dictationMode, setDictationMode] = useState<"notebook" | "audio_quiz" | "category_match" | "sentences">("notebook");
+  const [currentQuizIdx, setCurrentQuizIdx] = useState<number>(0);
+  const [selectedCategoryAns, setSelectedCategoryAns] = useState<string | null>(null);
+  const [dictationFeedback, setDictationFeedback] = useState<{ isCorrect: boolean; text: string } | null>(null);
+  const [dictationScore, setDictationScore] = useState<number>(0);
+  const [typedDictationWord, setTypedDictationWord] = useState<string>("");
+  const [userCategorization, setUserCategorization] = useState<{ [key: string]: string }>({});
 
   React.useEffect(() => {
     setActiveTab(getDefaultTab());
@@ -752,7 +777,7 @@ export default function G6TeluguGrammarExplorer({ activeChapterId }: { activeCha
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 bg-slate-100 p-1.5 rounded-2xl">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 bg-slate-100 p-1.5 rounded-2xl">
           <button
             onClick={() => setActiveTab("bhashabhagalu")}
             className={`py-2 px-3 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1.5 ${
@@ -760,6 +785,15 @@ export default function G6TeluguGrammarExplorer({ activeChapterId }: { activeCha
             }`}
           >
             <span>🏷️ భాషాభాగాలు</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("dictation")}
+            className={`py-2 px-3 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-1.5 ${
+              activeTab === "dictation" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-700 hover:bg-slate-200"
+            }`}
+          >
+            <span>✍️ శ్రుతలేఖనం (Dictation)</span>
           </button>
 
           <button
@@ -1709,6 +1743,436 @@ export default function G6TeluguGrammarExplorer({ activeChapterId }: { activeCha
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* --- TAB 9: DICTATION & NOTEBOOK GRAMMAR PRACTICE --- */}
+      {activeTab === "dictation" && (
+        <div className="space-y-6 animate-fade-in">
+          {/* Header Banner */}
+          <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-950 text-white rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-2xl">✍️</span>
+                <h3 className="text-lg sm:text-xl font-black text-white">
+                  శ్రుతలేఖనం & భాషాభాగాలు (Telugu Dictation & Grammar Practice)
+                </h3>
+              </div>
+              <p className="text-xs text-emerald-100/90 leading-relaxed max-w-2xl">
+                తరగతి గదిలో విద్యార్థుల రాత నైపుణ్యాలను (Writing Skills), ఉచ్ఛారణను, మరియు భాషాభాగాల (Parts of Speech) జ్ఞానాన్ని పెంపొందించడానికి నిర్వహించే శ్రుతలేఖన పదాల సమగ్ర సాధన!
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 bg-emerald-900/80 border border-emerald-500/50 p-2.5 rounded-xl">
+              <Award className="text-amber-400 shrink-0" size={20} />
+              <div>
+                <span className="text-[10px] font-mono text-emerald-300 block uppercase">డిక్టేషన్ స్కోరు</span>
+                <span className="text-sm font-black text-amber-300">{dictationScore} పాయింట్లు</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Dictation Mode Switcher */}
+          <div className="flex flex-wrap items-center gap-2 bg-emerald-50/80 p-2 rounded-2xl border border-emerald-200">
+            <button
+              onClick={() => setDictationMode("notebook")}
+              className={`py-2 px-3.5 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-2 ${
+                dictationMode === "notebook"
+                  ? "bg-emerald-700 text-white shadow-xs"
+                  : "bg-white text-emerald-900 hover:bg-emerald-100 border border-emerald-200"
+              }`}
+            >
+              <span>📖 1. నోట్‌బుక్ శ్రుతలేఖన పదాలు (Notebook Words)</span>
+            </button>
+
+            <button
+              onClick={() => setDictationMode("audio_quiz")}
+              className={`py-2 px-3.5 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-2 ${
+                dictationMode === "audio_quiz"
+                  ? "bg-emerald-700 text-white shadow-xs"
+                  : "bg-white text-emerald-900 hover:bg-emerald-100 border border-emerald-200"
+              }`}
+            >
+              <span>🎧 2. ఆడియో డిక్టేషన్ పరీక్ష (Audio Test)</span>
+            </button>
+
+            <button
+              onClick={() => setDictationMode("category_match")}
+              className={`py-2 px-3.5 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-2 ${
+                dictationMode === "category_match"
+                  ? "bg-emerald-700 text-white shadow-xs"
+                  : "bg-white text-emerald-900 hover:bg-emerald-100 border border-emerald-200"
+              }`}
+            >
+              <span>🧩 3. భాషాభాగాల వర్గీకరణ (Grammar Sorting)</span>
+            </button>
+
+            <button
+              onClick={() => setDictationMode("sentences")}
+              className={`py-2 px-3.5 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-2 ${
+                dictationMode === "sentences"
+                  ? "bg-emerald-700 text-white shadow-xs"
+                  : "bg-white text-emerald-900 hover:bg-emerald-100 border border-emerald-200"
+              }`}
+            >
+              <span>📝 4. వాక్య నిర్మాణం (Sentence Building)</span>
+            </button>
+          </div>
+
+          {/* MODE 1: NOTEBOOK DICTATION WORDS SHOWCASE */}
+          {dictationMode === "notebook" && (
+            <div className="space-y-5">
+              <div className="bg-amber-50/70 border-2 border-amber-200 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-amber-200 pb-3">
+                  <div>
+                    <h4 className="font-extrabold text-sm text-amber-950 flex items-center gap-2">
+                      <span>📘 విద్యార్థి నోట్‌బుక్ శ్రుతలేఖన పట్టిక (Student Dictation Words - Grade 6)</span>
+                    </h4>
+                    <p className="text-xs text-amber-900/80 mt-0.5">
+                      కింది 13 పదాలు విద్యార్థి నోట్‌బుక్‌లో శ్రుతలేఖనంగా (Dictation) రాయబడ్డాయి. వీటి ఉచ్ఛారణ వినడానికి మరియు భాషాభాగాన్ని గుర్తుపట్టడానికి మైక్ బటన్ నొక్కండి!
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const allText = notebookDictationWords.map(w => w.telugu).join(", ");
+                      playTeluguSpeech(`శ్రుతలేఖన పదాలు: ${allText}`);
+                    }}
+                    className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer shadow-2xs shrink-0"
+                  >
+                    <Volume2 size={14} />
+                    <span>అన్ని పదాలు వినండి (All Words Audio)</span>
+                  </button>
+                </div>
+
+                {/* Ruled Paper Notebook Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {notebookDictationWords.map((item, idx) => (
+                    <div
+                      key={item.id}
+                      className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs hover:shadow-md transition flex flex-col justify-between gap-2 border-l-4 border-l-emerald-600"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-black text-slate-400 bg-slate-100 w-6 h-6 rounded-full flex items-center justify-center shrink-0">
+                            {idx + 1}
+                          </span>
+                          <div>
+                            <span className="text-lg font-black text-slate-900 block leading-tight">
+                              {item.telugu}
+                            </span>
+                            <span className="text-[11px] font-mono text-slate-500 font-bold block">
+                              {item.eng} ({item.meaning})
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => playTeluguSpeech(item.telugu)}
+                          className="bg-emerald-100 hover:bg-emerald-200 text-emerald-900 p-2 rounded-lg transition cursor-pointer shrink-0"
+                          title="పదం ఉచ్ఛారణ వినండి"
+                        >
+                          <Volume2 size={15} />
+                        </button>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase">భాషాభాగం:</span>
+                        <span className={`text-xs font-black px-2.5 py-0.5 rounded-full border ${item.color}`}>
+                          {item.category} ({item.categoryEng})
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODE 2: AUDIO DICTATION QUIZ */}
+          {dictationMode === "audio_quiz" && (
+            <div className="bg-white border-2 border-emerald-200 rounded-2xl p-5 shadow-xs space-y-5">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
+                <div>
+                  <h4 className="font-black text-sm text-slate-800 flex items-center gap-2">
+                    <Volume2 className="text-emerald-600" size={18} />
+                    <span>ఆడియో శ్రుతలేఖన సాధన (Audio Dictation Test)</span>
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    ఆడియోను విని సరైన తెలుగు పదాన్ని మరియు దాని భాషాభాగాన్ని (Grammar Category) ఎంచుకోండి!
+                  </p>
+                </div>
+                <span className="text-xs font-black bg-emerald-100 text-emerald-900 px-3 py-1 rounded-full border border-emerald-200 font-mono">
+                  ప్రశ్న {currentQuizIdx + 1} / {notebookDictationWords.length}
+                </span>
+              </div>
+
+              {/* Quiz Card */}
+              <div className="p-6 bg-gradient-to-br from-emerald-50 via-teal-50 to-amber-50 rounded-2xl border border-emerald-200 text-center space-y-4">
+                <span className="text-xs font-extrabold text-emerald-900 uppercase tracking-wide block font-mono">
+                  🔊 డిక్టేషన్ ఆడియో ప్లేయర్
+                </span>
+
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => playTeluguSpeech(notebookDictationWords[currentQuizIdx].telugu, 0.75)}
+                    className="flex items-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black px-6 py-3.5 rounded-2xl text-base shadow-md transition transform active:scale-95 cursor-pointer"
+                  >
+                    <Volume2 size={22} />
+                    <span>ఉచ్ఛారణ వినండి (Listen Word Audio)</span>
+                  </button>
+                </div>
+
+                <p className="text-xs text-slate-600">
+                  (బటన్ నొక్కి పదాన్ని స్పష్టంగా వినండి. అవసరమైతే మళ్లీ వినవచ్చు!)
+                </p>
+
+                {/* Category Multiple Choice */}
+                <div className="space-y-3 pt-3 border-t border-emerald-200/80 text-left">
+                  <label className="text-xs font-black text-slate-800 block">
+                    1. విన్న పదం ఏ భాషాభాగం క్రిందికి వస్తుంది? (Select Part of Speech):
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    {["నామవాచకం", "సర్వనామం", "విశేషణం", "క్రియ", "అవ్యయం"].map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedCategoryAns(cat)}
+                        className={`p-2.5 rounded-xl font-black text-xs transition cursor-pointer border ${
+                          selectedCategoryAns === cat
+                            ? "bg-emerald-600 text-white border-emerald-700 shadow-xs"
+                            : "bg-white text-slate-700 hover:bg-emerald-50 border-slate-200"
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Word Reveal / Choice buttons */}
+                  <label className="text-xs font-black text-slate-800 block pt-2">
+                    2. విన్న సరైన పదాన్ని ఎంచుకోండి (Identify Word):
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {notebookDictationWords.map((wItem) => (
+                      <button
+                        key={wItem.id}
+                        onClick={() => setTypedDictationWord(wItem.telugu)}
+                        className={`p-2 rounded-xl font-black text-xs transition cursor-pointer border ${
+                          typedDictationWord === wItem.telugu
+                            ? "bg-purple-700 text-white border-purple-800 shadow-xs"
+                            : "bg-white text-slate-800 hover:bg-slate-100 border-slate-200"
+                        }`}
+                      >
+                        {wItem.telugu}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action buttons */}
+                <div className="pt-3 flex flex-wrap items-center justify-between gap-3">
+                  <button
+                    onClick={() => {
+                      const cur = notebookDictationWords[currentQuizIdx];
+                      const isCatCorrect = selectedCategoryAns === cur.category;
+                      const isWordCorrect = typedDictationWord === cur.telugu;
+
+                      if (isCatCorrect && isWordCorrect) {
+                        setDictationFeedback({
+                          isCorrect: true,
+                          text: `శభాష్! అద్భుతం! '${cur.telugu}' అనేది '${cur.category}' (${cur.categoryEng}). సరిగ్గా చెప్పారు!`
+                        });
+                        setDictationScore(prev => prev + 10);
+                        playTeluguSpeech(`శభాష్! సరియైన సమాధానం. ${cur.telugu} అనగా ${cur.category}.`);
+                      } else if (!isCatCorrect && isWordCorrect) {
+                        setDictationFeedback({
+                          isCorrect: false,
+                          text: `'${cur.telugu}' పదం సరైనదే కానీ దాని భాషాభాగం '${cur.category}' (${cur.categoryEng}). మళ్లీ ప్రయత్నించండి!`
+                        });
+                        playTeluguSpeech(`పదం సరిగ్గా చెప్పారు. కానీ దాని భాషాభాగం ${cur.category}.`);
+                      } else {
+                        setDictationFeedback({
+                          isCorrect: false,
+                          text: `తప్పు సమాధానం! విన్న పదం: '${cur.telugu}', భాషాభాగం: '${cur.category}'.`
+                        });
+                        playTeluguSpeech(`తప్పు సమాధానం. విన్న పదం ${cur.telugu}.`);
+                      }
+                    }}
+                    disabled={!selectedCategoryAns || !typedDictationWord}
+                    className={`px-5 py-2.5 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-2 ${
+                      selectedCategoryAns && typedDictationWord
+                        ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
+                  >
+                    <CheckCircle2 size={16} />
+                    <span>సరిచూడండి (Check Answer)</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setCurrentQuizIdx((prev) => (prev + 1) % notebookDictationWords.length);
+                      setSelectedCategoryAns(null);
+                      setTypedDictationWord("");
+                      setDictationFeedback(null);
+                    }}
+                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 border border-slate-200"
+                  >
+                    <span>తరువాతి పదం (Next Word)</span>
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
+
+                {/* Feedback Box */}
+                {dictationFeedback && (
+                  <div
+                    className={`p-3.5 rounded-xl text-xs font-bold border leading-relaxed ${
+                      dictationFeedback.isCorrect
+                        ? "bg-emerald-100 text-emerald-950 border-emerald-300"
+                        : "bg-rose-100 text-rose-950 border-rose-300"
+                    }`}
+                  >
+                    {dictationFeedback.text}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* MODE 3: GRAMMAR CATEGORY MATCHING */}
+          {dictationMode === "category_match" && (
+            <div className="bg-white border-2 border-emerald-200 rounded-2xl p-5 shadow-xs space-y-5">
+              <div>
+                <h4 className="font-extrabold text-sm text-slate-800 flex items-center gap-2">
+                  <Layers className="text-emerald-600" size={18} />
+                  <span>భాషాభాగాల వర్గీకరణ బోర్డు (Category Sorting Board)</span>
+                </h4>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  నోట్‌బుక్ శ్రుతలేఖన పదాలను వాటి సరియైన భాషాభాగం (నామవాచకం, సర్వనామం, విశేషణం, క్రియ, అవ్యయం) పట్టికలో వర్గీకరించండి!
+                </p>
+              </div>
+
+              {/* 5 Category Columns */}
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                {[
+                  { name: "నామవాచకం", desc: "పేర్లు (Nouns)", color: "bg-blue-50 border-blue-200 text-blue-900" },
+                  { name: "సర్వనామం", desc: "బదులుగా వాడేవి (Pronouns)", color: "bg-purple-50 border-purple-200 text-purple-900" },
+                  { name: "విశేషణం", desc: "గుణాలు (Adjectives)", color: "bg-amber-50 border-amber-200 text-amber-900" },
+                  { name: "క్రియ", desc: "పనులు (Verbs)", color: "bg-rose-50 border-rose-200 text-rose-900" },
+                  { name: "అవ్యయం", desc: "మార్పు చెందనివి (Indeclinables)", color: "bg-teal-50 border-teal-200 text-teal-900" }
+                ].map((catObj) => {
+                  const matchingWords = notebookDictationWords.filter(w => w.category === catObj.name);
+                  return (
+                    <div key={catObj.name} className={`p-3 rounded-2xl border ${catObj.color} space-y-2`}>
+                      <div className="text-center border-b pb-2 border-slate-200/60">
+                        <span className="font-black text-xs block">{catObj.name}</span>
+                        <span className="text-[10px] font-mono text-slate-600">{catObj.desc}</span>
+                      </div>
+
+                      <div className="space-y-1.5 pt-1">
+                        {matchingWords.map(w => (
+                          <div
+                            key={w.id}
+                            onClick={() => playTeluguSpeech(`${w.telugu} అనగా ${w.category}`)}
+                            className="bg-white p-2 rounded-xl border border-slate-200/90 shadow-2xs flex items-center justify-between cursor-pointer hover:bg-slate-50 transition"
+                          >
+                            <span className="font-black text-xs text-slate-900">{w.telugu}</span>
+                            <Volume2 size={12} className="text-slate-400" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* MODE 4: SENTENCE BUILDING PRACTICE */}
+          {dictationMode === "sentences" && (
+            <div className="bg-white border-2 border-emerald-200 rounded-2xl p-5 shadow-xs space-y-4">
+              <div>
+                <h4 className="font-extrabold text-sm text-slate-800 flex items-center gap-2">
+                  <FileText className="text-emerald-600" size={18} />
+                  <span>శ్రుతలేఖన పదాలతో వాక్య నిర్మాణం (Sentence Building)</span>
+                </h4>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  నోట్‌బుక్‌లోని శ్రుతలేఖన పదాలను ఉపయోగించి తయారుచేసిన ప్రమాణిక తెలుగు వాక్యాలు మరియు వాటి వ్యాకరణ విశ్లేషణ:
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {[
+                  {
+                    sentence: "రాముడు హైదరాబాద్ వెళ్ళెను.",
+                    breakdown: [
+                      { word: "రాముడు", type: "నామవాచకం", cls: "bg-blue-100 text-blue-900 border-blue-200" },
+                      { word: "హైదరాబాద్", type: "నామవాచకం", cls: "bg-blue-100 text-blue-900 border-blue-200" },
+                      { word: "వెళ్ళెను", type: "క్రియ", cls: "bg-rose-100 text-rose-900 border-rose-200" }
+                    ],
+                    meaning: "Rama went to Hyderabad."
+                  },
+                  {
+                    sentence: "అతడు ఎర్రని పుస్తకం చదివెను.",
+                    breakdown: [
+                      { word: "అతడు", type: "సర్వనామం", cls: "bg-purple-100 text-purple-900 border-purple-200" },
+                      { word: "ఎర్రని", type: "విశేషణం", cls: "bg-amber-100 text-amber-900 border-amber-200" },
+                      { word: "పుస్తకం", type: "నామవాచకం", cls: "bg-blue-100 text-blue-900 border-blue-200" },
+                      { word: "చదివెను", type: "క్రియ", cls: "bg-rose-100 text-rose-900 border-rose-200" }
+                    ],
+                    meaning: "He read a red book."
+                  },
+                  {
+                    sentence: "మేము అక్కడ తియ్యని మామిడి పండు తింటిమి.",
+                    breakdown: [
+                      { word: "మేము", type: "సర్వనామం", cls: "bg-purple-100 text-purple-900 border-purple-200" },
+                      { word: "అక్కడ", type: "అవ్యయం", cls: "bg-teal-100 text-teal-900 border-teal-200" },
+                      { word: "తియ్యని", type: "విశేషణం", cls: "bg-amber-100 text-amber-900 border-amber-200" },
+                      { word: "పండు", type: "నామవాచకం", cls: "bg-blue-100 text-blue-900 border-blue-200" },
+                      { word: "తింటిమి", type: "క్రియ", cls: "bg-rose-100 text-rose-900 border-rose-200" }
+                    ],
+                    meaning: "We ate a sweet mango there."
+                  },
+                  {
+                    sentence: "ఆమె వేగమైన జింకను అడవిలో చూసెను.",
+                    breakdown: [
+                      { word: "ఆమె", type: "సర్వనామం", cls: "bg-purple-100 text-purple-900 border-purple-200" },
+                      { word: "వేగమైన", type: "విశేషణం", cls: "bg-amber-100 text-amber-900 border-amber-200" },
+                      { word: "జింకను", type: "నామవాచకం", cls: "bg-blue-100 text-blue-900 border-blue-200" },
+                      { word: "అడవిలో", type: "నామవాచకం", cls: "bg-blue-100 text-blue-900 border-blue-200" },
+                      { word: "చూసెను", type: "క్రియ", cls: "bg-rose-100 text-rose-900 border-rose-200" }
+                    ],
+                    meaning: "She saw a fast deer in the forest."
+                  }
+                ].map((sItem, sIdx) => (
+                  <div
+                    key={sIdx}
+                    className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 hover:bg-slate-100/80 transition"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-black text-slate-900">{sItem.sentence}</span>
+                      <button
+                        onClick={() => playTeluguSpeech(sItem.sentence)}
+                        className="flex items-center gap-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 text-xs font-bold px-2.5 py-1 rounded-lg transition cursor-pointer"
+                      >
+                        <Volume2 size={13} />
+                        <span>వినండి</span>
+                      </button>
+                    </div>
+
+                    <p className="text-[11px] font-mono text-slate-500">{sItem.meaning}</p>
+
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {sItem.breakdown.map((b, bIdx) => (
+                        <span key={bIdx} className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${b.cls}`}>
+                          {b.word} ➔ <span className="font-mono">{b.type}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

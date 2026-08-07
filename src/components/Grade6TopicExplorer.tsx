@@ -101,7 +101,8 @@ export default function Grade6TopicExplorer({ defaultTab = "geometry", hideTabSw
                 2. Angle Classification & Bisector
               </div>
               <ul className="text-xs text-slate-700 space-y-1.5 leading-relaxed font-medium">
-                <li>• <b>Right Angle:</b> Exactly 90° (Perpendicular lines intersect at 90°).</li>
+                <li>• <b>Right Angle & Perpendicular:</b> Exactly 90°. Perpendicular lines intersect at 90° (written AB ⊥ CD).</li>
+                <li>• <b>Perpendicular Bisector:</b> A line perpendicular to a segment that cuts it into 2 equal parts.</li>
                 <li>• <b>Straight Angle:</b> Exactly 180° = 2 Right Angles.</li>
                 <li>• <b>Reflex Angle:</b> Between 180° and 360° (e.g. 250°).</li>
                 <li>• <b>Angle Bisector:</b> A ray dividing an angle into 2 equal halves.</li>

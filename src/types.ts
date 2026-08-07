@@ -42,7 +42,16 @@ export interface AssertionReasonQuestion {
   reason: string;
   options: string[];
   correctAnswer: "A" | "B" | "C" | "D" | string;
+  hint?: string;
   explanation: string;
+}
+
+export interface ShortQuestion {
+  id: string;
+  question: string;
+  answer: string;
+  explanation: string;
+  hint?: string;
 }
 
 export interface TopicQuizData {
@@ -50,6 +59,7 @@ export interface TopicQuizData {
   chapterTitle: string;
   mcqs: QuizQuestion[];
   assertionReasons: AssertionReasonQuestion[];
+  shortQuestions?: ShortQuestion[];
 }
 
 export interface Worksheet {

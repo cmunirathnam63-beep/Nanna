@@ -102,6 +102,7 @@ export default function App() {
   }, [selectedGrade, selectedSubject]);
   const [activeTool, setActiveTool] = useState<"fraction" | "numberline" | "placevalue" | "perimeter" | "typesofnumbers" | "clock">("fraction");
   const [activeHighlightMode, setActiveHighlightMode] = useState<string>("all");
+  const [isQuizViewActive, setIsQuizViewActive] = useState<boolean>(false);
 
   // Indian CBSE Student Profile States (Grade-wise)
   const [gradeStudentNames, setGradeStudentNames] = useState<Record<1 | 6 | 9, string>>({
@@ -183,134 +184,70 @@ export default function App() {
     setActiveSection("lessons");
   };
 
+  const isQuizMode = isQuizViewActive || activeSection === "quiz";
+
   return (
-    <div className="min-h-screen bg-natural-bg text-slate-800 font-sans flex flex-col antialiased" id="root_viewport">
+    <div className={`bg-natural-bg text-slate-800 font-sans flex flex-col antialiased ${isQuizMode ? "h-screen overflow-hidden" : "min-h-screen"}`} id="root_viewport">
       {/* Top Header */}
-      <header className="bg-natural-beige-light border-b border-natural-beige-dark px-4 md:px-6 py-3 flex flex-row items-center justify-between gap-3 shadow-xs shrink-0 select-none">
-        {/* App Branding / Active Chapter Header */}
-        <div className="flex items-center gap-3 shrink-0">
-          <button 
-            onClick={() => {
-              setActiveSection("dashboard");
-            }}
-            className="w-10 h-10 rounded-2xl bg-natural-primary hover:bg-natural-primary/90 flex items-center justify-center text-white font-black shadow-md shadow-natural-primary/20 text-lg transition cursor-pointer shrink-0"
-            title="Go to Dashboard"
-            id="app_header_logo_btn"
-          >
-            GS
-          </button>
-          {(activeSection === "lessons" || activeSection === "quiz" || activeSection === "visualtools") && selectedChapter ? (
-            <div className="flex items-center gap-2.5" id="header_active_chapter_info">
-              <button
-                onClick={() => setActiveSection("dashboard")}
-                className="flex items-center gap-1.5 text-xs font-bold text-natural-dark bg-white hover:bg-natural-beige-light px-3 py-1.5 rounded-xl border border-natural-beige-dark shadow-2xs transition cursor-pointer shrink-0 active:scale-95"
-                id="header_back_to_chapters_btn"
-              >
-                <ArrowLeft size={14} /> Back to Chapters
-              </button>
-              <div className="hidden sm:block h-6 w-px bg-natural-beige-dark/80" />
-              <div>
-                <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] text-natural-primary font-extrabold uppercase tracking-wider">
-                  <span>GyanSetu</span>
-                  <span>•</span>
-                  <span>Grade {selectedGrade}</span>
-                  <span>•</span>
-                  <span className="capitalize">{selectedSubject === "maths" ? "Mathematics" : selectedSubject === "social_science" ? "Social Science" : selectedSubject}</span>
-                </div>
-                <h1 className="text-sm md:text-base font-black text-natural-dark tracking-tight line-clamp-1 max-w-[180px] sm:max-w-xs md:max-w-sm">
-                  {selectedChapter.chapterNumber ? `Ch ${selectedChapter.chapterNumber}: ` : ""}{selectedChapter.title}
-                </h1>
-              </div>
-            </div>
-          ) : showChapters ? (
-            <div className="flex items-center gap-2.5" id="chapters_view_header">
-              <button
-                onClick={() => {
-                  setShowChapters(false);
-                  setShowGrade1Topics(false);
-                  setShowGrade6And9Topics(false);
-                }}
-                className="flex items-center gap-1.5 text-xs font-bold text-natural-dark bg-white hover:bg-natural-beige-light px-3 py-1.5 rounded-xl border border-natural-beige-dark shadow-2xs transition cursor-pointer shrink-0 active:scale-95"
-                id="header_change_grade_btn"
-              >
-                <ArrowLeft size={14} /> Change Grade
-              </button>
-              <div className="hidden sm:block h-6 w-px bg-natural-beige-dark/80" />
-              <div className="flex items-center gap-2">
-                <span className="text-xl">
-                  {selectedGrade === 1 ? "🌱" : selectedGrade === 6 ? "📙" : "🚀"}
-                </span>
-                <div>
-                  <h1 className="text-sm md:text-base font-black text-natural-dark tracking-tight leading-tight">
-                    GyanSetu Grade {selectedGrade}
-                  </h1>
-                  <p className="text-[9px] md:text-[10px] text-natural-sage font-bold uppercase tracking-wider leading-tight">
-                    {selectedGrade === 1 
-                      ? (!showGrade1Topics ? "Select a Subject" : `${selectedSubject} Module`) 
-                      : (!showGrade6And9Topics ? "Select a Subject" : `NCERT ${selectedSubject === "maths" ? "Mathematics" : selectedSubject === "social_science" ? "Social Science" : selectedSubject.toUpperCase()}`)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <h1 className="text-sm md:text-base font-black text-natural-dark tracking-tight">GyanSetu</h1>
-              <p className="text-[9px] md:text-[10px] text-natural-sage font-bold uppercase tracking-wider">Interactive CBSE Learning Companion</p>
-            </div>
-          )}
-        </div>
-
-        {/* Chapter Navigation Tabs in Top Division */}
-        {(activeSection === "lessons" || activeSection === "quiz" || activeSection === "visualtools") && selectedChapter && (
-          <div className="flex items-center gap-1.5 shrink-0" id="top_header_chapter_tabs">
-            <button
-              onClick={() => setActiveSection("lessons")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                activeSection === "lessons"
-                  ? "bg-natural-primary text-white shadow-xs font-black"
-                  : "bg-white/80 hover:bg-white text-natural-sage hover:text-natural-dark border border-natural-beige-dark/60 shadow-2xs"
-              }`}
-            >
-              <span>📖</span> <span>Lesson</span>
-            </button>
-            <button
-              onClick={() => setActiveSection("quiz")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 cursor-pointer ${
-                activeSection === "quiz"
-                  ? "bg-natural-primary text-white shadow-xs font-black"
-                  : "bg-white/80 hover:bg-white text-natural-sage hover:text-natural-dark border border-natural-beige-dark/60 shadow-2xs"
-              }`}
-            >
-              <span>✍️</span> <span>Practice Tab</span>
-            </button>
-            <button
+      {!isQuizMode && (
+        <header className="bg-natural-beige-light border-b border-natural-beige-dark px-4 md:px-6 py-3 flex flex-row items-center justify-between gap-3 shadow-xs shrink-0 select-none">
+          {/* App Branding / Active Chapter Header */}
+          <div className="flex items-center gap-3 shrink-0">
+            <button 
               onClick={() => {
-                setActiveTool(
-                  selectedSubject === "physics" ? "motion" :
-                  selectedSubject === "chemistry" ? "atombuilder" :
-                  selectedChapter.id === "g9_coordinate" ? "coordinate" :
-                  selectedChapter.id === "g9_polynomials" ? "polynomials" :
-                  "fraction"
-                );
-                setActiveSection("visualtools");
+                setActiveSection("dashboard");
               }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                activeSection === "visualtools"
-                  ? "bg-natural-primary text-white shadow-xs font-black"
-                  : "bg-white/80 hover:bg-white text-natural-sage hover:text-natural-dark border border-natural-beige-dark/60 shadow-2xs"
-              }`}
+              className="w-10 h-10 rounded-2xl bg-natural-primary hover:bg-natural-primary/90 flex items-center justify-center text-white font-black shadow-md shadow-natural-primary/20 text-lg transition cursor-pointer shrink-0"
+              title="Go to Dashboard"
+              id="app_header_logo_btn"
             >
-              <span>🔬</span> <span>Visual Explorer</span>
+              GS
             </button>
+            {showChapters && !selectedChapter ? (
+              <div className="flex items-center gap-2.5" id="chapters_view_header">
+                <button
+                  onClick={() => {
+                    setShowChapters(false);
+                    setShowGrade1Topics(false);
+                    setShowGrade6And9Topics(false);
+                  }}
+                  className="flex items-center gap-1.5 text-xs font-bold text-natural-dark bg-white hover:bg-natural-beige-light px-3 py-1.5 rounded-xl border border-natural-beige-dark shadow-2xs transition cursor-pointer shrink-0 active:scale-95"
+                  id="header_change_grade_btn"
+                >
+                  <ArrowLeft size={14} /> Change Grade
+                </button>
+                <div className="hidden sm:block h-6 w-px bg-natural-beige-dark/80" />
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">
+                    {selectedGrade === 1 ? "🌱" : selectedGrade === 6 ? "📙" : "🚀"}
+                  </span>
+                  <div>
+                    <h1 className="text-sm md:text-base font-black text-natural-dark tracking-tight leading-tight">
+                      GyanSetu Grade {selectedGrade}
+                    </h1>
+                    <p className="text-[9px] md:text-[10px] text-natural-sage font-bold uppercase tracking-wider leading-tight">
+                      {selectedGrade === 1 
+                        ? (!showGrade1Topics ? "Select a Subject" : `${selectedSubject} Module`) 
+                        : (!showGrade6And9Topics ? "Select a Subject" : `NCERT ${selectedSubject === "maths" ? "Mathematics" : selectedSubject === "social_science" ? "Social Science" : selectedSubject.toUpperCase()}`)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <h1 className="text-sm md:text-base font-black text-natural-dark tracking-tight">GyanSetu</h1>
+                <p className="text-[9px] md:text-[10px] text-natural-sage font-bold uppercase tracking-wider">Interactive CBSE Learning Companion</p>
+              </div>
+            )}
           </div>
-        )}
 
-      </header>
+        </header>
+      )}
 
       {/* Main Workspace Column */}
-      <main className="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 lg:p-8 space-y-6" id="app_workspace">
+      <main className={`flex-1 w-full mx-auto ${isQuizMode ? "h-full max-w-none p-0 overflow-hidden flex flex-col" : "max-w-5xl p-4 md:p-6 lg:p-8 space-y-6"}`} id="app_workspace">
         {/* Render the active viewport nicely */}
-        <div className="bg-white border border-natural-beige-dark rounded-3xl shadow-xs overflow-hidden flex flex-col min-h-[500px]" id="workspace_viewport">
+        <div className={`bg-white border border-natural-beige-dark shadow-xs flex flex-col ${isQuizMode ? "h-full w-full rounded-none border-none shadow-none min-h-0 overflow-hidden flex-1" : "rounded-3xl min-h-[500px] overflow-hidden"}`} id="workspace_viewport">
           
           {/* 1. DASHBOARD VIEW */}
           {activeSection === "dashboard" && (
@@ -705,40 +642,33 @@ export default function App() {
           )}
 
 
-          {/* 2. CHAPTER LESSON VIEW */}
-          {activeSection === "lessons" && (
+          {/* 2. UNIFIED CHAPTER VIEW */}
+          {(activeSection === "lessons" || activeSection === "quiz" || activeSection === "visualtools") && selectedChapter && (
             <LessonSection
               selectedChapter={selectedChapter}
+              initialTab={
+                activeSection === "quiz"
+                  ? "worksheet"
+                  : activeSection === "visualtools"
+                  ? "interactive"
+                  : undefined
+              }
               onOpenTool={(toolId, highlightMode) => {
                 setActiveTool(toolId);
                 setActiveHighlightMode(highlightMode || "all");
-                setActiveSection("visualtools");
               }}
               onOpenWorksheet={() => setActiveSection("quiz")}
               onActionComplete={handleTutorAction}
               onQuizComplete={handleQuizComplete}
-            />
-          )}
-
-          {/* 3. WORKSHEET QUIZ VIEW */}
-          {activeSection === "quiz" && (
-            <PracticeQuiz
-              chapterId={selectedChapter.id}
-              chapterTitle={selectedChapter.title}
-              onQuizComplete={handleQuizComplete}
-              onAskTutor={launchCustomTutorQuestion}
-            />
-          )}
-
-          {/* 4. VISUAL TOOLS VIEW */}
-          {activeSection === "visualtools" && (
-            <VisualTools
-              chapterId={selectedChapter.id}
-              subject={selectedSubject}
-              grade={selectedGrade}
-              initialTool={activeTool}
-              initialHighlightMode={activeHighlightMode}
-              onActionComplete={handleActionComplete}
+              onBackToChapters={() => {
+                setActiveSection("dashboard");
+                setShowChapters(true);
+                setShowGrade6And9Topics(true);
+                setShowGrade1Topics(true);
+              }}
+              selectedGrade={selectedGrade}
+              selectedSubject={selectedSubject}
+              onQuizViewToggle={setIsQuizViewActive}
             />
           )}
 
@@ -827,7 +757,7 @@ export default function App() {
         </div>
 
         {/* Dynamic Subject Heritage Footer Callout */}
-        {(() => {
+        {!isQuizMode && (() => {
           let heritageTitle = "Indian Math Heritage";
           let heritageDesc = "Ancient Indian scholars like Brahmagupta, Aryabhata, and Ramanujan discovered fundamental mathematical principles such as Zero, decimals, and negative numbers.";
           let heritageIcon = "🇮🇳";
@@ -869,34 +799,36 @@ export default function App() {
       </main>
 
       {/* Navigation Tab Bar (Moved to bottom) */}
-      <nav className="bg-white border-t border-natural-beige-dark sticky bottom-0 z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] select-none">
-        <div className="max-w-5xl mx-auto px-4 flex justify-around md:justify-start gap-1 md:gap-4 py-2">
-          {[
-            { id: "dashboard", label: "Dashboard", icon: Trophy, onClick: () => { setActiveSection("dashboard"); setShowChapters(false); } },
-            { id: "tutor", label: "Mitra (AI)", icon: Sparkles, onClick: () => setActiveSection("tutor") },
-            { id: "achievements", label: "Trophy Room", icon: Award, onClick: () => setActiveSection("achievements") }
-          ].map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeSection === tab.id || 
-              (tab.id === "dashboard" && (activeSection === "lessons" || activeSection === "quiz"));
-            return (
-              <button
-                key={tab.id}
-                onClick={tab.onClick}
-                className={`flex items-center gap-2 py-2 px-3 md:px-4 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                  isActive
-                    ? "bg-natural-primary text-white shadow-sm"
-                    : "text-natural-sage hover:text-natural-dark hover:bg-natural-beige-light/50"
-                }`}
-                id={`nav_${tab.id}`}
-              >
-                <Icon size={15} />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
+      {!isQuizMode && (
+        <nav className="bg-white border-t border-natural-beige-dark sticky bottom-0 z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] select-none">
+          <div className="max-w-5xl mx-auto px-4 flex justify-around md:justify-start gap-1 md:gap-4 py-2">
+            {[
+              { id: "dashboard", label: "Dashboard", icon: Trophy, onClick: () => { setActiveSection("dashboard"); setShowChapters(false); } },
+              { id: "tutor", label: "Mitra (AI)", icon: Sparkles, onClick: () => setActiveSection("tutor") },
+              { id: "achievements", label: "Trophy Room", icon: Award, onClick: () => setActiveSection("achievements") }
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeSection === tab.id || 
+                (tab.id === "dashboard" && (activeSection === "lessons" || activeSection === "quiz"));
+              return (
+                <button
+                  key={tab.id}
+                  onClick={tab.onClick}
+                  className={`flex items-center gap-2 py-2 px-3 md:px-4 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                    isActive
+                      ? "bg-natural-primary text-white shadow-sm"
+                      : "text-natural-sage hover:text-natural-dark hover:bg-natural-beige-light/50"
+                  }`}
+                  id={`nav_${tab.id}`}
+                >
+                  <Icon size={15} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      )}
     </div>
   );
 }

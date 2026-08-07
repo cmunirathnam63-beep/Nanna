@@ -141,22 +141,28 @@ app.post("/api/generate-worksheet", async (req, res) => {
 
   try {
     const numQuestions = 20;
+    const cleanChapterName = (chapter || targetChapterKey).replace(/[\u{1F600}-\u{1F6FF}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}"]/gu, '').replace(/^"|"$/g, '').trim();
+
     const prompt = `Generate an authentic, high-quality practice worksheet of exactly ${numQuestions} questions strictly related ONLY to the following specific chapter topic:
-Chapter Title / Topic: "${chapter || targetChapterKey}"
-Chapter ID / Context: "${targetChapterKey}"
+Chapter Topic: "${cleanChapterName}"
+Context Key: "${targetChapterKey}"
 
-CRITICAL RULE: ALL ${numQuestions} questions MUST be 100% focused on and directly relevant ONLY to "${chapter || targetChapterKey}". Do NOT include questions from unrelated chapters, grades, or subjects.
+STRICT GUIDELINES FOR QUESTION GENERATION:
+1. NO LATEX DELIMITERS: Use plain text and standard Unicode characters for all math symbols and variables (e.g. use "1/2", "x", "y = 3x", "25%", "3 ¾", "π", "√2", "cm²", "10°C"). STRICTLY FORBID LaTeX $ wrappers or dollar signs around variables (e.g., do NOT write "$x$" or "$y = kx$").
+2. NO TOPIC INJECTION: Write questions naturally as found in standard textbooks. STRICTLY FORBID injecting raw topic strings, quotes, or emojis into the question prompt (e.g. NEVER write 'In mathematical models for "🍕 Fractions"...' or 'In the topic of Fractions...'). Formulate natural mathematical or word problems directly.
+3. CURRICULUM ALIGNMENT: Ensure questions strictly align with the grade curriculum for "${cleanChapterName}". For Grade 6 Fractions, test proper/improper/mixed fractions, equivalent fractions, simplest form, comparing fractions, and addition/subtraction of fractions with like and unlike denominators. Do NOT generate generic algebraic formulas (like direct variation y = kx) or high-school calculus unless specifically requested.
+4. QUALITY DISTRACTORS: All 4 multiple-choice distractors must be mathematically/academically plausible calculation results or common student misconceptions. Do NOT generate obvious or non-academic joke options.
+5. CONCEPTUAL SCOPE: Strictly test actual mathematical or scientific concepts. Do NOT ask meta-questions about definitions, authors, or study techniques.
 
-Difficulty progression requirement:
-- Questions 1 to 7: Beginner level (Fundamental concepts, simple recall, easy definitions or basic applications)
-- Questions 8 to 14: Intermediate level (Standard problem solving, calculations, or analysis)
-- Questions 15 to 20: Expert level (Challenging word problems, multi-step reasoning, or higher-order thinking)
+Difficulty progression:
+- Questions 1 to 7: Beginner level (Fundamental concepts, simple visual/numeric fractions, basic operations)
+- Questions 8 to 14: Intermediate level (Equivalent fractions, conversions, word problems, comparing)
+- Questions 15 to 20: Expert level (Multi-step word problems, simplifying complex fraction expressions, higher-order reasoning)
 
-Make sure questions match the curriculum level of this chapter (e.g. Grade 9, Grade 6, Grade 1, Social Science, Physics, Chemistry, Math, Telugu, Hindi, or English as appropriate for the chapter).
-${currentAttempt > 0 ? `IMPORTANT: This is attempt #${currentAttempt + 1} (a retake) for this student. You MUST generate a COMPLETELY NEW and DIFFERENT set of questions than previous attempts, varying numbers, scenarios, and contexts.` : ""}
+${currentAttempt > 0 ? `IMPORTANT: This is attempt #${currentAttempt + 1} (a retake) for this student. You MUST generate a COMPLETELY NEW and DIFFERENT set of questions than previous attempts.` : ""}
 
-Provide:
-- A title (e.g. "${chapter || targetChapterKey} - Practice Worksheet")
+Provide JSON with:
+- title (e.g. "${cleanChapterName} - Practice Worksheet")
 - ${numQuestions} problems, each with:
   - id (1 to ${numQuestions})
   - question text

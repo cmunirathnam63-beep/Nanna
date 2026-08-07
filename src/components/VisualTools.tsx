@@ -117,9 +117,13 @@ export default function VisualTools({ chapterId, subject = "maths", grade, initi
   const [tenths, setTenths] = useState<number>(7);
   const [hundredths, setHundredths] = useState<number>(5);
   
-  // 4. Perimeter/Area State
+  // 4. Perimeter/Area & Circumference State
   const [rectLength, setRectLength] = useState<number>(8);
   const [rectWidth, setRectWidth] = useState<number>(5);
+  const [mensurationShapeMode, setMensurationShapeMode] = useState<"rectangle" | "circle">("circle");
+  const [circleRadius, setCircleRadius] = useState<number>(7);
+  const [wheelRevolutions, setWheelRevolutions] = useState<number>(100);
+  const [circleType, setCircleType] = useState<"full" | "semicircle" | "quadrant">("full");
 
   // 5. Types of Numbers State
   const [selectedNum, setSelectedNum] = useState<number>(12);
@@ -783,166 +787,457 @@ export default function VisualTools({ chapterId, subject = "maths", grade, initi
           </div>
         )}
 
-        {/* PERIMETER & AREA EXPLORER */}
+        {/* PERIMETER & CIRCUMFERENCE EXPLORER */}
         {activeTab === "perimeter" && (
-          <div className="flex flex-col lg:flex-row gap-6 h-full" id="perimeter_tool_container">
-            <div className="flex-1 flex flex-col justify-center items-center bg-violet-50/20 border border-violet-100 rounded-xl p-6">
-              <span className="text-xs font-semibold text-violet-700 uppercase tracking-widest bg-violet-100 px-2.5 py-1 rounded-full mb-6">
-                Dynamic 2D Schoolyard Explorer
-              </span>
-
-              {/* Dynamic canvas drawing space */}
-              <div className="relative border-2 border-dashed border-violet-300 bg-white rounded-xl p-6 w-full max-w-sm h-64 flex items-center justify-center overflow-hidden">
-                {/* Dynamically Sized Rectangle Box */}
-                <div
-                  style={{
-                    width: `${rectLength * 22}px`,
-                    height: `${rectWidth * 22}px`,
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                  }}
-                  className="bg-violet-100/80 border-4 border-violet-600 rounded-lg flex flex-col justify-center items-center transition-all duration-300 relative select-none shadow-md"
-                >
-                  {/* Length Label (Top) */}
-                  <div className="absolute -top-7 text-xs font-extrabold text-violet-700 bg-white px-1.5 py-0.5 rounded border border-violet-200">
-                    Length: {rectLength} m
-                  </div>
-                  {/* Width Label (Right) */}
-                  <div className="absolute -right-10 md:-right-12 text-xs font-extrabold text-violet-700 bg-white px-1.5 py-0.5 rounded border border-violet-200 rotate-90 lg:rotate-0">
-                    Width: {rectWidth} m
-                  </div>
-                  
-                  {/* Interior summary */}
-                  <span className="font-mono text-[11px] font-bold text-violet-800">
-                    Area = {rectLength * rectWidth} m²
-                  </span>
-                </div>
-              </div>
-
-              {/* Formula & Explanations */}
-              <div className="mt-6 w-full grid grid-cols-2 gap-4">
-                <div className="bg-white border border-violet-100 rounded-xl p-3 text-center">
-                  <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
-                    Perimeter (Boundary length)
-                  </span>
-                  <p className="font-mono text-lg font-black text-violet-800 mt-1">
-                    2 × ({rectLength} + {rectWidth}) = {2 * (rectLength + rectWidth)} m
-                  </p>
-                </div>
-                <div className="bg-white border border-violet-100 rounded-xl p-3 text-center">
-                  <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
-                    Area (Interior Region)
-                  </span>
-                  <p className="font-mono text-lg font-black text-violet-800 mt-1">
-                    {rectLength} × {rectWidth} = {rectLength * rectWidth} m²
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Dimensional Controls */}
-            <div className="w-full lg:w-72 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-slate-100 pt-5 lg:pt-0 lg:pl-6">
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-500 tracking-wider mb-2">
-                    Rectangle Length: {rectLength} meters
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => { if (rectLength > 2) { setRectLength(rectLength - 1); awardPoints(1); } }}
-                      className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 cursor-pointer text-slate-700"
-                    >
-                      <Minus size={14} />
-                    </button>
-                    <input
-                      type="range"
-                      min="2"
-                      max="12"
-                      value={rectLength}
-                      onChange={(e) => {
-                        setRectLength(parseInt(e.target.value, 10));
-                        awardPoints(2);
-                      }}
-                      className="flex-1 accent-violet-600 h-2 bg-slate-150 rounded-lg appearance-none cursor-pointer"
-                    />
-                    <button
-                      onClick={() => {
-                        if (rectLength < 12) {
-                          setRectLength(rectLength + 1);
-                          awardPoints(1);
-                        }
-                      }}
-                      className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 cursor-pointer text-slate-700"
-                    >
-                      <Plus size={14} />
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-500 tracking-wider mb-2">
-                    Rectangle Width: {rectWidth} meters
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => { if (rectWidth > 2) { setRectWidth(rectWidth - 1); awardPoints(1); } }}
-                      className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 cursor-pointer text-slate-700"
-                    >
-                      <Minus size={14} />
-                    </button>
-                    <input
-                      type="range"
-                      min="2"
-                      max="8"
-                      value={rectWidth}
-                      onChange={(e) => {
-                        setRectWidth(parseInt(e.target.value, 10));
-                        awardPoints(2);
-                      }}
-                      className="flex-1 accent-violet-600 h-2 bg-slate-150 rounded-lg appearance-none cursor-pointer"
-                    />
-                    <button
-                      onClick={() => {
-                        if (rectWidth < 8) {
-                          setRectWidth(rectWidth + 1);
-                          awardPoints(1);
-                        }
-                      }}
-                      className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 cursor-pointer text-slate-700"
-                    >
-                      <Plus size={14} />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="bg-violet-50 border border-violet-200/50 rounded-xl p-4 text-xs text-violet-800 space-y-1.5 leading-relaxed">
-                  <h4 className="font-bold flex items-center gap-1 uppercase mb-1">
-                    📖 CBSE Math Context
-                  </h4>
-                  <p>
-                    <strong>Fencing cost calculation:</strong>
-                  </p>
-                  <p className="font-mono bg-white px-2 py-1 rounded border border-violet-150">
-                    If fencing wire costs ₹20 per meter, fencing this school yard completely would cost:
-                    <br />
-                    <strong>{2 * (rectLength + rectWidth)} m × ₹20 = ₹{2 * (rectLength + rectWidth) * 20}</strong>
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 flex justify-end">
+          <div className="space-y-4 h-full" id="perimeter_tool_container">
+            {/* Mode Switcher */}
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-violet-50/80 border border-violet-200 rounded-xl p-3">
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={() => {
-                    setRectLength(8);
-                    setRectWidth(5);
-                    awardPoints(5);
-                  }}
-                  className="flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg cursor-pointer transition"
+                  onClick={() => { setMensurationShapeMode("circle"); awardPoints(2); }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                    mensurationShapeMode === "circle"
+                      ? "bg-violet-700 text-white shadow-sm"
+                      : "bg-white text-violet-900 hover:bg-violet-100 border border-violet-200"
+                  }`}
                 >
-                  <RotateCcw size={14} /> Reset Rectangle
+                  <span>⭕ Circle & Circumference Studio</span>
+                </button>
+                <button
+                  onClick={() => { setMensurationShapeMode("rectangle"); awardPoints(2); }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${
+                    mensurationShapeMode === "rectangle"
+                      ? "bg-violet-700 text-white shadow-sm"
+                      : "bg-white text-violet-900 hover:bg-violet-100 border border-violet-200"
+                  }`}
+                >
+                  <span>📏 Rectangle & Square Lab</span>
                 </button>
               </div>
+
+              {mensurationShapeMode === "circle" && (
+                <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-violet-200">
+                  <span className="text-[10px] font-bold text-violet-900 px-1.5">Type:</span>
+                  {(["full", "semicircle", "quadrant"] as const).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => { setCircleType(t); awardPoints(2); }}
+                      className={`px-2 py-1 rounded text-[11px] font-extrabold capitalize transition cursor-pointer ${
+                        circleType === t
+                          ? "bg-amber-500 text-slate-950 shadow-xs"
+                          : "text-slate-600 hover:text-slate-900"
+                      }`}
+                    >
+                      {t === "full" ? "Full Circle" : t === "semicircle" ? "Semicircle (½)" : "Quadrant (¼)"}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
+
+            {mensurationShapeMode === "circle" ? (
+              <div className="flex flex-col lg:flex-row gap-6">
+                {/* SVG Visual Canvas */}
+                <div className="flex-1 flex flex-col justify-center items-center bg-violet-50/20 border border-violet-100 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-[11px] font-black text-violet-800 uppercase tracking-widest bg-violet-100 px-3 py-1 rounded-full">
+                      ⭕ Interactive Circle Boundary & Radius Simulator
+                    </span>
+                    <span className="text-xs font-mono font-black text-violet-900 bg-white border border-violet-200 px-2.5 py-1 rounded-lg shadow-2xs">
+                      r = {circleRadius} cm | d = {2 * circleRadius} cm
+                    </span>
+                  </div>
+
+                  {/* SVG Drawing */}
+                  <div className="relative border-2 border-dashed border-violet-300 bg-white rounded-2xl p-4 w-full max-w-md h-72 flex items-center justify-center overflow-hidden shadow-xs">
+                    <svg className="w-full h-full max-w-[260px] max-h-[260px]" viewBox="0 0 240 240">
+                      {/* Full Circle */}
+                      {circleType === "full" && (
+                        <g>
+                          {/* Interior Fill */}
+                          <circle cx="120" cy="120" r={Math.min(95, 25 + circleRadius * 2.2)} className="fill-violet-100/70" />
+                          {/* Circumference Outer Line */}
+                          <circle cx="120" cy="120" r={Math.min(95, 25 + circleRadius * 2.2)} className="stroke-violet-600 stroke-[4] fill-none" />
+                          {/* Center Point */}
+                          <circle cx="120" cy="120" r="4.5" className="fill-violet-950" />
+                          <text x="110" y="115" className="text-xs font-black fill-violet-950">O</text>
+                          {/* Diameter Line */}
+                          <line
+                            x1={120 - Math.min(95, 25 + circleRadius * 2.2)}
+                            y1="120"
+                            x2={120 + Math.min(95, 25 + circleRadius * 2.2)}
+                            y2="120"
+                            className="stroke-amber-500 stroke-2 stroke-dasharray-[4,3]"
+                          />
+                          {/* Radius Line */}
+                          <line x1="120" y1="120" x2={120 + Math.min(95, 25 + circleRadius * 2.2)} y2="120" className="stroke-rose-600 stroke-[3.5]" />
+                          <text x={120 + Math.min(95, 25 + circleRadius * 2.2) / 2} y="112" className="text-[11px] font-black fill-rose-900" textAnchor="middle">
+                            r = {circleRadius} cm
+                          </text>
+                          {/* Circumference Label Arc */}
+                          <text x="120" y="25" className="text-[11px] font-black fill-violet-900" textAnchor="middle">
+                            Circumference C = 2 × (22/7) × {circleRadius} = {((2 * 22 * circleRadius) / 7).toFixed(1)} cm
+                          </text>
+                        </g>
+                      )}
+
+                      {/* Semicircle */}
+                      {circleType === "semicircle" && (
+                        <g>
+                          <path
+                            d={`M ${120 - Math.min(95, 25 + circleRadius * 2.2)} 150 A ${Math.min(95, 25 + circleRadius * 2.2)} ${Math.min(95, 25 + circleRadius * 2.2)} 0 0 1 ${120 + Math.min(95, 25 + circleRadius * 2.2)} 150 Z`}
+                            className="fill-amber-100/80 stroke-violet-600 stroke-[4]"
+                          />
+                          <circle cx="120" cy="150" r="4.5" className="fill-violet-950" />
+                          <text x="115" y="170" className="text-xs font-black fill-violet-950">O (Center)</text>
+                          <text x="120" y="45" className="text-[11px] font-black fill-violet-900" textAnchor="middle">
+                            Curved Arc = πr = {((22 * circleRadius) / 7).toFixed(1)} cm
+                          </text>
+                          <text x="120" y="142" className="text-[10px] font-black fill-amber-900" textAnchor="middle">
+                            Diameter = 2r = {2 * circleRadius} cm
+                          </text>
+                        </g>
+                      )}
+
+                      {/* Quadrant */}
+                      {circleType === "quadrant" && (
+                        <g>
+                          <path
+                            d={`M 120 120 L ${120 + Math.min(95, 25 + circleRadius * 2.2)} 120 A ${Math.min(95, 25 + circleRadius * 2.2)} ${Math.min(95, 25 + circleRadius * 2.2)} 0 0 0 120 ${120 - Math.min(95, 25 + circleRadius * 2.2)} Z`}
+                            className="fill-emerald-100/80 stroke-violet-600 stroke-[4]"
+                          />
+                          <circle cx="120" cy="120" r="4.5" className="fill-violet-950" />
+                          <text x="100" y="135" className="text-xs font-black fill-violet-950">O</text>
+                          <text x="165" y="60" className="text-[10px] font-black fill-emerald-900" textAnchor="middle">
+                            Arc = πr/2 = {((11 * circleRadius) / 7).toFixed(1)} cm
+                          </text>
+                        </g>
+                      )}
+                    </svg>
+                  </div>
+
+                  {/* Calculated Results Cards */}
+                  <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div className="bg-white border border-violet-100 rounded-xl p-3 text-center shadow-2xs">
+                      <span className="text-[10px] uppercase font-extrabold text-slate-500 tracking-wider">
+                        {circleType === "full" ? "Circumference (C)" : circleType === "semicircle" ? "Semicircle Perimeter" : "Quadrant Perimeter"}
+                      </span>
+                      <p className="font-mono text-base sm:text-lg font-black text-violet-800 mt-1">
+                        {circleType === "full" && `${((2 * 22 * circleRadius) / 7).toFixed(1)} cm`}
+                        {circleType === "semicircle" && `${(((22 * circleRadius) / 7) + 2 * circleRadius).toFixed(1)} cm`}
+                        {circleType === "quadrant" && `${(((11 * circleRadius) / 7) + 2 * circleRadius).toFixed(1)} cm`}
+                      </p>
+                      <span className="text-[10px] text-slate-500 font-mono">
+                        {circleType === "full" ? "C = 2 × (22/7) × r" : circleType === "semicircle" ? "P = πr + 2r" : "P = πr/2 + 2r"}
+                      </span>
+                    </div>
+
+                    <div className="bg-white border border-violet-100 rounded-xl p-3 text-center shadow-2xs">
+                      <span className="text-[10px] uppercase font-extrabold text-slate-500 tracking-wider">
+                        Circle Area (A)
+                      </span>
+                      <p className="font-mono text-base sm:text-lg font-black text-violet-800 mt-1">
+                        {((22 * circleRadius * circleRadius) / 7).toFixed(1)} cm²
+                      </p>
+                      <span className="text-[10px] text-slate-500 font-mono">
+                        Area = (22/7) × r²
+                      </span>
+                    </div>
+
+                    <div className="bg-white border border-violet-100 rounded-xl p-3 text-center col-span-2 sm:col-span-1 shadow-2xs">
+                      <span className="text-[10px] uppercase font-extrabold text-slate-500 tracking-wider">
+                        Constant Ratio (C / d)
+                      </span>
+                      <p className="font-mono text-base sm:text-lg font-black text-amber-700 mt-1">
+                        π ≈ 3.142 (22/7)
+                      </p>
+                      <span className="text-[10px] text-slate-500 font-mono">
+                        Universal Pi Constant
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Interactive Controls Column */}
+                <div className="w-full lg:w-80 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-slate-100 pt-5 lg:pt-0 lg:pl-6 space-y-5">
+                  <div className="space-y-5">
+                    {/* Radius Slider */}
+                    <div className="bg-white border border-violet-200 rounded-xl p-3.5 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-black uppercase text-violet-900 tracking-wider">
+                          Circle Radius (r): {circleRadius} cm
+                        </label>
+                        <span className="text-xs font-mono font-black bg-rose-100 text-rose-800 px-2 py-0.5 rounded">
+                          d = {2 * circleRadius} cm
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => { if (circleRadius > 1) { setCircleRadius(circleRadius - 1); awardPoints(1); } }}
+                          className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 cursor-pointer text-slate-700 font-bold"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="range"
+                          min="1"
+                          max="35"
+                          step="1"
+                          value={circleRadius}
+                          onChange={(e) => {
+                            setCircleRadius(parseInt(e.target.value, 10));
+                            awardPoints(2);
+                          }}
+                          className="flex-1 accent-violet-600 h-2 bg-slate-150 rounded-lg cursor-pointer"
+                        />
+                        <button
+                          onClick={() => { if (circleRadius < 35) { setCircleRadius(circleRadius + 1); awardPoints(1); } }}
+                          className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 cursor-pointer text-slate-700 font-bold"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      {/* Quick Preset Buttons */}
+                      <div className="flex items-center gap-1.5 pt-1">
+                        <span className="text-[10px] font-bold text-slate-500">Quick r:</span>
+                        {[7, 14, 21, 28, 35].map((val) => (
+                          <button
+                            key={val}
+                            onClick={() => { setCircleRadius(val); awardPoints(2); }}
+                            className={`px-2 py-0.5 rounded text-[11px] font-black font-mono transition cursor-pointer ${
+                              circleRadius === val ? "bg-violet-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                            }`}
+                          >
+                            {val}cm
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Wheel Revolution Distance Calculator */}
+                    <div className="bg-amber-50/90 border border-amber-200/80 rounded-xl p-3.5 space-y-2 text-xs">
+                      <h4 className="font-extrabold text-amber-950 flex items-center justify-between">
+                        <span>🎡 Rolling Wheel Distance</span>
+                        <span className="text-[10px] font-mono font-bold bg-amber-200 px-1.5 py-0.5 rounded text-amber-900">
+                          NCERT Application
+                        </span>
+                      </h4>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-slate-700 font-medium">Revolutions (N):</span>
+                        <input
+                          type="number"
+                          min="10"
+                          max="2000"
+                          step="10"
+                          value={wheelRevolutions}
+                          onChange={(e) => setWheelRevolutions(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                          className="w-20 px-2 py-1 border border-amber-300 rounded font-mono font-bold text-amber-950 text-right bg-white"
+                        />
+                      </div>
+                      <div className="bg-white p-2.5 rounded-lg border border-amber-200 font-mono space-y-1 text-slate-800">
+                        <p>1 Revolution = Circumference C = {((2 * 22 * circleRadius) / 7).toFixed(1)} cm</p>
+                        <p className="font-black text-amber-900 border-t border-amber-100 pt-1">
+                          Total Distance in {wheelRevolutions} revs:
+                          <br />
+                          {wheelRevolutions} × {((2 * 22 * circleRadius) / 7).toFixed(1)} cm = <strong>{(((wheelRevolutions * 2 * 22 * circleRadius) / 7) / 100).toFixed(2)} meters</strong>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Wire Bending Equivalency Card */}
+                    <div className="bg-indigo-50/90 border border-indigo-200/80 rounded-xl p-3.5 space-y-2 text-xs text-indigo-950">
+                      <h4 className="font-extrabold flex items-center justify-between">
+                        <span>🧵 Wire Bending Simulator</span>
+                        <span className="text-[10px] font-mono bg-indigo-200 px-1.5 py-0.5 rounded text-indigo-900">
+                          Equivalence
+                        </span>
+                      </h4>
+                      <p className="text-slate-700 leading-snug">
+                        If a wire of length <strong>{((2 * 22 * circleRadius) / 7).toFixed(1)} cm</strong> (equal to circle circumference) is re-bent into a <strong>SQUARE</strong>:
+                      </p>
+                      <div className="bg-white p-2 rounded-lg border border-indigo-200 font-mono text-center font-black text-indigo-900">
+                        Square Side = {((2 * 22 * circleRadius) / 7).toFixed(1)} ÷ 4 = <strong>{(((2 * 22 * circleRadius) / 7) / 4).toFixed(2)} cm</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-100 flex justify-end">
+                    <button
+                      onClick={() => {
+                        setCircleRadius(7);
+                        setCircleType("full");
+                        setWheelRevolutions(100);
+                        awardPoints(5);
+                      }}
+                      className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg cursor-pointer transition"
+                    >
+                      <RotateCcw size={14} /> Reset Circle
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col lg:flex-row gap-6 h-full">
+                <div className="flex-1 flex flex-col justify-center items-center bg-violet-50/20 border border-violet-100 rounded-xl p-6">
+                  <span className="text-xs font-semibold text-violet-700 uppercase tracking-widest bg-violet-100 px-2.5 py-1 rounded-full mb-6">
+                    Dynamic 2D Schoolyard Explorer
+                  </span>
+
+                  {/* Dynamic canvas drawing space */}
+                  <div className="relative border-2 border-dashed border-violet-300 bg-white rounded-xl p-6 w-full max-w-sm h-64 flex items-center justify-center overflow-hidden">
+                    {/* Dynamically Sized Rectangle Box */}
+                    <div
+                      style={{
+                        width: `${rectLength * 22}px`,
+                        height: `${rectWidth * 22}px`,
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                      }}
+                      className="bg-violet-100/80 border-4 border-violet-600 rounded-lg flex flex-col justify-center items-center transition-all duration-300 relative select-none shadow-md"
+                    >
+                      {/* Length Label (Top) */}
+                      <div className="absolute -top-7 text-xs font-extrabold text-violet-700 bg-white px-1.5 py-0.5 rounded border border-violet-200">
+                        Length: {rectLength} m
+                      </div>
+                      {/* Width Label (Right) */}
+                      <div className="absolute -right-10 md:-right-12 text-xs font-extrabold text-violet-700 bg-white px-1.5 py-0.5 rounded border border-violet-200 rotate-90 lg:rotate-0">
+                        Width: {rectWidth} m
+                      </div>
+                      
+                      {/* Interior summary */}
+                      <span className="font-mono text-[11px] font-bold text-violet-800">
+                        Area = {rectLength * rectWidth} m²
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Formula & Explanations */}
+                  <div className="mt-6 w-full grid grid-cols-2 gap-4">
+                    <div className="bg-white border border-violet-100 rounded-xl p-3 text-center">
+                      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                        Perimeter (Boundary length)
+                      </span>
+                      <p className="font-mono text-lg font-black text-violet-800 mt-1">
+                        2 × ({rectLength} + {rectWidth}) = {2 * (rectLength + rectWidth)} m
+                      </p>
+                    </div>
+                    <div className="bg-white border border-violet-100 rounded-xl p-3 text-center">
+                      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                        Area (Interior Region)
+                      </span>
+                      <p className="font-mono text-lg font-black text-violet-800 mt-1">
+                        {rectLength} × {rectWidth} = {rectLength * rectWidth} m²
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dimensional Controls */}
+                <div className="w-full lg:w-72 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-slate-100 pt-5 lg:pt-0 lg:pl-6">
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-xs font-semibold uppercase text-slate-500 tracking-wider mb-2">
+                        Rectangle Length: {rectLength} meters
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => { if (rectLength > 2) { setRectLength(rectLength - 1); awardPoints(1); } }}
+                          className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 cursor-pointer text-slate-700"
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <input
+                          type="range"
+                          min="2"
+                          max="12"
+                          value={rectLength}
+                          onChange={(e) => {
+                            setRectLength(parseInt(e.target.value, 10));
+                            awardPoints(2);
+                          }}
+                          className="flex-1 accent-violet-600 h-2 bg-slate-150 rounded-lg appearance-none cursor-pointer"
+                        />
+                        <button
+                          onClick={() => {
+                            if (rectLength < 12) {
+                              setRectLength(rectLength + 1);
+                              awardPoints(1);
+                            }
+                          }}
+                          className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 cursor-pointer text-slate-700"
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold uppercase text-slate-500 tracking-wider mb-2">
+                        Rectangle Width: {rectWidth} meters
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => { if (rectWidth > 2) { setRectWidth(rectWidth - 1); awardPoints(1); } }}
+                          className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 cursor-pointer text-slate-700"
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <input
+                          type="range"
+                          min="2"
+                          max="8"
+                          value={rectWidth}
+                          onChange={(e) => {
+                            setRectWidth(parseInt(e.target.value, 10));
+                            awardPoints(2);
+                          }}
+                          className="flex-1 accent-violet-600 h-2 bg-slate-150 rounded-lg appearance-none cursor-pointer"
+                        />
+                        <button
+                          onClick={() => {
+                            if (rectWidth < 8) {
+                              setRectWidth(rectWidth + 1);
+                              awardPoints(1);
+                            }
+                          }}
+                          className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 cursor-pointer text-slate-700"
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="bg-violet-50 border border-violet-200/50 rounded-xl p-4 text-xs text-violet-800 space-y-1.5 leading-relaxed">
+                      <h4 className="font-bold flex items-center gap-1 uppercase mb-1">
+                        📖 CBSE Math Context
+                      </h4>
+                      <p>
+                        <strong>Fencing cost calculation:</strong>
+                      </p>
+                      <p className="font-mono bg-white px-2 py-1 rounded border border-violet-150">
+                        If fencing wire costs ₹20 per meter, fencing this school yard completely would cost:
+                        <br />
+                        <strong>{2 * (rectLength + rectWidth)} m × ₹20 = ₹{2 * (rectLength + rectWidth) * 20}</strong>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-100 flex justify-end">
+                    <button
+                      onClick={() => {
+                        setRectLength(8);
+                        setRectWidth(5);
+                        awardPoints(5);
+                      }}
+                      className="flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg cursor-pointer transition"
+                    >
+                      <RotateCcw size={14} /> Reset Rectangle
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -2058,7 +2353,7 @@ function getNumberFactors(num: number): number[] {
 // ==========================================
 
 export function Grade6MotionVisualLab() {
-  const [activeTab, setActiveTab] = useState<"concept" | "types" | "quiz">("concept");
+  const [activeTab, setActiveTab] = useState<"concept" | "types" | "converter" | "quiz">("concept");
 
   // Concept Tab State
   const [isCarMoving, setIsCarMoving] = useState<boolean>(true);
@@ -2067,7 +2362,11 @@ export function Grade6MotionVisualLab() {
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
   // Types Tab State
-  const [selectedType, setSelectedType] = useState<"rectilinear" | "circular" | "rotational" | "periodic" | "combination">("rectilinear");
+  const [selectedType, setSelectedType] = useState<"rectilinear" | "circular" | "rotational" | "periodic" | "oscillatory" | "combination">("rectilinear");
+
+  // Converter Tab State
+  const [convDirection, setConvDirection] = useState<"kmh_to_ms" | "ms_to_kmh">("kmh_to_ms");
+  const [convInputValue, setConvInputValue] = useState<number>(36);
 
   // Game Tab State
   const [gameIndex, setGameIndex] = useState<number>(0);
@@ -2193,11 +2492,63 @@ export function Grade6MotionVisualLab() {
       options: [
         { id: "rectilinear", label: "Rectilinear Motion" },
         { id: "circular", label: "Circular Motion" },
-        { id: "periodic", label: "Periodic Motion" },
+        { id: "periodic", label: "Periodic / Oscillatory Motion" },
         { id: "rotational", label: "Rotational Motion" }
       ],
       correct: "periodic",
-      explanation: "The pendulum takes equal intervals of time for each complete left-and-right swing, making it Periodic Motion!"
+      explanation: "The pendulum moves to and fro about its central rest position at regular time intervals, exhibiting Oscillatory and Periodic Motion!"
+    },
+    {
+      id: 8,
+      scenario: "A plucked guitar string vibrating rapidly back and forth about its central rest position.",
+      icon: "🎸",
+      options: [
+        { id: "rectilinear", label: "Rectilinear Motion" },
+        { id: "oscillatory", label: "Oscillatory Motion" },
+        { id: "rotational", label: "Rotational Motion" },
+        { id: "circular", label: "Circular Motion" }
+      ],
+      correct: "oscillatory",
+      explanation: "When plucked, a guitar string moves to and fro about its central rest position, demonstrating Oscillatory Motion!"
+    },
+    {
+      id: 9,
+      scenario: "Which statement accurately describes the relationship between Periodic and Oscillatory motion?",
+      icon: "💡",
+      options: [
+        { id: "all_osc_per", label: "All Oscillatory motions are Periodic, but NOT all Periodic motions are Oscillatory" },
+        { id: "all_per_osc", label: "All Periodic motions are Oscillatory, but NOT all Oscillatory motions are Periodic" },
+        { id: "both_same", label: "Periodic and Oscillatory motion mean exactly the same thing in all cases" },
+        { id: "neither", label: "Oscillatory motion can never be periodic" }
+      ],
+      correct: "all_osc_per",
+      explanation: "Oscillatory motion requires 'to-and-fro' movement about a mean position. Since back-and-forth swings repeat in equal time periods, all oscillatory motions are periodic. However, a planet orbiting the Sun repeats in equal time periods (periodic) without moving back-and-forth, so not all periodic motions are oscillatory!"
+    },
+    {
+      id: 10,
+      scenario: "A car is cruising on a highway at a speed of 72 km/h. What is its speed in meters per second (m/s)?",
+      icon: "🚗",
+      options: [
+        { id: "10ms", label: "10 m/s" },
+        { id: "20ms", label: "20 m/s" },
+        { id: "25ms", label: "25 m/s" },
+        { id: "30ms", label: "30 m/s" }
+      ],
+      correct: "20ms",
+      explanation: "To convert km/h into m/s, multiply by 5/18: 72 × (5/18) = 4 × 5 = 20 m/s!"
+    },
+    {
+      id: 11,
+      scenario: "To convert a speed value given in kilometers per hour (km/h) into standard SI unit meters per second (m/s), what fraction do you multiply by?",
+      icon: "⚡",
+      options: [
+        { id: "18_5", label: "18 / 5" },
+        { id: "5_18", label: "5 / 18" },
+        { id: "1000_60", label: "1000 / 60" },
+        { id: "3_6", label: "3.6 / 100" }
+      ],
+      correct: "5_18",
+      explanation: "Since 1 km = 1000 m and 1 hour = 3600 seconds, 1 km/h = 1000 / 3600 = 5/18 m/s!"
     }
   ];
 
@@ -2232,18 +2583,18 @@ export function Grade6MotionVisualLab() {
             </span>
           </div>
           <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
-            🌌 Motion Definition & Types of Motion Interactive Lab
+            🌌 Motion, Measurement & Speed Conversions Interactive Lab
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Understand rest vs motion relative to a reference point, explore 5 types of motion with live animated models, and test your skills!
+            Understand rest vs motion, explore 5 types of motion, convert km/h to m/s with live math derivations, and test your skills!
           </p>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 self-stretch md:self-auto justify-stretch">
+        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 self-stretch md:self-auto justify-stretch flex-wrap md:flex-nowrap gap-1">
           <button
             onClick={() => setActiveTab("concept")}
-            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            className={`flex-1 md:flex-none px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === "concept"
                 ? "bg-white text-sky-700 shadow-xs border border-slate-200"
                 : "text-slate-600 hover:text-slate-900"
@@ -2253,7 +2604,7 @@ export function Grade6MotionVisualLab() {
           </button>
           <button
             onClick={() => setActiveTab("types")}
-            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            className={`flex-1 md:flex-none px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === "types"
                 ? "bg-white text-sky-700 shadow-xs border border-slate-200"
                 : "text-slate-600 hover:text-slate-900"
@@ -2262,14 +2613,24 @@ export function Grade6MotionVisualLab() {
             <span>🌀 2. Types of Motion</span>
           </button>
           <button
+            onClick={() => setActiveTab("converter")}
+            className={`flex-1 md:flex-none px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+              activeTab === "converter"
+                ? "bg-white text-indigo-700 shadow-xs border border-slate-200"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>⚡ 3. km/h ↔ m/s Converter</span>
+          </button>
+          <button
             onClick={() => setActiveTab("quiz")}
-            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            className={`flex-1 md:flex-none px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === "quiz"
                 ? "bg-white text-emerald-700 shadow-xs border border-slate-200"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            <span>🎮 3. Motion Quiz</span>
+            <span>🎮 4. Motion Quiz</span>
           </button>
         </div>
       </div>
@@ -2450,32 +2811,33 @@ export function Grade6MotionVisualLab() {
       {activeTab === "types" && (
         <div className="space-y-6">
           {/* Motion Type Selector Buttons */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
             {[
               { id: "rectilinear", label: "Straight Line", sub: "Rectilinear", icon: "📐" },
               { id: "circular", label: "Circular", sub: "Round & Round", icon: "⭕" },
               { id: "rotational", label: "Rotational", sub: "Spinning Axis", icon: "🌀" },
-              { id: "periodic", label: "Periodic", sub: "To & Fro", icon: "⏱️" },
+              { id: "periodic", label: "Periodic", sub: "Equal Intervals", icon: "⏱️" },
+              { id: "oscillatory", label: "Oscillatory", sub: "To & Fro", icon: "⚛️" },
               { id: "combination", label: "Combination", sub: "Multi-Motion", icon: "⚙️" }
             ].map(type => (
               <button
                 key={type.id}
                 onClick={() => setSelectedType(type.id as any)}
-                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
+                className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
                   selectedType === type.id
                     ? "bg-sky-600 text-white border-sky-700 shadow-md ring-2 ring-sky-300"
                     : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
                 }`}
               >
                 <div className="flex justify-between items-center">
-                  <span className="text-2xl">{type.icon}</span>
+                  <span className="text-xl">{type.icon}</span>
                   {selectedType === type.id && (
                     <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
                   )}
                 </div>
                 <div>
-                  <div className="font-extrabold text-xs leading-tight">{type.label}</div>
-                  <div className={`text-[10px] font-medium ${selectedType === type.id ? "text-sky-100" : "text-slate-500"}`}>
+                  <div className="font-extrabold text-[11px] leading-tight">{type.label}</div>
+                  <div className={`text-[9px] font-medium ${selectedType === type.id ? "text-sky-100" : "text-slate-500"}`}>
                     {type.sub}
                   </div>
                 </div>
@@ -2485,7 +2847,7 @@ export function Grade6MotionVisualLab() {
 
           {/* Interactive Simulation Display for Selected Type */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-            {/* Visual Canvas (8 cols) */}
+            {/* Visual Canvas (7 cols) */}
             <div className="md:col-span-7 bg-slate-900 rounded-2xl p-6 h-64 flex flex-col items-center justify-center relative overflow-hidden border border-slate-800 shadow-inner">
               
               {/* 1. RECTILINEAR MOTION VISUAL */}
@@ -2582,34 +2944,74 @@ export function Grade6MotionVisualLab() {
               {selectedType === "periodic" && (
                 <div className="w-full h-full flex flex-col items-center justify-center relative">
                   <span className="absolute top-2 left-2 text-[10px] font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">
-                    Path: To-and-Fro Oscillation (Equal Time T)
+                    Path: Repeats in Fixed Period T
                   </span>
 
-                  {/* Top Stand Ceiling */}
-                  <div className="absolute top-8 w-32 h-2 bg-slate-700 rounded-full"></div>
-
-                  {/* Pendulum Arm */}
-                  <div
-                    className="origin-top flex flex-col items-center transition-transform duration-75"
-                    style={{
-                      top: "38px",
-                      transform: `rotate(${periodicAngle}deg)`
-                    }}
-                  >
-                    <div className="w-1 h-28 bg-emerald-400"></div>
-                    <div className="w-8 h-8 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-900 shadow-lg -mt-1">
-                      🕰️
+                  {/* Earth Revolving around Sun Orbit */}
+                  <div className="relative flex items-center justify-center">
+                    {/* Sun */}
+                    <div className="w-10 h-10 rounded-full bg-amber-400 border-2 border-amber-200 flex items-center justify-center text-xl shadow-lg shadow-amber-500/50 z-10">
+                      ☀️
+                    </div>
+                    {/* Orbit Ring */}
+                    <div className="absolute w-40 h-40 rounded-full border border-dashed border-emerald-500/40"></div>
+                    {/* Earth */}
+                    <div
+                      className="absolute w-7 h-7 flex items-center justify-center transition-all duration-75"
+                      style={{
+                        left: `${50 + 40 * Math.cos(simTime * 2)}%`,
+                        top: `${50 + 40 * Math.sin(simTime * 2)}%`,
+                        transform: "translate(-50%, -50%)"
+                      }}
+                    >
+                      <span className="text-2xl filter drop-shadow-md">🌍</span>
                     </div>
                   </div>
 
-                  {/* Dotted Oscillation Arc */}
-                  <div className="absolute bottom-6 text-[10px] font-mono text-emerald-300 bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">
-                    T = Equal Time Interval (Oscillation)
+                  {/* Dotted Periodic Loop Marker */}
+                  <div className="absolute bottom-4 text-[10px] font-mono text-emerald-300 bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">
+                    T = Fixed Time Interval (Repeats in a loop)
                   </div>
                 </div>
               )}
 
-              {/* 5. COMBINATION MOTION VISUAL */}
+              {/* 5. OSCILLATORY MOTION VISUAL */}
+              {selectedType === "oscillatory" && (
+                <div className="w-full h-full flex flex-col items-center justify-center relative">
+                  <span className="absolute top-2 left-2 text-[10px] font-mono text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800">
+                    Path: To-and-Fro About Central Rest Position
+                  </span>
+
+                  {/* Top Stand Ceiling */}
+                  <div className="absolute top-6 w-36 h-2 bg-slate-700 rounded-full border border-slate-600"></div>
+
+                  {/* Mean Position Center Line */}
+                  <div className="absolute top-8 bottom-10 w-0.5 border-l border-dashed border-cyan-500/50"></div>
+                  <span className="absolute bottom-2 text-[9px] font-mono text-cyan-400 font-bold bg-slate-900/90 px-1.5 py-0.5 rounded border border-cyan-800">
+                    📍 Mean Rest Position
+                  </span>
+
+                  {/* Left Extreme & Right Extreme Labels */}
+                  <span className="absolute top-12 left-6 text-[8px] font-mono text-cyan-300/70">◀ Left Extreme</span>
+                  <span className="absolute top-12 right-6 text-[8px] font-mono text-cyan-300/70">Right Extreme ▶</span>
+
+                  {/* Oscillating Pendulum Bob */}
+                  <div
+                    className="origin-top flex flex-col items-center transition-transform duration-75"
+                    style={{
+                      top: "28px",
+                      transform: `rotate(${periodicAngle}deg)`
+                    }}
+                  >
+                    <div className="w-1 h-28 bg-cyan-400 shadow-xs"></div>
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-400 to-sky-600 border-2 border-white flex items-center justify-center text-sm font-black text-slate-900 shadow-xl -mt-1">
+                      🔔
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 6. COMBINATION MOTION VISUAL */}
               {selectedType === "combination" && (
                 <div className="w-full h-full flex flex-col items-center justify-center relative">
                   <span className="absolute top-2 left-2 text-[10px] font-mono text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-800">
@@ -2710,15 +3112,39 @@ export function Grade6MotionVisualLab() {
                   </div>
                   <h3 className="text-base font-extrabold text-slate-800">Repeating at Equal Time Intervals</h3>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Motion that repeats itself over and over again after equal intervals of time (fixed time period T).
+                    Any motion that repeats itself at regular, fixed time periods (T). It may move in a continuous loop or circle, or back and forth.
                   </p>
                   <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5 text-xs">
                     <span className="font-extrabold text-slate-800 block">Real-life Examples:</span>
                     <ul className="list-disc list-inside text-slate-600 space-y-1 font-medium">
-                      <li>Swinging pendulum of a grandfather clock</li>
-                      <li>Child swinging on a playground swing</li>
-                      <li>Vibration of a plucked guitar string</li>
-                      <li>Heartbeats in a healthy human body</li>
+                      <li>Earth's revolution around Sun (every 365.25 days)</li>
+                      <li>Hands of a clock passing 12 (every 60s / 60m)</li>
+                      <li>Heartbeats in a healthy human body (~72 bpm)</li>
+                      <li>Swinging pendulum of a clock</li>
+                    </ul>
+                  </div>
+                </>
+              )}
+
+              {selectedType === "oscillatory" && (
+                <>
+                  <div className="inline-block px-2.5 py-1 rounded-md bg-cyan-50 text-cyan-700 border border-cyan-200 font-mono text-xs font-bold">
+                    ⚛️ Oscillatory Motion
+                  </div>
+                  <h3 className="text-base font-extrabold text-slate-800">To-and-Fro About a Mean Position</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Motion where an object swings back and forth repeatedly across a central rest position (Mean Position).
+                  </p>
+                  <div className="bg-amber-50 p-2.5 rounded-xl border border-amber-200 text-[11px] text-amber-900 font-medium">
+                    ✨ <strong>Golden Physics Rule:</strong> All Oscillatory motions are Periodic! But NOT all Periodic motions are Oscillatory (e.g., Earth revolving around the Sun is periodic but NOT oscillatory).
+                  </div>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5 text-xs">
+                    <span className="font-extrabold text-slate-800 block">Real-life Examples:</span>
+                    <ul className="list-disc list-inside text-slate-600 space-y-1 font-medium">
+                      <li>Swinging grandfather clock pendulum</li>
+                      <li>Child on a playground swing</li>
+                      <li>Plucked guitar string or struck drumhead</li>
+                      <li>Vibrating tuning fork prongs</li>
                     </ul>
                   </div>
                 </>
@@ -2738,7 +3164,7 @@ export function Grade6MotionVisualLab() {
                     <ul className="list-disc list-inside text-slate-600 space-y-1 font-medium">
                       <li>Rolling Bicycle Wheel (Rectilinear + Rotational)</li>
                       <li>Planet Earth (Rotational on axis + Circular around Sun)</li>
-                      <li>Sewing Machine Needle (Rotational wheel + Periodic needle)</li>
+                      <li>Sewing Machine Needle (Rotational wheel + Oscillatory needle)</li>
                       <li>Drill Bit drilling into wood (Rotational + Linear)</li>
                     </ul>
                   </div>
@@ -2749,7 +3175,272 @@ export function Grade6MotionVisualLab() {
         </div>
       )}
 
-      {/* TAB 3: MOTION CLASSIFICATION GAME */}
+      {/* TAB 3: SPEED & UNIT CONVERTER (km/h ↔ m/s) */}
+      {activeTab === "converter" && (
+        <div className="space-y-6">
+          {/* Header Card */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div>
+                <span className="text-[10px] font-black uppercase text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded border border-indigo-100 font-mono">
+                  Physics Formula & Unit Conversion
+                </span>
+                <h3 className="text-lg font-extrabold text-slate-800 mt-1">
+                  ⚡ Speed Converter: km/h ↔ m/s
+                </h3>
+              </div>
+
+              {/* Conversion Direction Toggle */}
+              <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button
+                  onClick={() => {
+                    setConvDirection("kmh_to_ms");
+                    setConvInputValue(36);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                    convDirection === "kmh_to_ms"
+                      ? "bg-indigo-600 text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  km/h ➔ m/s (× 5/18)
+                </button>
+                <button
+                  onClick={() => {
+                    setConvDirection("ms_to_kmh");
+                    setConvInputValue(10);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                    convDirection === "ms_to_kmh"
+                      ? "bg-indigo-600 text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  m/s ➔ km/h (× 18/5)
+                </button>
+              </div>
+            </div>
+
+            {/* Input Controls & Presets */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+              <div className="md:col-span-7 space-y-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-black text-slate-700">
+                    Enter Speed in {convDirection === "kmh_to_ms" ? "Kilometers per Hour (km/h)" : "Meters per Second (m/s)"}:
+                  </label>
+                  <span className="text-xs font-mono font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">
+                    {convInputValue} {convDirection === "kmh_to_ms" ? "km/h" : "m/s"}
+                  </span>
+                </div>
+
+                <input
+                  type="range"
+                  min={1}
+                  max={convDirection === "kmh_to_ms" ? 360 : 100}
+                  step={1}
+                  value={convInputValue}
+                  onChange={(e) => setConvInputValue(Number(e.target.value))}
+                  className="w-full accent-indigo-600 cursor-pointer"
+                />
+
+                {/* Direct Number Input */}
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-slate-500 font-medium">Or type exact value:</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={1000}
+                    value={convInputValue}
+                    onChange={(e) => setConvInputValue(Math.max(0, Number(e.target.value)))}
+                    className="w-28 px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-black font-mono focus:ring-2 focus:ring-indigo-500 outline-none"
+                  />
+                  <span className="text-xs font-extrabold text-slate-600">
+                    {convDirection === "kmh_to_ms" ? "km/h" : "m/s"}
+                  </span>
+                </div>
+
+                {/* Quick Presets */}
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-black text-slate-500 uppercase tracking-wider block">
+                    ⚡ Quick Real-Life Speed Presets:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {convDirection === "kmh_to_ms" ? (
+                      <>
+                        <button onClick={() => setConvInputValue(5)} className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold border border-slate-200 transition-colors cursor-pointer">🚶 Walking (5 km/h)</button>
+                        <button onClick={() => setConvInputValue(18)} className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold border border-slate-200 transition-colors cursor-pointer">🚲 Bicycle (18 km/h)</button>
+                        <button onClick={() => setConvInputValue(36)} className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold border border-slate-200 transition-colors cursor-pointer">🚘 City Car (36 km/h)</button>
+                        <button onClick={() => setConvInputValue(72)} className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold border border-slate-200 transition-colors cursor-pointer">🏎️ Highway Car (72 km/h)</button>
+                        <button onClick={() => setConvInputValue(108)} className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold border border-slate-200 transition-colors cursor-pointer">🚆 Express Train (108 km/h)</button>
+                        <button onClick={() => setConvInputValue(120)} className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold border border-slate-200 transition-colors cursor-pointer">🐆 Cheetah (120 km/h)</button>
+                      </>
+                    ) : (
+                      <>
+                        <button onClick={() => setConvInputValue(5)} className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold border border-slate-200 transition-colors cursor-pointer">🏃 5 m/s (18 km/h)</button>
+                        <button onClick={() => setConvInputValue(10)} className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold border border-slate-200 transition-colors cursor-pointer">🚗 10 m/s (36 km/h)</button>
+                        <button onClick={() => setConvInputValue(20)} className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold border border-slate-200 transition-colors cursor-pointer">🏎️ 20 m/s (72 km/h)</button>
+                        <button onClick={() => setConvInputValue(25)} className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold border border-slate-200 transition-colors cursor-pointer">🚅 25 m/s (90 km/h)</button>
+                        <button onClick={() => setConvInputValue(30)} className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold border border-slate-200 transition-colors cursor-pointer">🚄 30 m/s (108 km/h)</button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Converted Result Display Card */}
+              <div className="md:col-span-5 bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-5 rounded-2xl shadow-md border border-indigo-800 flex flex-col justify-between h-full min-h-[180px]">
+                <div>
+                  <span className="text-[10px] font-mono text-indigo-300 uppercase tracking-widest block font-bold">
+                    Converted SI Speed Output
+                  </span>
+                  <div className="mt-2 flex items-baseline gap-2">
+                    <span className="text-3xl font-black text-amber-300 font-mono">
+                      {convDirection === "kmh_to_ms"
+                        ? Number((convInputValue * 5 / 18).toFixed(2))
+                        : Number((convInputValue * 18 / 5).toFixed(2))}
+                    </span>
+                    <span className="text-lg font-bold text-slate-200">
+                      {convDirection === "kmh_to_ms" ? "m/s" : "km/h"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-indigo-200 mt-2 font-medium">
+                    {convDirection === "kmh_to_ms" ? (
+                      <>An object going <strong>{convInputValue} km/h</strong> covers <strong>{Number((convInputValue * 5 / 18).toFixed(2))} meters</strong> every single second!</>
+                    ) : (
+                      <>An object covering <strong>{convInputValue} m/s</strong> travels <strong>{Number((convInputValue * 18 / 5).toFixed(2))} km</strong> in one hour!</>
+                    )}
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-indigo-800/80 flex justify-between items-center text-[11px] text-indigo-300 font-mono">
+                  <span>Conversion Factor:</span>
+                  <span className="font-bold text-amber-300">
+                    {convDirection === "kmh_to_ms" ? "× (5 / 18)" : "× (18 / 5)"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mathematical Step-by-Step Derivation Breakdown */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <h4 className="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+              <span>📐 Step-by-Step Mathematical Derivation</span>
+            </h4>
+
+            {convDirection === "kmh_to_ms" ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <div className="bg-indigo-50/70 border border-indigo-150 p-3.5 rounded-xl space-y-1">
+                  <span className="font-extrabold text-indigo-900 block">Step 1: Length & Time Standard Units</span>
+                  <p className="text-slate-600">1 kilometer (km) = 1,000 meters (m)</p>
+                  <p className="text-slate-600">1 hour (h) = 60 min × 60 s = 3,600 seconds (s)</p>
+                </div>
+
+                <div className="bg-amber-50/70 border border-amber-150 p-3.5 rounded-xl space-y-1">
+                  <span className="font-extrabold text-amber-900 block">Step 2: Simplify Unit Fraction</span>
+                  <p className="font-mono text-slate-700">1 km/h = 1000 m ÷ 3600 s</p>
+                  <p className="font-mono font-bold text-amber-900">1 km/h = 10/36 = 5/18 m/s ≈ 0.2778 m/s</p>
+                </div>
+
+                <div className="bg-emerald-50/70 border border-emerald-150 p-3.5 rounded-xl space-y-1">
+                  <span className="font-extrabold text-emerald-900 block">Step 3: Calculate Given Value</span>
+                  <p className="font-mono text-slate-700">{convInputValue} × (5 / 18)</p>
+                  <p className="font-mono font-extrabold text-emerald-800">
+                    = {convInputValue} × 5 ÷ 18 = <span className="text-emerald-950 font-black">{Number((convInputValue * 5 / 18).toFixed(2))} m/s</span>
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <div className="bg-indigo-50/70 border border-indigo-150 p-3.5 rounded-xl space-y-1">
+                  <span className="font-extrabold text-indigo-900 block">Step 1: Inverse Unit Fractions</span>
+                  <p className="text-slate-600">1 meter (m) = 1/1,000 km</p>
+                  <p className="text-slate-600">1 second (s) = 1/3,600 hour</p>
+                </div>
+
+                <div className="bg-amber-50/70 border border-amber-150 p-3.5 rounded-xl space-y-1">
+                  <span className="font-extrabold text-amber-900 block">Step 2: Simplify Inverse Fraction</span>
+                  <p className="font-mono text-slate-700">1 m/s = (1/1000) ÷ (1/3600)</p>
+                  <p className="font-mono font-bold text-amber-900">1 m/s = 3600 / 1000 = 18/5 = 3.6 km/h</p>
+                </div>
+
+                <div className="bg-emerald-50/70 border border-emerald-150 p-3.5 rounded-xl space-y-1">
+                  <span className="font-extrabold text-emerald-900 block">Step 3: Calculate Given Value</span>
+                  <p className="font-mono text-slate-700">{convInputValue} × (18 / 5)</p>
+                  <p className="font-mono font-extrabold text-emerald-800">
+                    = {convInputValue} × 3.6 = <span className="text-emerald-950 font-black">{Number((convInputValue * 18 / 5).toFixed(2))} km/h</span>
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Quick Conversion Reference Table */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+            <h4 className="text-sm font-extrabold text-slate-800">
+              📊 Standard Physics Reference Table (km/h ↔ m/s)
+            </h4>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead>
+                  <tr className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
+                    <th className="p-2.5 rounded-l-lg">Everyday Object / Scenario</th>
+                    <th className="p-2.5">Speed in km/h</th>
+                    <th className="p-2.5">Speed in m/s (SI Unit)</th>
+                    <th className="p-2.5 rounded-r-lg">Math Calculation</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  <tr className="hover:bg-slate-50">
+                    <td className="p-2.5 font-bold">🚶 Human Walking Speed</td>
+                    <td className="p-2.5 font-mono">5 km/h</td>
+                    <td className="p-2.5 font-mono font-bold text-indigo-700">1.39 m/s</td>
+                    <td className="p-2.5 font-mono text-slate-500">5 × 5/18 = 25/18</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50">
+                    <td className="p-2.5 font-bold">🚲 Cycling at Leisure</td>
+                    <td className="p-2.5 font-mono">18 km/h</td>
+                    <td className="p-2.5 font-mono font-bold text-indigo-700">5.00 m/s</td>
+                    <td className="p-2.5 font-mono text-slate-500">18 × 5/18 = 5</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50 bg-indigo-50/30">
+                    <td className="p-2.5 font-bold">🚘 City Traffic Driving</td>
+                    <td className="p-2.5 font-mono">36 km/h</td>
+                    <td className="p-2.5 font-mono font-extrabold text-indigo-800">10.00 m/s</td>
+                    <td className="p-2.5 font-mono text-indigo-600 font-bold">36 × 5/18 = 2 × 5 = 10</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50">
+                    <td className="p-2.5 font-bold">🚌 City Bus Speed</td>
+                    <td className="p-2.5 font-mono">54 km/h</td>
+                    <td className="p-2.5 font-mono font-bold text-indigo-700">15.00 m/s</td>
+                    <td className="p-2.5 font-mono text-slate-500">54 × 5/18 = 3 × 5 = 15</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50 bg-indigo-50/30">
+                    <td className="p-2.5 font-bold">🏎️ Highway Cruising Car</td>
+                    <td className="p-2.5 font-mono">72 km/h</td>
+                    <td className="p-2.5 font-mono font-extrabold text-indigo-800">20.00 m/s</td>
+                    <td className="p-2.5 font-mono text-indigo-600 font-bold">72 × 5/18 = 4 × 5 = 20</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50">
+                    <td className="p-2.5 font-bold">🚆 Express Passenger Train</td>
+                    <td className="p-2.5 font-mono">108 km/h</td>
+                    <td className="p-2.5 font-mono font-bold text-indigo-700">30.00 m/s</td>
+                    <td className="p-2.5 font-mono text-slate-500">108 × 5/18 = 6 × 5 = 30</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50">
+                    <td className="p-2.5 font-bold">🐆 Sprinting Cheetah</td>
+                    <td className="p-2.5 font-mono">120 km/h</td>
+                    <td className="p-2.5 font-mono font-bold text-indigo-700">33.33 m/s</td>
+                    <td className="p-2.5 font-mono text-slate-500">120 × 5/18 = 100/3</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: MOTION CLASSIFICATION GAME */}
       {activeTab === "quiz" && (
         <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-xs">
           {/* Header Score Tracker */}
@@ -2836,11 +3527,17 @@ export function Grade6MotionVisualLab() {
 }
 
 export function Grade6TemperatureVisualLab() {
-  const [activeTab, setActiveTab] = useState<"sim" | "scales" | "quiz">("sim");
+  const [activeTab, setActiveTab] = useState<"sim" | "units" | "scales" | "quiz">("sim");
 
   // Simulation State
   const [tempCelsius, setTempCelsius] = useState<number>(37);
   const [thermometerType, setThermometerType] = useState<"clinical" | "lab" | "digital">("clinical");
+
+  // Units tab custom converter state
+  const [unitInputValue, setUnitInputValue] = useState<number>(37);
+
+  // Parallax Error state
+  const [parallaxAngle, setParallaxAngle] = useState<"above" | "level" | "below">("level");
 
   // Conversions
   const tempFahrenheit = Number(((tempCelsius * 9) / 5 + 32).toFixed(1));
@@ -2882,7 +3579,19 @@ export function Grade6TemperatureVisualLab() {
       q: "What is the normal human body temperature on the Celsius scale?",
       options: ["37°C", "98.6°C", "100°C", "0°C"],
       correct: "37°C",
-      exp: "Normal human body temperature is 37°C (which equals 98.6°F)."
+      exp: "Normal human body temperature is 37°C (which equals 98.6°F or 310.15 K)."
+    },
+    {
+      q: "Which of the following is the official SI unit of temperature?",
+      options: ["Degree Celsius (°C)", "Degree Fahrenheit (°F)", "Kelvin (K)", "Joule (J)"],
+      correct: "Kelvin (K)",
+      exp: "Kelvin (K) is the SI base unit of thermodynamic temperature. Note that Kelvin is written without a degree symbol (°)."
+    },
+    {
+      q: "What is the correct conversion formula from Celsius (°C) to Kelvin (K)?",
+      options: ["K = °C + 273.15", "K = (°C × 9/5) + 32", "K = °C - 100", "K = °C ÷ 273.15"],
+      correct: "K = °C + 273.15",
+      exp: "To convert Celsius to Kelvin, add 273.15 (e.g., 0°C + 273.15 = 273.15 K)."
     },
     {
       q: "Why is a constriction ('kink') present in a clinical thermometer?",
@@ -2896,16 +3605,16 @@ export function Grade6TemperatureVisualLab() {
       exp: "The kink breaks the continuous column of mercury when cooling starts, holding the reading steady until shaken down!"
     },
     {
+      q: "What is the boiling point of pure water in Fahrenheit (°F) and Kelvin (K)?",
+      options: ["212°F and 373.15 K", "100°F and 273.15 K", "98.6°F and 310.15 K", "32°F and 0 K"],
+      correct: "212°F and 373.15 K",
+      exp: "Water boils at 100°C, which converts to 212°F [(100 × 9/5) + 32] and 373.15 K (100 + 273.15)."
+    },
+    {
       q: "What is the standard measurement range of a Laboratory Thermometer?",
       options: ["35°C to 42°C", "-10°C to 110°C", "0°C to 100°F", "20°C to 50°C"],
       correct: "-10°C to 110°C",
       exp: "A laboratory thermometer spans from freezing ice (-10°C) up to boiling water (110°C)."
-    },
-    {
-      q: "What is the official SI unit of temperature?",
-      options: ["Degree Celsius (°C)", "Degree Fahrenheit (°F)", "Kelvin (K)", "Joule (J)"],
-      correct: "Kelvin (K)",
-      exp: "Kelvin (K) is the SI unit of temperature used internationally in scientific research."
     }
   ];
 
@@ -2934,38 +3643,46 @@ export function Grade6TemperatureVisualLab() {
             </span>
           </div>
           <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
-            🌡️ Temperature and its Measurement Studio
+            🌡️ Temperature, Units & Measurement Studio
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Explore clinical, laboratory & digital thermometers, live temperature scale conversions (°C, °F, K), and clinical kink mechanics!
+            Explore units of temperature (°C, °F, K), live scale conversions, clinical & laboratory thermometers, and precautions!
           </p>
         </div>
 
         {/* Tab Controls */}
-        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 self-stretch md:self-auto justify-stretch">
+        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 self-stretch md:self-auto justify-stretch flex-wrap md:flex-nowrap gap-1">
           <button
             onClick={() => setActiveTab("sim")}
-            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+            className={`flex-1 md:flex-none px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
               activeTab === "sim" ? "bg-white text-rose-700 shadow-xs border border-slate-200" : "text-slate-600 hover:text-slate-900"
             }`}
           >
             🎯 1. Thermometer Simulator
           </button>
           <button
+            onClick={() => setActiveTab("units")}
+            className={`flex-1 md:flex-none px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+              activeTab === "units" ? "bg-white text-indigo-700 shadow-xs border border-slate-200" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🌡️ 2. Units of Temperature
+          </button>
+          <button
             onClick={() => setActiveTab("scales")}
-            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+            className={`flex-1 md:flex-none px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
               activeTab === "scales" ? "bg-white text-rose-700 shadow-xs border border-slate-200" : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            📊 2. Scales & Precautions
+            👁️ 3. Parallax Error & Precautions
           </button>
           <button
             onClick={() => setActiveTab("quiz")}
-            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+            className={`flex-1 md:flex-none px-3 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
               activeTab === "quiz" ? "bg-white text-emerald-700 shadow-xs border border-slate-200" : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            🎮 3. Temperature Quiz
+            🎮 4. Temperature Quiz
           </button>
         </div>
       </div>
@@ -3157,27 +3874,537 @@ export function Grade6TemperatureVisualLab() {
         </div>
       )}
 
-      {activeTab === "scales" && (
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
-          <h3 className="text-base font-extrabold text-slate-800">📊 Temperature Scales & Usage Precautions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-600">
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-              <span className="font-extrabold text-slate-800 text-sm block">1. Scale Formulas & Benchmarks</span>
-              <ul className="space-y-1.5 list-disc list-inside">
-                <li><strong>Freezing Point of Water:</strong> 0°C = 32°F = 273.15 K</li>
-                <li><strong>Normal Human Body Temp:</strong> 37°C = 98.6°F = 310.15 K</li>
-                <li><strong>Boiling Point of Water:</strong> 100°C = 212°F = 373.15 K</li>
-                <li><strong>Celsius to Fahrenheit:</strong> F = (C × 9/5) + 32</li>
-                <li><strong>Celsius to Kelvin:</strong> K = C + 273.15</li>
+      {/* TAB 2: UNITS OF TEMPERATURE INTERACTIVE LAB */}
+      {activeTab === "units" && (
+        <div className="space-y-6">
+          {/* Fundamental Concept Banner: What is Temperature? */}
+          <div className="bg-gradient-to-r from-indigo-900 via-slate-900 to-rose-950 text-white p-5 rounded-2xl border border-indigo-800 shadow-md space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">💡</span>
+              <h3 className="text-base font-extrabold tracking-tight text-amber-300">
+                Core Physics Concept: What is Temperature?
+              </h3>
+            </div>
+            <p className="text-xs text-slate-200 leading-relaxed font-medium">
+              <strong className="text-white">Temperature</strong> is defined as the quantitative measure of the degree of <strong>hotness or coldness</strong> of a body.
+              While our sense of touch can be tricked (feeling subjective warmth or cold), temperature gives an exact numerical value using calibrated scales.
+            </p>
+            
+            {/* Molecular kinetic energy visual indicator */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
+              <div className="bg-white/10 backdrop-blur-xs p-3 rounded-xl border border-white/15 space-y-1">
+                <span className="font-extrabold text-amber-300 block flex items-center gap-1.5">
+                  <span>⚛️ Microscopic Meaning:</span>
+                </span>
+                <p className="text-[11px] text-slate-200">
+                  At the atomic level, temperature measures the <strong>average kinetic energy</strong> of moving particles. Hotter objects have rapidly vibrating molecules, while cold objects have slow-moving molecules!
+                </p>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-xs p-3 rounded-xl border border-white/15 space-y-1">
+                <span className="font-extrabold text-rose-300 block flex items-center gap-1.5">
+                  <span>🔥 Heat vs Temperature:</span>
+                </span>
+                <p className="text-[11px] text-slate-200">
+                  <strong>Heat</strong> is the total thermal energy contained in a substance (Joule), whereas <strong>Temperature</strong> is the intensity level of hotness (Measured in °C, °F, or Kelvin K).
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Live Unit Converter & Visual Gauges */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-5">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[10px] font-black uppercase text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded border border-indigo-100 font-mono">
+                  SI & Standard Units of Temperature
+                </span>
+                <h3 className="text-lg font-extrabold text-slate-800 mt-1">
+                  🌡️ Live Temperature Units Converter (°C ↔ °F ↔ K)
+                </h3>
+              </div>
+              <span className="text-xs font-mono font-black text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-lg">
+                SI Unit: Kelvin (K)
+              </span>
+            </div>
+
+            {/* Slider & Presets */}
+            <div className="space-y-4">
+              <div className="flex justify-between items-center text-xs font-extrabold text-slate-700">
+                <label>Adjust Celsius Temperature (°C):</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={-273.15}
+                    max={200}
+                    value={unitInputValue}
+                    onChange={(e) => setUnitInputValue(Number(e.target.value))}
+                    className="w-24 px-2 py-1 border border-slate-300 rounded-md text-xs font-mono font-bold text-center"
+                  />
+                  <span className="text-indigo-600 font-mono font-bold">°C</span>
+                </div>
+              </div>
+
+              <input
+                type="range"
+                min={-50}
+                max={150}
+                step={1}
+                value={unitInputValue}
+                onChange={(e) => setUnitInputValue(Number(e.target.value))}
+                className="w-full accent-indigo-600 cursor-pointer"
+              />
+
+              {/* Presets */}
+              <div className="space-y-1.5">
+                <span className="text-[11px] font-black text-slate-500 uppercase tracking-wider block">
+                  ⚡ Key Benchmark Presets:
+                </span>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <button
+                    onClick={() => setUnitInputValue(-273.15)}
+                    className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-bold border border-indigo-200 cursor-pointer"
+                  >
+                    🌌 Absolute Zero (-273.15°C / 0 K)
+                  </button>
+                  <button
+                    onClick={() => setUnitInputValue(0)}
+                    className="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-900 font-bold border border-sky-200 cursor-pointer"
+                  >
+                    🧊 Freezing Water (0°C)
+                  </button>
+                  <button
+                    onClick={() => setUnitInputValue(25)}
+                    className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold border border-emerald-200 cursor-pointer"
+                  >
+                    🏠 Room Temp (25°C)
+                  </button>
+                  <button
+                    onClick={() => setUnitInputValue(37)}
+                    className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 font-extrabold border border-amber-200 cursor-pointer"
+                  >
+                    💚 Normal Body (37°C)
+                  </button>
+                  <button
+                    onClick={() => setUnitInputValue(100)}
+                    className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold border border-rose-200 cursor-pointer"
+                  >
+                    ♨️ Boiling Water (100°C)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Live 3-Unit Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Celsius */}
+              <div className="bg-gradient-to-br from-sky-50 to-blue-50 border border-sky-200 p-4 rounded-xl space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-black uppercase tracking-wider text-sky-900">Degree Celsius</span>
+                  <span className="text-xs font-mono font-bold text-sky-700 bg-white px-2 py-0.5 rounded border border-sky-200">°C</span>
+                </div>
+                <div className="text-2xl font-black font-mono text-sky-950">
+                  {unitInputValue}°C
+                </div>
+                <p className="text-[11px] text-sky-800 leading-snug">
+                  Invented by Anders Celsius (1742). Water freezes at <strong>0°C</strong> and boils at <strong>100°C</strong>.
+                </p>
+              </div>
+
+              {/* Fahrenheit */}
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 p-4 rounded-xl space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-black uppercase tracking-wider text-amber-900">Degree Fahrenheit</span>
+                  <span className="text-xs font-mono font-bold text-amber-700 bg-white px-2 py-0.5 rounded border border-amber-200">°F</span>
+                </div>
+                <div className="text-2xl font-black font-mono text-amber-950">
+                  {Number(((unitInputValue * 9) / 5 + 32).toFixed(2))}°F
+                </div>
+                <p className="text-[11px] text-amber-800 leading-snug">
+                  Formula: <code>°F = (°C × 9/5) + 32</code>. Water freezes at <strong>32°F</strong> and boils at <strong>212°F</strong>.
+                </p>
+              </div>
+
+              {/* Kelvin */}
+              <div className="bg-gradient-to-br from-indigo-900 to-slate-900 text-white border border-indigo-700 p-4 rounded-xl space-y-2 shadow-md">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-black uppercase tracking-wider text-amber-300">Kelvin (SI Unit)</span>
+                  <span className="text-xs font-mono font-bold text-indigo-900 bg-amber-300 px-2 py-0.5 rounded">K</span>
+                </div>
+                <div className="text-2xl font-black font-mono text-amber-300">
+                  {Number((unitInputValue + 273.15).toFixed(2))} K
+                </div>
+                <p className="text-[11px] text-indigo-200 leading-snug">
+                  Formula: <code>K = °C + 273.15</code>. Official SI unit! Starts at Absolute Zero (<strong>0 K</strong>). Written without degree symbol (°).
+                </p>
+              </div>
+            </div>
+
+            {/* Live Step-by-Step Conversion Worked Math Guide */}
+            <div className="bg-slate-900 text-white p-4 rounded-xl border border-indigo-800 space-y-3">
+              <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+                <span className="text-base">🧮</span>
+                <h4 className="text-xs font-extrabold text-amber-300 uppercase tracking-wider font-mono">
+                  Live Step-by-Step Conversion Math for {unitInputValue}°C
+                </h4>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                {/* C to F Worked Steps */}
+                <div className="bg-slate-950 p-3 rounded-lg border border-amber-500/30 space-y-1.5 font-mono">
+                  <div className="text-amber-400 font-extrabold flex justify-between">
+                    <span>1. Convert {unitInputValue}°C → °F</span>
+                    <span className="text-[10px] text-slate-400">F = (C × 1.8) + 32</span>
+                  </div>
+                  <div className="text-slate-300 text-[11px] space-y-1">
+                    <p>• Step 1 (Multiply by 1.8): {unitInputValue} × 1.8 = <strong className="text-amber-300">{(unitInputValue * 1.8).toFixed(2)}</strong></p>
+                    <p>• Step 2 (Add 32): {(unitInputValue * 1.8).toFixed(2)} + 32 = <strong className="text-amber-300">{((unitInputValue * 1.8) + 32).toFixed(2)}°F</strong></p>
+                  </div>
+                </div>
+
+                {/* C to K Worked Steps */}
+                <div className="bg-slate-950 p-3 rounded-lg border border-indigo-500/30 space-y-1.5 font-mono">
+                  <div className="text-indigo-300 font-extrabold flex justify-between">
+                    <span>2. Convert {unitInputValue}°C → Kelvin (K)</span>
+                    <span className="text-[10px] text-slate-400">K = C + 273.15</span>
+                  </div>
+                  <div className="text-slate-300 text-[11px] space-y-1">
+                    <p>• Step 1 (Add 273.15): {unitInputValue} + 273.15 = <strong className="text-indigo-300">{(unitInputValue + 273.15).toFixed(2)} K</strong></p>
+                    <p className="text-[10px] text-indigo-400 font-sans italic">Note: Kelvin is written without degree symbol (°)!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Detailed Units Comparison & Rules */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🌡️</span>
+                <span className="font-extrabold text-slate-800 text-sm">1. Degree Celsius (°C)</span>
+              </div>
+              <ul className="space-y-1.5 text-slate-600 list-disc list-inside">
+                <li>Common unit used in everyday weather forecasting & cooking.</li>
+                <li>Lower Fixed Point: <strong>0°C</strong> (Melting ice).</li>
+                <li>Upper Fixed Point: <strong>100°C</strong> (Boiling water).</li>
+                <li>Interval divided into <strong>100 equal degrees</strong>.</li>
               </ul>
             </div>
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-              <span className="font-extrabold text-slate-800 text-sm block">2. Essential Handling Precautions</span>
-              <ul className="space-y-1.5 list-disc list-inside">
-                <li>Wash thermometer with antiseptic solution before & after use.</li>
-                <li>Ensure mercury is below 35°C before taking clinical reading.</li>
-                <li>Keep line of sight level with top of mercury meniscus to prevent <strong>parallax error</strong>.</li>
-                <li>Do NOT hold the thermometer by its glass bulb while taking or reading temperature.</li>
+
+            <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🩺</span>
+                <span className="font-extrabold text-slate-800 text-sm">2. Degree Fahrenheit (°F)</span>
+              </div>
+              <ul className="space-y-1.5 text-slate-600 list-disc list-inside">
+                <li>Widely used in medicine and clinical fever readings in many regions.</li>
+                <li>Freezing Point: <strong>32°F</strong> | Boiling Point: <strong>212°F</strong>.</li>
+                <li>Interval divided into <strong>180 equal degrees</strong>.</li>
+                <li>Normal body temperature = <strong>98.6°F</strong> (37°C).</li>
+              </ul>
+            </div>
+
+            <div className="bg-white p-4 rounded-xl border border-indigo-200 bg-indigo-50/30 space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">⚡</span>
+                <span className="font-extrabold text-indigo-950 text-sm">3. Kelvin (K - SI Unit)</span>
+              </div>
+              <ul className="space-y-1.5 text-indigo-900 list-disc list-inside">
+                <li><strong>SI Base Unit</strong> of thermodynamic temperature in physics.</li>
+                <li>Starts at Absolute Zero (0 K) where particle motion stops.</li>
+                <li><strong>No Degree Symbol:</strong> Written as <code>300 K</code>, NOT <code>300 °K</code>.</li>
+                <li>Same scale step size as Celsius: 1 K increment = 1 °C increment!</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Benchmark Temperatures Matrix Table */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+            <h4 className="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+              <span>📊 Universal Benchmark Temperature Comparison Table</span>
+            </h4>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead>
+                  <tr className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
+                    <th className="p-2.5 rounded-l-lg">Physical Condition / Benchmark</th>
+                    <th className="p-2.5">Celsius (°C)</th>
+                    <th className="p-2.5">Fahrenheit (°F)</th>
+                    <th className="p-2.5 rounded-r-lg text-indigo-700">Kelvin (K - SI Unit)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  <tr className="hover:bg-slate-50">
+                    <td className="p-2.5 font-bold">🌌 Absolute Zero (Lowest possible temp)</td>
+                    <td className="p-2.5 font-mono text-indigo-700 font-bold">-273.15 °C</td>
+                    <td className="p-2.5 font-mono">-459.67 °F</td>
+                    <td className="p-2.5 font-mono font-black text-rose-600">0 K</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50 bg-sky-50/40">
+                    <td className="p-2.5 font-bold">🧊 Freezing Point of Pure Water</td>
+                    <td className="p-2.5 font-mono text-sky-800 font-bold">0 °C</td>
+                    <td className="p-2.5 font-mono">32 °F</td>
+                    <td className="p-2.5 font-mono font-bold text-sky-900">273.15 K</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50">
+                    <td className="p-2.5 font-bold">🏠 Comfortable Room Temperature</td>
+                    <td className="p-2.5 font-mono">25 °C</td>
+                    <td className="p-2.5 font-mono">77 °F</td>
+                    <td className="p-2.5 font-mono font-bold text-indigo-700">298.15 K</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50 bg-emerald-50/40">
+                    <td className="p-2.5 font-bold">💚 Normal Human Body Temperature</td>
+                    <td className="p-2.5 font-mono text-emerald-800 font-extrabold">37 °C</td>
+                    <td className="p-2.5 font-mono text-emerald-800 font-extrabold">98.6 °F</td>
+                    <td className="p-2.5 font-mono text-emerald-900 font-extrabold">310.15 K</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50 bg-rose-50/40">
+                    <td className="p-2.5 font-bold">♨️ Boiling Point of Pure Water</td>
+                    <td className="p-2.5 font-mono text-rose-800 font-bold">100 °C</td>
+                    <td className="p-2.5 font-mono text-rose-800 font-bold">212 °F</td>
+                    <td className="p-2.5 font-mono text-rose-900 font-bold">373.15 K</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "scales" && (
+        <div className="space-y-6">
+          {/* Parallax Error Interactive Lab Banner */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-5">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[10px] font-black uppercase text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200 font-mono">
+                  Grade 6 Physics • Chapter 7 Measurement Skill
+                </span>
+                <h3 className="text-lg font-extrabold text-slate-800 mt-1">
+                  👁️ Interactive Parallax Error Laboratory
+                </h3>
+              </div>
+              <span className="text-xs font-mono font-black text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg">
+                Eye Level Principle (90° Perpendicular)
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              <strong>What is Parallax Error?</strong> Parallax error is an apparent shift or error in reading a scale (on a thermometer, ruler, or measuring cylinder) caused when the observer's eye is not positioned directly level and perpendicular to the mark being read.
+            </p>
+
+            {/* Interactive Eye Position Selector */}
+            <div className="space-y-2">
+              <span className="text-xs font-extrabold text-slate-700 block">
+                👉 Select Observer's Eye Angle & Line of Sight:
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-extrabold">
+                <button
+                  onClick={() => setParallaxAngle("above")}
+                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    parallaxAngle === "above"
+                      ? "bg-rose-50 text-rose-900 border-rose-300 shadow-xs ring-2 ring-rose-400"
+                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">👁️↗️</span>
+                    <div>
+                      <div>Looking from ABOVE</div>
+                      <div className="text-[10px] font-normal text-rose-700 mt-0.5">Slanted Top-Down View</div>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setParallaxAngle("level")}
+                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    parallaxAngle === "level"
+                      ? "bg-emerald-50 text-emerald-950 border-emerald-300 shadow-xs ring-2 ring-emerald-500"
+                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">👁️➡️</span>
+                    <div>
+                      <div>✅ Eye Level (Perpendicular)</div>
+                      <div className="text-[10px] font-normal text-emerald-700 mt-0.5">Correct 90° Angle View</div>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setParallaxAngle("below")}
+                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    parallaxAngle === "below"
+                      ? "bg-amber-50 text-amber-950 border-amber-300 shadow-xs ring-2 ring-amber-400"
+                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">👁️↘️</span>
+                    <div>
+                      <div>Looking from BELOW</div>
+                      <div className="text-[10px] font-normal text-amber-700 mt-0.5">Slanted Bottom-Up View</div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Interactive SVG Scale & Ray Demonstration */}
+            <div className="bg-slate-900 text-white p-4 rounded-xl border border-slate-800 space-y-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                <span className="text-xs font-mono text-amber-300 font-bold uppercase tracking-wider">
+                  Live Visual Diagram: Line of Sight Projection
+                </span>
+                <span className={`text-xs font-extrabold font-mono px-3 py-1 rounded-full border ${
+                  parallaxAngle === "level" 
+                    ? "bg-emerald-900/80 text-emerald-200 border-emerald-500" 
+                    : parallaxAngle === "above"
+                    ? "bg-rose-900/80 text-rose-200 border-rose-500"
+                    : "bg-amber-900/80 text-amber-200 border-amber-500"
+                }`}>
+                  {parallaxAngle === "level" ? "✅ Zero Error (True 37.0°C)" : parallaxAngle === "above" ? "⚠️ Parallax Error: +1.6°C (Falsely High)" : "⚠️ Parallax Error: -1.6°C (Falsely Low)"}
+                </span>
+              </div>
+
+              <div className="flex justify-center items-center py-2">
+                <svg viewBox="0 0 500 240" className="w-full max-w-lg h-auto overflow-visible select-none">
+                  {/* Background Glass Scale */}
+                  <rect x="220" y="20" width="60" height="200" rx="6" fill="#1e293b" stroke="#475569" strokeWidth="2" />
+                  
+                  {/* Scale Graduations */}
+                  {[
+                    { val: "39°C", y: 40 },
+                    { val: "38.5°C", y: 60 },
+                    { val: "38°C", y: 80 },
+                    { val: "37.5°C", y: 100 },
+                    { val: "37°C (True)", y: 120, bold: true },
+                    { val: "36.5°C", y: 140 },
+                    { val: "36°C", y: 160 },
+                    { val: "35.5°C", y: 180 },
+                    { val: "35°C", y: 200 }
+                  ].map((tick) => (
+                    <g key={tick.val}>
+                      <line x1="220" y1={tick.y} x2="235" y2={tick.y} stroke={tick.bold ? "#10b981" : "#94a3b8"} strokeWidth={tick.bold ? "2.5" : "1"} />
+                      <text x="210" y={tick.y + 4} fill={tick.bold ? "#34d399" : "#cbd5e1"} fontSize={tick.bold ? "11" : "9"} fontFamily="monospace" fontWeight={tick.bold ? "bold" : "normal"} textAnchor="end">
+                        {tick.val}
+                      </text>
+                    </g>
+                  ))}
+
+                  {/* Red Mercury Column in Capillary */}
+                  <rect x="245" y="120" width="10" height="95" fill="#f43f5e" rx="2" />
+                  <circle cx="250" cy="120" r="5" fill="#f43f5e" />
+
+                  {/* Observer Eye Position & Ray Line */}
+                  {parallaxAngle === "above" && (
+                    <g className="transition-all duration-300">
+                      {/* Eye Icon at Top */}
+                      <text x="60" y="50" fontSize="28">👁️</text>
+                      <text x="50" y="75" fill="#f43f5e" fontSize="10" fontFamily="monospace" fontWeight="bold">Observer Eye (Above)</text>
+
+                      {/* Slanted Ray through Meniscus onto Scale */}
+                      <line x1="85" y1="50" x2="250" y2="120" stroke="#f43f5e" strokeWidth="2" strokeDasharray="4,4" />
+                      <line x1="250" y1="120" x2="280" y2="60" stroke="#f43f5e" strokeWidth="2.5" />
+                      <polygon points="280,60 270,68 275,75" fill="#f43f5e" />
+
+                      {/* False Reading Highlight Box */}
+                      <rect x="285" y="48" width="110" height="24" rx="4" fill="#881337" stroke="#f43f5e" strokeWidth="1.5" />
+                      <text x="290" y="64" fill="#fecdd3" fontSize="11" fontFamily="monospace" fontWeight="bold">Apparent: 38.6°C</text>
+                    </g>
+                  )}
+
+                  {parallaxAngle === "level" && (
+                    <g className="transition-all duration-300">
+                      {/* Eye Icon at Exact Level */}
+                      <text x="60" y="125" fontSize="28">👁️</text>
+                      <text x="45" y="150" fill="#34d399" fontSize="10" fontFamily="monospace" fontWeight="bold">Eye Level (90° View)</text>
+
+                      {/* Straight Perpendicular Ray */}
+                      <line x1="85" y1="120" x2="250" y2="120" stroke="#10b981" strokeWidth="3" />
+                      <circle cx="250" cy="120" r="7" fill="none" stroke="#34d399" strokeWidth="2" />
+
+                      {/* True Reading Highlight Box */}
+                      <rect x="285" y="108" width="125" height="24" rx="4" fill="#064e3b" stroke="#10b981" strokeWidth="1.5" />
+                      <text x="290" y="124" fill="#a7f3d0" fontSize="11" fontFamily="monospace" fontWeight="bold">Exact True: 37.0°C</text>
+                    </g>
+                  )}
+
+                  {parallaxAngle === "below" && (
+                    <g className="transition-all duration-300">
+                      {/* Eye Icon at Bottom */}
+                      <text x="60" y="200" fontSize="28">👁️</text>
+                      <text x="50" y="222" fill="#fbbf24" fontSize="10" fontFamily="monospace" fontWeight="bold">Observer Eye (Below)</text>
+
+                      {/* Slanted Ray through Meniscus onto Scale */}
+                      <line x1="85" y1="195" x2="250" y2="120" stroke="#fbbf24" strokeWidth="2" strokeDasharray="4,4" />
+                      <line x1="250" y1="120" x2="280" y2="180" stroke="#fbbf24" strokeWidth="2.5" />
+                      <polygon points="280,180 275,165 270,172" fill="#fbbf24" />
+
+                      {/* False Reading Highlight Box */}
+                      <rect x="285" y="168" width="110" height="24" rx="4" fill="#78350f" stroke="#fbbf24" strokeWidth="1.5" />
+                      <text x="290" y="184" fill="#fef3c7" fontSize="11" fontFamily="monospace" fontWeight="bold">Apparent: 35.4°C</text>
+                    </g>
+                  )}
+                </svg>
+              </div>
+
+              {/* Explanatory Message Box */}
+              <div className={`p-3.5 rounded-xl border text-xs leading-snug space-y-1 ${
+                parallaxAngle === "level"
+                  ? "bg-emerald-950/60 text-emerald-200 border-emerald-800"
+                  : parallaxAngle === "above"
+                  ? "bg-rose-950/60 text-rose-200 border-rose-800"
+                  : "bg-amber-950/60 text-amber-200 border-amber-800"
+              }`}>
+                <div className="font-extrabold flex items-center gap-1.5 text-sm">
+                  <span>{parallaxAngle === "level" ? "🎯 Perfect Measurement Technique!" : "⚠️ Parallax Distortion Active!"}</span>
+                </div>
+                <p>
+                  {parallaxAngle === "level" && "When your line of sight is strictly horizontal and perpendicular (at 90°) to the mercury column, there is zero parallax displacement. You record the true value of 37.0°C."}
+                  {parallaxAngle === "above" && "Because you are viewing from above, your line of sight cuts through the glass tube at a downward slant and strikes the printed scale HIGHER than the liquid top. You falsely record 38.6°C (+1.6°C error)!"}
+                  {parallaxAngle === "below" && "Because you are viewing from below, your line of sight cuts through the glass tube at an upward slant and strikes the printed scale LOWER than the liquid top. You falsely record 35.4°C (-1.6°C error)!"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Scale Summary & Thermometer Handling Precautions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-600">
+            <div className="p-4 bg-white rounded-2xl border border-slate-200 space-y-2 shadow-xs">
+              <span className="font-extrabold text-slate-800 text-sm block flex items-center gap-1.5">
+                <span>📐 1. Golden Rules to Avoid Parallax Error</span>
+              </span>
+              <ul className="space-y-2 list-disc list-inside text-slate-700">
+                <li>
+                  <strong>Direct Perpendicular View:</strong> Keep your eye at the exact horizontal level of the top of the liquid column.
+                </li>
+                <li>
+                  <strong>Line of Sight Angle:</strong> Ensure your line of sight forms a right angle (90°) with the measuring scale.
+                </li>
+                <li>
+                  <strong>Meniscus Rule:</strong>
+                  <ul className="pl-5 mt-1 space-y-1 list-square text-[11px] text-slate-600">
+                    <li>For <strong>Mercury</strong> (convex curve): Read the upper convex crest.</li>
+                    <li>For <strong>Water / Alcohol</strong> (concave curve): Read the lowest point of the concave dip.</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+
+            <div className="p-4 bg-white rounded-2xl border border-slate-200 space-y-2 shadow-xs">
+              <span className="font-extrabold text-slate-800 text-sm block flex items-center gap-1.5">
+                <span>🩺 2. Thermometer Handling Precautions</span>
+              </span>
+              <ul className="space-y-1.5 list-disc list-inside text-slate-700">
+                <li>Wash with antiseptic liquid before & after every clinical measurement.</li>
+                <li>Ensure mercury is shaken down below <strong>35°C</strong> before taking body temperature.</li>
+                <li>Do <strong>NOT</strong> hold the thermometer by its glass bulb while reading or holding it.</li>
+                <li>Read the thermometer while holding it horizontally in front of your eyes.</li>
+                <li>Handle glass with extreme care; mercury is toxic if glass breaks.</li>
               </ul>
             </div>
           </div>
@@ -7172,7 +8399,714 @@ export function HindiLanguageLab({ chapterId }: { chapterId?: string }) {
   );
 }
 
+export function Grade6EnglishGrammarLab({ activeChapterId }: { activeChapterId?: string }) {
+  const [activeTab, setActiveTab] = useState<"pos" | "tenses" | "articles" | "sentences" | "letters">("pos");
+
+  // Parts of Speech state
+  const [selectedSentenceIdx, setSelectedSentenceIdx] = useState<number>(0);
+
+  // Letter Writing State
+  const [letterType, setLetterType] = useState<"formal" | "informal">("formal");
+  const [studentName, setStudentName] = useState<string>("Aarav Sharma");
+  const [classRoll, setClassRoll] = useState<string>("Grade 6-A, Roll No. 14");
+  const [schoolName, setSchoolName] = useState<string>("Modern Public School, New Delhi");
+  const [leaveReason, setLeaveReason] = useState<string>("severe viral fever and doctor's advice for rest");
+  const [leaveDays, setLeaveDays] = useState<number>(2);
+  const [friendName, setFriendName] = useState<string>("Rohan");
+  const [eventTopic, setEventTopic] = useState<string>("my 12th Birthday Celebration");
+  const sampleSentences = [
+    {
+      text: "The brave astronaut Kalpana Chawla flew gracefully into space.",
+      tokens: [
+        { word: "The", pos: "Article", desc: "Definite Article pointing to a specific astronaut", color: "bg-amber-100 text-amber-900 border-amber-300" },
+        { word: "brave", pos: "Adjective", desc: "Describes the noun 'astronaut'", color: "bg-emerald-100 text-emerald-900 border-emerald-300" },
+        { word: "astronaut", pos: "Common Noun", desc: "Names a person/profession", color: "bg-blue-100 text-blue-900 border-blue-300" },
+        { word: "Kalpana Chawla", pos: "Proper Noun", desc: "Specific name of the famous astronaut", color: "bg-indigo-100 text-indigo-900 border-indigo-300" },
+        { word: "flew", pos: "Action Verb (Past)", desc: "Irregular past tense action of fly", color: "bg-rose-100 text-rose-900 border-rose-300" },
+        { word: "gracefully", pos: "Adverb", desc: "Modifies the verb 'flew' (tells HOW she flew)", color: "bg-purple-100 text-purple-900 border-purple-300" },
+        { word: "into", pos: "Preposition", desc: "Shows direction of movement towards the inside of space", color: "bg-teal-100 text-teal-900 border-teal-300" },
+        { word: "space.", pos: "Abstract/Common Noun", desc: "Names the physical cosmos destination", color: "bg-sky-100 text-sky-900 border-sky-300" }
+      ]
+    },
+    {
+      text: "Patrick worked hard, but his clever elf quietly solved the problems.",
+      tokens: [
+        { word: "Patrick", pos: "Proper Noun", desc: "Specific name of a boy", color: "bg-indigo-100 text-indigo-900 border-indigo-300" },
+        { word: "worked", pos: "Action Verb (Past)", desc: "Past tense of work", color: "bg-rose-100 text-rose-900 border-rose-300" },
+        { word: "hard,", pos: "Adverb", desc: "Tells HOW Patrick worked", color: "bg-purple-100 text-purple-900 border-purple-300" },
+        { word: "but", pos: "Conjunction", desc: "Coordinating conjunction joining two contrasting thoughts", color: "bg-amber-100 text-amber-900 border-amber-300" },
+        { word: "his", pos: "Possessive Pronoun", desc: "Replaces Patrick to show ownership of the elf", color: "bg-cyan-100 text-cyan-900 border-cyan-300" },
+        { word: "clever", pos: "Adjective", desc: "Describes the elf's quality", color: "bg-emerald-100 text-emerald-900 border-emerald-300" },
+        { word: "elf", pos: "Common Noun", desc: "Names a mythical creature", color: "bg-blue-100 text-blue-900 border-blue-300" },
+        { word: "quietly", pos: "Adverb", desc: "Describes HOW the elf solved problems", color: "bg-purple-100 text-purple-900 border-purple-300" },
+        { word: "solved", pos: "Action Verb (Past)", desc: "Past tense action", color: "bg-rose-100 text-rose-900 border-rose-300" },
+        { word: "the", pos: "Article", desc: "Definite Article", color: "bg-amber-100 text-amber-900 border-amber-300" },
+        { word: "problems.", pos: "Common Noun", desc: "Plural noun", color: "bg-blue-100 text-blue-900 border-blue-300" }
+      ]
+    }
+  ];
+  const [selectedTokenIdx, setSelectedTokenIdx] = useState<number | null>(0);
+
+  // Tense state
+  const [subjectPerson, setSubjectPerson] = useState<"He" | "She" | "They" | "I">("He");
+  const [selectedVerb, setSelectedVerb] = useState<{ base: string; past: string; participle: string; ing: string; obj: string }>({
+    base: "write",
+    past: "wrote",
+    participle: "written",
+    ing: "writing",
+    obj: "an English story"
+  });
+
+  const verbsList = [
+    { base: "write", past: "wrote", participle: "written", ing: "writing", obj: "an English story" },
+    { base: "play", past: "played", participle: "played", ing: "playing", obj: "cricket in the garden" },
+    { base: "eat", past: "ate", participle: "eaten", ing: "eating", obj: "a healthy red apple" },
+    { base: "read", past: "read", participle: "read", ing: "reading", obj: "a fascinating science book" }
+  ];
+
+  // Articles & Preposition State
+  const [articleTestWord, setArticleTestWord] = useState<string>("apple");
+  const articleExamples = [
+    { word: "apple", correct: "an", rule: "Starts with vowel sound 'a' → AN apple" },
+    { word: "honest man", correct: "an", rule: "Silent 'h' sound 'on-est' → AN honest man" },
+    { word: "European country", correct: "a", rule: "Starts with consonant sound 'yoo' → A European country" },
+    { word: "Taj Mahal", correct: "the", rule: "Unique historic monument → THE Taj Mahal" },
+    { word: "Sun", correct: "the", rule: "Unique celestial body → THE Sun" },
+    { word: "university", correct: "a", rule: "Starts with consonant sound 'yoo' → A university" },
+    { word: "hour", correct: "an", rule: "Silent 'h' sound 'ow-er' → AN hour" }
+  ];
+
+  return (
+    <div className="flex flex-col gap-5 p-5 bg-slate-50 rounded-2xl border border-slate-200">
+      {/* Header Banner */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+        <div>
+          <span className="text-[10px] font-black uppercase text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded border border-purple-200 font-mono">
+            Grade 6 English • CBSE / NCERT Grammar & Composition
+          </span>
+          <h3 className="text-lg font-extrabold text-slate-800 mt-1">
+            📝 Grade 6 English Grammar & Sentence Mechanics Laboratory
+          </h3>
+        </div>
+        <span className="text-xs font-mono font-black text-purple-700 bg-purple-100 border border-purple-300 px-3 py-1 rounded-xl">
+          Grammar Mastery Studio
+        </span>
+      </div>
+
+      {/* Tabs Switcher */}
+      <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-2">
+        <button
+          onClick={() => setActiveTab("pos")}
+          className={`px-3.5 py-1.5 rounded-xl font-extrabold text-xs transition-all cursor-pointer ${
+            activeTab === "pos" ? "bg-purple-700 text-white shadow-xs" : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+          }`}
+        >
+          🏷️ 1. Parts of Speech Studio
+        </button>
+        <button
+          onClick={() => setActiveTab("tenses")}
+          className={`px-3.5 py-1.5 rounded-xl font-extrabold text-xs transition-all cursor-pointer ${
+            activeTab === "tenses" ? "bg-purple-700 text-white shadow-xs" : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+          }`}
+        >
+          ⏳ 2. Tenses & Verb Forms
+        </button>
+        <button
+          onClick={() => setActiveTab("articles")}
+          className={`px-3.5 py-1.5 rounded-xl font-extrabold text-xs transition-all cursor-pointer ${
+            activeTab === "articles" ? "bg-purple-700 text-white shadow-xs" : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+          }`}
+        >
+          🔤 3. Articles & Prepositions
+        </button>
+        <button
+          onClick={() => setActiveTab("sentences")}
+          className={`px-3.5 py-1.5 rounded-xl font-extrabold text-xs transition-all cursor-pointer ${
+            activeTab === "sentences" ? "bg-purple-700 text-white shadow-xs" : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+          }`}
+        >
+          💬 4. Sentence Types & Voice
+        </button>
+        <button
+          onClick={() => setActiveTab("letters")}
+          className={`px-3.5 py-1.5 rounded-xl font-extrabold text-xs transition-all cursor-pointer ${
+            activeTab === "letters" ? "bg-purple-700 text-white shadow-xs" : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+          }`}
+        >
+          ✉️ 5. Formal & Informal Letter Writing
+        </button>
+      </div>
+
+      {/* TAB 1: Parts of Speech Studio */}
+      {activeTab === "pos" && (
+        <div className="space-y-5 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div>
+              <h4 className="text-sm font-extrabold text-slate-800">🔍 Interactive Sentence Parts-of-Speech Analyzer</h4>
+              <p className="text-xs text-slate-500">Click any word in the sentence to analyze its grammatical role, category, and usage rules!</p>
+            </div>
+            <div className="flex gap-2 text-xs font-bold">
+              <button
+                onClick={() => { setSelectedSentenceIdx(0); setSelectedTokenIdx(0); }}
+                className={`px-3 py-1 rounded-lg border transition-all cursor-pointer ${
+                  selectedSentenceIdx === 0 ? "bg-purple-100 text-purple-900 border-purple-300" : "bg-slate-50 text-slate-600"
+                }`}
+              >
+                Sentence 1
+              </button>
+              <button
+                onClick={() => { setSelectedSentenceIdx(1); setSelectedTokenIdx(0); }}
+                className={`px-3 py-1 rounded-lg border transition-all cursor-pointer ${
+                  selectedSentenceIdx === 1 ? "bg-purple-100 text-purple-900 border-purple-300" : "bg-slate-50 text-slate-600"
+                }`}
+              >
+                Sentence 2
+              </button>
+            </div>
+          </div>
+
+          {/* Clickable Sentence Display */}
+          <div className="p-4 bg-slate-900 rounded-xl border border-slate-800 space-y-3">
+            <span className="text-[10px] font-mono text-purple-300 font-extrabold uppercase">
+              Click a word below to inspect:
+            </span>
+            <div className="flex flex-wrap gap-2 text-sm sm:text-base font-medium">
+              {sampleSentences[selectedSentenceIdx].tokens.map((token, tIdx) => (
+                <button
+                  key={tIdx}
+                  onClick={() => setSelectedTokenIdx(tIdx)}
+                  className={`px-3 py-1.5 rounded-lg border font-mono font-bold transition-all cursor-pointer ${
+                    selectedTokenIdx === tIdx
+                      ? "ring-2 ring-purple-400 scale-105 shadow-md " + token.color
+                      : "bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700"
+                  }`}
+                >
+                  {token.word}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Inspector Panel */}
+          {selectedTokenIdx !== null && (
+            <div className={`p-4 rounded-xl border space-y-2 ${sampleSentences[selectedSentenceIdx].tokens[selectedTokenIdx].color}`}>
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-mono uppercase font-black tracking-wider">
+                  WORD: "{sampleSentences[selectedSentenceIdx].tokens[selectedTokenIdx].word}"
+                </span>
+                <span className="text-xs font-black uppercase px-2.5 py-0.5 rounded bg-white/80 border border-black/10 font-mono">
+                  {sampleSentences[selectedSentenceIdx].tokens[selectedTokenIdx].pos}
+                </span>
+              </div>
+              <p className="text-xs font-medium leading-relaxed">
+                {sampleSentences[selectedSentenceIdx].tokens[selectedTokenIdx].desc}
+              </p>
+            </div>
+          )}
+
+          {/* 8 Parts of Speech Quick Reference Card Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
+            {[
+              { title: "Noun", desc: "Name of person, place, thing, or idea", example: "Delhi, Book, Honesty", color: "border-blue-200 bg-blue-50/60" },
+              { title: "Pronoun", desc: "Replaces a noun to avoid repetition", example: "He, She, They, Myself", color: "border-cyan-200 bg-cyan-50/60" },
+              { title: "Verb", desc: "Shows action or state of being", example: "Run, Is, Wrote, Become", color: "border-rose-200 bg-rose-50/60" },
+              { title: "Adjective", desc: "Describes or modifies a noun", example: "Brave, Clever, Three", color: "border-emerald-200 bg-emerald-50/60" },
+              { title: "Adverb", desc: "Modifies verb, adj, or adverb", example: "Gracefully, Very, Quietly", color: "border-purple-200 bg-purple-50/60" },
+              { title: "Preposition", desc: "Shows direction, place, or time", example: "In, On, Under, Into", color: "border-teal-200 bg-teal-50/60" },
+              { title: "Conjunction", desc: "Joins words, phrases, or clauses", example: "And, But, Because, So", color: "border-amber-200 bg-amber-50/60" },
+              { title: "Interjection", desc: "Expresses sudden emotion/exclamation", example: "Wow!, Alas!, Hurrah!", color: "border-fuchsia-200 bg-fuchsia-50/60" }
+            ].map((item, idx) => (
+              <div key={idx} className={`p-3 rounded-xl border text-xs space-y-1 ${item.color}`}>
+                <div className="font-extrabold text-slate-800">{item.title}</div>
+                <div className="text-[11px] text-slate-600 leading-tight">{item.desc}</div>
+                <div className="text-[10px] font-mono font-bold text-slate-700 pt-1 border-t border-slate-200">
+                  E.g. {item.example}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: Tenses & Verb Forms */}
+      {activeTab === "tenses" && (
+        <div className="space-y-5 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div>
+            <h4 className="text-sm font-extrabold text-slate-800">⏳ Interactive Tense Transformer & Conjugator</h4>
+            <p className="text-xs text-slate-500">Select a subject pronoun and verb to watch how sentences change across Present, Past, and Future tenses!</p>
+          </div>
+
+          {/* Controls */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <span className="text-xs font-extrabold text-slate-700 block">👤 Select Subject:</span>
+              <div className="flex gap-2">
+                {(["He", "She", "They", "I"] as const).map((subj) => (
+                  <button
+                    key={subj}
+                    onClick={() => setSubjectPerson(subj)}
+                    className={`flex-1 py-2 text-xs font-extrabold rounded-xl border transition-all cursor-pointer ${
+                      subjectPerson === subj
+                        ? "bg-purple-700 text-white border-purple-800 shadow-xs"
+                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    {subj}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="text-xs font-extrabold text-slate-700 block">⚡ Select Action Verb:</span>
+              <select
+                value={selectedVerb.base}
+                onChange={(e) => {
+                  const found = verbsList.find((v) => v.base === e.target.value);
+                  if (found) setSelectedVerb(found);
+                }}
+                className="w-full p-2 bg-slate-50 border border-slate-200 text-xs font-extrabold rounded-xl text-slate-800 cursor-pointer"
+              >
+                {verbsList.map((v) => (
+                  <option key={v.base} value={v.base}>
+                    {v.base.toUpperCase()} ({v.base} - {v.past} - {v.participle})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Tenses Grid Matrix */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* PRESENT TENSE */}
+            <div className="p-4 bg-blue-50/70 rounded-xl border border-blue-200 space-y-2 text-xs">
+              <div className="font-extrabold text-blue-900 border-b border-blue-200 pb-1 flex justify-between">
+                <span>🌞 Present Tense</span>
+                <span className="text-[10px] bg-blue-200 text-blue-900 px-2 py-0.5 rounded font-mono">Current / Habit</span>
+              </div>
+              <div className="space-y-1.5 font-mono">
+                <div>
+                  <span className="font-bold text-slate-500 text-[10px] block">Simple Present:</span>
+                  <p className="text-slate-800 font-bold bg-white p-2 rounded border border-blue-100">
+                    {subjectPerson} {subjectPerson === "He" || subjectPerson === "She" ? (selectedVerb.base === "write" ? "writes" : selectedVerb.base === "play" ? "plays" : selectedVerb.base === "eat" ? "eats" : "reads") : selectedVerb.base} {selectedVerb.obj}.
+                  </p>
+                </div>
+                <div>
+                  <span className="font-bold text-slate-500 text-[10px] block">Present Continuous:</span>
+                  <p className="text-slate-800 font-bold bg-white p-2 rounded border border-blue-100">
+                    {subjectPerson} {subjectPerson === "I" ? "am" : subjectPerson === "They" ? "are" : "is"} {selectedVerb.ing} {selectedVerb.obj}.
+                  </p>
+                </div>
+                <div>
+                  <span className="font-bold text-slate-500 text-[10px] block">Present Perfect:</span>
+                  <p className="text-slate-800 font-bold bg-white p-2 rounded border border-blue-100">
+                    {subjectPerson} {subjectPerson === "He" || subjectPerson === "She" ? "has" : "have"} {selectedVerb.participle} {selectedVerb.obj}.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* PAST TENSE */}
+            <div className="p-4 bg-amber-50/70 rounded-xl border border-amber-200 space-y-2 text-xs">
+              <div className="font-extrabold text-amber-900 border-b border-amber-200 pb-1 flex justify-between">
+                <span>🕰️ Past Tense</span>
+                <span className="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-mono">Completed</span>
+              </div>
+              <div className="space-y-1.5 font-mono">
+                <div>
+                  <span className="font-bold text-slate-500 text-[10px] block">Simple Past:</span>
+                  <p className="text-slate-800 font-bold bg-white p-2 rounded border border-amber-100">
+                    {subjectPerson} {selectedVerb.past} {selectedVerb.obj}.
+                  </p>
+                </div>
+                <div>
+                  <span className="font-bold text-slate-500 text-[10px] block">Past Continuous:</span>
+                  <p className="text-slate-800 font-bold bg-white p-2 rounded border border-amber-100">
+                    {subjectPerson} {subjectPerson === "They" ? "were" : "was"} {selectedVerb.ing} {selectedVerb.obj}.
+                  </p>
+                </div>
+                <div>
+                  <span className="font-bold text-slate-500 text-[10px] block">Past Perfect:</span>
+                  <p className="text-slate-800 font-bold bg-white p-2 rounded border border-amber-100">
+                    {subjectPerson} had {selectedVerb.participle} {selectedVerb.obj}.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* FUTURE TENSE */}
+            <div className="p-4 bg-purple-50/70 rounded-xl border border-purple-200 space-y-2 text-xs">
+              <div className="font-extrabold text-purple-900 border-b border-purple-200 pb-1 flex justify-between">
+                <span>🚀 Future Tense</span>
+                <span className="text-[10px] bg-purple-200 text-purple-900 px-2 py-0.5 rounded font-mono">Upcoming</span>
+              </div>
+              <div className="space-y-1.5 font-mono">
+                <div>
+                  <span className="font-bold text-slate-500 text-[10px] block">Simple Future:</span>
+                  <p className="text-slate-800 font-bold bg-white p-2 rounded border border-purple-100">
+                    {subjectPerson} will {selectedVerb.base} {selectedVerb.obj}.
+                  </p>
+                </div>
+                <div>
+                  <span className="font-bold text-slate-500 text-[10px] block">Future Continuous:</span>
+                  <p className="text-slate-800 font-bold bg-white p-2 rounded border border-purple-100">
+                    {subjectPerson} will be {selectedVerb.ing} {selectedVerb.obj}.
+                  </p>
+                </div>
+                <div>
+                  <span className="font-bold text-slate-500 text-[10px] block">Future Perfect:</span>
+                  <p className="text-slate-800 font-bold bg-white p-2 rounded border border-purple-100">
+                    {subjectPerson} will have {selectedVerb.participle} {selectedVerb.obj}.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: Articles & Prepositions */}
+      {activeTab === "articles" && (
+        <div className="space-y-5 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div>
+            <h4 className="text-sm font-extrabold text-slate-800">🔤 Articles (A, An, The) & Preposition Rules</h4>
+            <p className="text-xs text-slate-500">Learn why phonetic vowel sounds (not just letters) dictate the choice between 'A' and 'AN'!</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            {/* Articles Rule Box */}
+            <div className="p-4 bg-slate-900 text-white rounded-xl border border-slate-800 space-y-3">
+              <div className="font-extrabold text-amber-300 font-mono text-xs uppercase">
+                🎯 Article Selector Test Card:
+              </div>
+              <div className="space-y-2">
+                <span className="text-xs text-slate-300 block">Select a word to test:</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {articleExamples.map((ex) => (
+                    <button
+                      key={ex.word}
+                      onClick={() => setArticleTestWord(ex.word)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                        articleTestWord === ex.word
+                          ? "bg-amber-400 text-slate-950 shadow-xs"
+                          : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                      }`}
+                    >
+                      {ex.word}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Selected Article Rule Result */}
+              {(() => {
+                const item = articleExamples.find((ex) => ex.word === articleTestWord) || articleExamples[0];
+                return (
+                  <div className="p-3 bg-slate-950 rounded-lg border border-amber-500/30 space-y-1 font-mono">
+                    <div className="text-emerald-400 font-extrabold text-sm">
+                      Result: <span className="bg-emerald-900/80 px-2 py-0.5 rounded text-white font-black">{item.correct.toUpperCase()}</span> {item.word}
+                    </div>
+                    <p className="text-slate-300 text-[11px] leading-snug">{item.rule}</p>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Common Spatial Prepositions Guide */}
+            <div className="p-4 bg-purple-50/80 rounded-xl border border-purple-200 space-y-2">
+              <div className="font-extrabold text-purple-900 border-b border-purple-200 pb-1">
+                📍 Essential Prepositions in Action
+              </div>
+              <ul className="space-y-2 text-slate-700 leading-snug">
+                <li className="bg-white p-2 rounded border border-purple-100">
+                  <strong>IN:</strong> Inside an enclosed area/container (e.g. "The fish swims <em>in</em> the pond.")
+                </li>
+                <li className="bg-white p-2 rounded border border-purple-100">
+                  <strong>ON:</strong> Resting on a surface (e.g. "The textbook is <em>on</em> the desk.")
+                </li>
+                <li className="bg-white p-2 rounded border border-purple-100">
+                  <strong>AT:</strong> Specific point or location (e.g. "We will meet <em>at</em> 5 PM <em>at</em> the bus stop.")
+                </li>
+                <li className="bg-white p-2 rounded border border-purple-100">
+                  <strong>BETWEEN vs. AMONG:</strong> <em>Between</em> 2 items (e.g., "Divide sweets between Ram and Shyam"), <em>Among</em> 3+ items (e.g., "Distribute sweets among all students").
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: Sentence Types & Voice */}
+      {activeTab === "sentences" && (
+        <div className="space-y-5 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs text-xs">
+          <div>
+            <h4 className="text-sm font-extrabold text-slate-800">💬 The 4 Sentence Types & Active vs Passive Voice</h4>
+            <p className="text-xs text-slate-500">Master how sentences are classified by function and how subject/object focus shifts in voice!</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              { type: "Declarative (Statement)", punct: "Period (.)", desc: "States a fact, opinion, or information.", example: "The Earth revolves around the Sun." },
+              { type: "Interrogative (Question)", punct: "Question Mark (?)", desc: "Asks a direct question.", example: "Who won the Grade 6 spelling bee?" },
+              { type: "Imperative (Command/Request)", punct: "Period (.) or (!)", desc: "Gives a command, request, or instruction.", example: "Please open your English notebooks." },
+              { type: "Exclamatory (Emotion)", punct: "Exclamation Point (!)", desc: "Expresses strong emotion or surprise.", example: "What a spectacular goal!" }
+            ].map((st, idx) => (
+              <div key={idx} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                <div className="flex justify-between items-center font-extrabold text-slate-800">
+                  <span>{st.type}</span>
+                  <span className="text-[10px] font-mono bg-purple-100 text-purple-900 px-2 py-0.5 rounded">{st.punct}</span>
+                </div>
+                <p className="text-slate-600 text-[11px]">{st.desc}</p>
+                <div className="text-purple-800 font-mono text-[11px] pt-1 font-bold">E.g. "{st.example}"</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Active vs Passive Voice Visual Transformation */}
+          <div className="p-4 bg-slate-900 text-white rounded-xl border border-slate-800 space-y-3">
+            <div className="font-extrabold text-amber-300 font-mono text-xs uppercase">
+              🔄 Active vs. Passive Voice Transformation Rule
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+              <div className="bg-slate-950 p-3 rounded-lg border border-blue-500/30 space-y-1">
+                <span className="text-blue-400 font-extrabold text-[11px] block">ACTIVE VOICE (Subject does action)</span>
+                <p className="text-white">"Taro <strong className="text-blue-300">chopped</strong> the wood."</p>
+                <span className="text-[10px] text-slate-400 block font-sans">Subject (Taro) + Verb (chopped) + Object (wood)</span>
+              </div>
+              <div className="bg-slate-950 p-3 rounded-lg border border-emerald-500/30 space-y-1">
+                <span className="text-emerald-400 font-extrabold text-[11px] block">PASSIVE VOICE (Object receives action)</span>
+                <p className="text-white">"The wood <strong className="text-emerald-300">was chopped</strong> by Taro."</p>
+                <span className="text-[10px] text-slate-400 block font-sans">Object (wood) + Was/Were + V3 (chopped) + By + Subject</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: Formal & Informal Letter Writing */}
+      {activeTab === "letters" && (
+        <div className="space-y-5 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs text-xs">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div>
+              <h4 className="text-sm font-extrabold text-slate-800">✉️ Grade 6 Letter Writing Generator & Blueprint</h4>
+              <p className="text-xs text-slate-500">Master the standard NCERT/CBSE format for both Formal (Official/School) and Informal (Personal) letters!</p>
+            </div>
+
+            {/* Letter Type Switcher */}
+            <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <button
+                onClick={() => setLetterType("formal")}
+                className={`px-3 py-1.5 rounded-lg font-extrabold text-xs transition-all cursor-pointer ${
+                  letterType === "formal" ? "bg-purple-700 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                📜 Formal (Leave Application)
+              </button>
+              <button
+                onClick={() => setLetterType("informal")}
+                className={`px-3 py-1.5 rounded-lg font-extrabold text-xs transition-all cursor-pointer ${
+                  letterType === "informal" ? "bg-purple-700 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                ✉️ Informal (Friend / Family)
+              </button>
+            </div>
+          </div>
+
+          {/* Letter Structure Comparison Rule Box */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Input Controls */}
+            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+              <span className="text-xs font-black uppercase text-purple-900 font-mono block">
+                🛠️ Customize Letter Details:
+              </span>
+
+              {letterType === "formal" ? (
+                <>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700 block">Student Name:</label>
+                    <input
+                      type="text"
+                      value={studentName}
+                      onChange={(e) => setStudentName(e.target.value)}
+                      className="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-slate-700 block">Class & Roll No:</label>
+                      <input
+                        type="text"
+                        value={classRoll}
+                        onChange={(e) => setClassRoll(e.target.value)}
+                        className="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-slate-700 block">Days of Leave:</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={10}
+                        value={leaveDays}
+                        onChange={(e) => setLeaveDays(Number(e.target.value))}
+                        className="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700 block">School Name & City:</label>
+                    <input
+                      type="text"
+                      value={schoolName}
+                      onChange={(e) => setSchoolName(e.target.value)}
+                      className="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700 block">Reason for Leave:</label>
+                    <input
+                      type="text"
+                      value={leaveReason}
+                      onChange={(e) => setLeaveReason(e.target.value)}
+                      className="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700 block">Your Name (Sender):</label>
+                    <input
+                      type="text"
+                      value={studentName}
+                      onChange={(e) => setStudentName(e.target.value)}
+                      className="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700 block">Friend / Receiver Name:</label>
+                    <input
+                      type="text"
+                      value={friendName}
+                      onChange={(e) => setFriendName(e.target.value)}
+                      className="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700 block">Event / Invitation Purpose:</label>
+                    <input
+                      type="text"
+                      value={eventTopic}
+                      onChange={(e) => setEventTopic(e.target.value)}
+                      className="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800"
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* NCERT Guidelines Callout */}
+              <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-[11px] text-amber-900 space-y-1">
+                <span className="font-extrabold block">💡 NCERT Grade 6 Rule:</span>
+                <p>
+                  {letterType === "formal"
+                    ? "Formal letters MUST have a clear Subject line, polite language, and subscription 'Yours obediently' or 'Yours faithfully'."
+                    : "Informal letters do NOT require a Subject line or Receiver's Designation. Use friendly greetings like 'Dear' and sign off with 'Yours lovingly'."}
+                </p>
+              </div>
+            </div>
+
+            {/* Real-time Paper Sheet Letter Preview */}
+            <div className="p-5 bg-amber-50/40 rounded-xl border border-amber-200/80 shadow-xs space-y-3 font-mono text-slate-800 text-[11px]">
+              <div className="flex justify-between items-center border-b border-amber-200 pb-2">
+                <span className="font-extrabold uppercase text-amber-900 text-[10px]">
+                  📄 LIVE LETTER PREVIEW ({letterType.toUpperCase()})
+                </span>
+                <span className="text-[10px] text-slate-500 font-bold">Standard Left-Aligned Format</span>
+              </div>
+
+              {letterType === "formal" ? (
+                <div className="space-y-2 leading-relaxed">
+                  <div className="text-slate-600">
+                    <div>124, Pocket-B, Mayur Vihar</div>
+                    <div>New Delhi - 110091</div>
+                  </div>
+                  <div className="text-slate-500 font-bold">Date: 15th August 2026</div>
+
+                  <div className="pt-2 text-slate-700">
+                    <div>To,</div>
+                    <div>The Principal,</div>
+                    <div className="font-bold text-slate-900">{schoolName}</div>
+                  </div>
+
+                  <div className="pt-2 font-bold text-purple-900 bg-purple-100/60 px-2 py-1 rounded">
+                    Subject: Application for {leaveDays} {leaveDays === 1 ? "day" : "days"} leave due to {leaveReason}
+                  </div>
+
+                  <div className="pt-2 font-bold text-slate-900">Respected Sir / Madam,</div>
+
+                  <p className="text-slate-800 font-sans leading-relaxed">
+                    With due respect, I wish to state that I am a student of class {classRoll}. I am suffering from {leaveReason}, due to which I will be unable to attend school for {leaveDays} {leaveDays === 1 ? "day" : "days"} (from today onwards).
+                  </p>
+
+                  <p className="text-slate-800 font-sans leading-relaxed">
+                    Kindly grant me leave for the above-mentioned duration. I assure you that I will complete all my missed classwork and homework upon my return.
+                  </p>
+
+                  <div className="pt-2">Thanking you.</div>
+
+                  <div className="pt-2 border-t border-amber-200/80">
+                    <div>Yours obediently,</div>
+                    <div className="font-bold text-slate-900 text-xs">{studentName}</div>
+                    <div className="text-slate-600">{classRoll}</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2 leading-relaxed">
+                  <div className="text-slate-600">
+                    <div>House No. 45, Green Park</div>
+                    <div>New Delhi - 110016</div>
+                  </div>
+                  <div className="text-slate-500 font-bold">Date: 15th August 2026</div>
+
+                  <div className="pt-3 font-bold text-slate-900">Dear {friendName},</div>
+
+                  <p className="text-slate-800 font-sans leading-relaxed">
+                    How are you? I hope this letter finds you in great health and high spirits.
+                  </p>
+
+                  <p className="text-slate-800 font-sans leading-relaxed">
+                    I am writing this letter to cordially invite you to {eventTopic}, which is taking place at my residence next Sunday at 5:00 PM. We have organized fun games, music, and delicious snacks!
+                  </p>
+
+                  <p className="text-slate-800 font-sans leading-relaxed">
+                    Please do come early so we can play together. Convey my warm regards to uncle and aunt.
+                  </p>
+
+                  <div className="pt-3 border-t border-amber-200/80">
+                    <div>Yours lovingly,</div>
+                    <div className="font-bold text-slate-900 text-xs">{studentName}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function EnglishLanguageLab({ chapterId }: { chapterId?: string }) {
+  if (chapterId?.startsWith("g6_eng_") || chapterId === "g6_eng_grammar") {
+    return <Grade6EnglishGrammarLab activeChapterId={chapterId} />;
+  }
+
   const words = [
     { word: "CAT 🐱", letters: ["C", "A", "T"], mean: "Feline Pet" },
     { word: "DOG 🐶", letters: ["D", "O", "G"], mean: "Loyal Canine" },
@@ -7868,19 +9802,19 @@ export function MotionsEarthVisualLab() {
 }
 
 export function EarliestCitiesVisualLab() {
-  const [activeTab, setActiveTab] = useState<"layout" | "artifacts" | "bath">("layout");
+  const [activeTab, setActiveTab] = useState<"layout" | "bath" | "artifacts" | "trade_map" | "gujarat_decline">("layout");
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-200" id="earliest_cities_lab">
-      <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-4 rounded-xl border border-slate-150 shadow-xs">
         <div>
           <span className="text-[10px] font-black uppercase text-orange-600 tracking-wider block">
-            History Lab • Social Science
+            NCERT Grade 6 History Lab • Social Science
           </span>
           <h3 className="font-extrabold text-base text-slate-800">🏛️ Earliest Cities: Harappan Civilization (~2500 BCE)</h3>
-          <p className="text-xs text-slate-500">Explore Citadel, Great Bath, Interlocking Bricks, Drains, Seals & Lothal Dockyard!</p>
+          <p className="text-xs text-slate-500">Interactive Blueprint: Citadel, Great Bath, Trade Map, Dholavira, Lothal & Mystery of Decline!</p>
         </div>
-        <div className="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
+        <div className="flex flex-wrap gap-1 bg-slate-100 p-1 rounded-xl">
           <button
             onClick={() => setActiveTab("layout")}
             className={`px-3 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer ${
@@ -7903,64 +9837,197 @@ export function EarliestCitiesVisualLab() {
               activeTab === "artifacts" ? "bg-orange-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            🏺 Seals & Crafts
+            🏺 Crafts, Seals & Weights
+          </button>
+          <button
+            onClick={() => setActiveTab("trade_map")}
+            className={`px-3 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+              activeTab === "trade_map" ? "bg-orange-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            🗺️ Raw Material Trade
+          </button>
+          <button
+            onClick={() => setActiveTab("gujarat_decline")}
+            className={`px-3 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+              activeTab === "gujarat_decline" ? "bg-orange-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            ⛵ Gujarat Towns & Decline
           </button>
         </div>
       </div>
 
+      {/* TAB 1: CITY LAYOUT */}
       {activeTab === "layout" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-orange-950 p-6 rounded-2xl text-white space-y-3 shadow-md">
-            <span className="text-[10px] font-mono font-bold text-orange-300 uppercase block">
-              1. Citadel (West Side - High Platform)
-            </span>
-            <h4 className="font-extrabold text-base text-amber-300">The Fortress & Public Center</h4>
-            <p className="text-xs text-orange-100 leading-relaxed font-serif">
-              Built on elevated mud-brick platforms to protect against Indus river floods. Contained public buildings like the Great Bath, Granaries for grain storage, and assembly halls.
-            </p>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="bg-orange-950 p-6 rounded-2xl text-white space-y-3 shadow-md border-l-4 border-amber-400">
+              <span className="text-[10px] font-mono font-bold text-orange-300 uppercase block">
+                1. Citadel (West Side - Elevated Platform)
+              </span>
+              <h4 className="font-extrabold text-base text-amber-300">The Administrative & Public Citadel</h4>
+              <p className="text-xs text-orange-100 leading-relaxed font-serif">
+                Built on high elevated mud-brick platforms to protect against Indus river floods. Contained public monuments like the Great Bath at Mohenjo-daro, Granaries for grain storage, and assembly halls used by city rulers.
+              </p>
+            </div>
+
+            <div className="bg-amber-900 p-6 rounded-2xl text-white space-y-3 shadow-md border-l-4 border-amber-300">
+              <span className="text-[10px] font-mono font-bold text-amber-300 uppercase block">
+                2. Lower Town (East Side - Broad Grid)
+              </span>
+              <h4 className="font-extrabold text-base text-amber-200">Residential Neighborhoods</h4>
+              <p className="text-xs text-amber-100 leading-relaxed font-serif">
+                Larger area with two-story baked brick houses built around central private courtyards. Streets intersected at right angles in a rectangular grid system with covered street drains running parallel to houses.
+              </p>
+            </div>
           </div>
 
-          <div className="bg-amber-900 p-6 rounded-2xl text-white space-y-3 shadow-md">
-            <span className="text-[10px] font-mono font-bold text-amber-300 uppercase block">
-              2. Lower Town (East Side - Broad Grid)
-            </span>
-            <h4 className="font-extrabold text-base text-amber-200">Residential Neighborhoods</h4>
-            <p className="text-xs text-amber-100 leading-relaxed font-serif">
-              Larger area with two-story brick houses built around central courtyards. Streets intersected at right angles in a rectangular grid system with covered street drains.
+          <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-950 space-y-1">
+            <span className="font-black uppercase text-amber-900 text-[10px] block">🧱 Interlocking Baked Bricks Discovery:</span>
+            <p>
+              Around 150 years ago, engineers laying railway tracks in Punjab unearthed millions of baked bricks from Harappan ruins. The bricks were laid in an interlocking pattern, creating walls so exceptionally strong that they endured for over 4,000 years!
             </p>
           </div>
         </div>
       )}
 
+      {/* TAB 2: GREAT BATH & DRAINS */}
       {activeTab === "bath" && (
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4">
-          <h4 className="font-extrabold text-sm text-slate-900">The Great Bath of Mohenjo-daro</h4>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            A large rectangular tank in the Citadel made of baked bricks, coated with plaster, and sealed with a layer of natural tar (bitumen) to prevent water leakage. Steps led down from two sides, surrounded by rooms for changing clothes.
-          </p>
-          <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl text-xs text-amber-950 space-y-1">
-            <span className="font-black block uppercase text-amber-800 text-[10px]">Sanitation & Drainage Standards:</span>
-            <p>Every Harappan house had its own paved bath space. Drains flowed into covered street sewers equipped with inspection holes at regular intervals for municipal cleaning!</p>
+        <div className="space-y-4">
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+              <span className="text-2xl">🌊</span>
+              <div>
+                <h4 className="font-extrabold text-sm text-slate-900">The Great Bath of Mohenjo-daro</h4>
+                <p className="text-xs text-slate-500">Advanced Waterproofing Engineering ~4500 Years Ago</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-700 leading-relaxed font-serif">
+              A large rectangular tank built in the Citadel. Lined with precision-cut baked bricks, coated with gypsum plaster, and made watertight with a thick layer of natural tar (bitumen). Steps led down into the pool from two sides, surrounded by changing rooms on all sides. Water was brought in from a well and drained out after use for special ritual bathing ceremonies.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs">
+                <span className="font-extrabold text-slate-800 block mb-1">🚿 House Bathing Spaces:</span>
+                <p className="text-slate-600 text-[11px]">Every house had a separate paved bathing area with wastewater pipes flowing through house walls into main street drains.</p>
+              </div>
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs">
+                <span className="font-extrabold text-slate-800 block mb-1">🧹 Inspection Holes:</span>
+                <p className="text-slate-600 text-[11px]">Street sewers were covered with stone slabs and fitted with inspection holes at regular intervals for municipal cleaning.</p>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
+      {/* TAB 3: CRAFTS, SEALS & WEIGHTS */}
       {activeTab === "artifacts" && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
             <span className="text-2xl block">🦏</span>
-            <h5 className="font-extrabold text-xs text-slate-900">Steatite Seals</h5>
-            <p className="text-[10px] text-slate-600">Stamped on clay packages for trade authentication with animal motifs (humpless bull, unicorn).</p>
+            <h5 className="font-extrabold text-xs text-slate-900">Steatite Seals & Sealings</h5>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Carved stone seals featuring animal motifs (bull, elephant, unicorn) and inscriptions. Stamped on wet clay tags on trade bags to ensure security during transit.
+            </p>
           </div>
-          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
-            <span className="text-2xl block">💃</span>
-            <h5 className="font-extrabold text-xs text-slate-900">Dancing Girl Statue</h5>
-            <p className="text-[10px] text-slate-600">Lost-wax bronze casting masterpiece demonstrating advanced metallurgy 4,500 years ago.</p>
+
+          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
+            <span className="text-2xl block">⚖️</span>
+            <h5 className="font-extrabold text-xs text-slate-900">Chert Stone Weights</h5>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Standardized cubical weights made of Chert stone used by merchants to accurately weigh gold, silver, and precious gemstones.
+            </p>
           </div>
-          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
-            <span className="text-2xl block">⚓</span>
-            <h5 className="font-extrabold text-xs text-slate-900">Lothal Dockyard</h5>
-            <p className="text-[10px] text-slate-600">World's earliest known tidal dockyard in Gujarat connecting Indus goods to Mesopotamia.</p>
+
+          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
+            <span className="text-2xl block">📿</span>
+            <h5 className="font-extrabold text-xs text-slate-900">Carnelian Beads & Jewelry</h5>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Craftspersons shaped reddish Carnelian stone into drilled beads for necklaces. Gold and silver were fashioned into bangles and vessels.
+            </p>
+          </div>
+
+          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
+            <span className="text-2xl block">🚜</span>
+            <h5 className="font-extrabold text-xs text-slate-900">Terracotta Toy Ploughs</h5>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              Toy plough models confirm that farmers used wooden ploughs to till fields and grow wheat, barley, sesame, and mustard.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: RAW MATERIAL TRADE MAP */}
+      {activeTab === "trade_map" && (
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 space-y-4 shadow-xs">
+          <div>
+            <h4 className="font-extrabold text-sm text-slate-900">🗺️ Harappan Long-Distance Trade Network</h4>
+            <p className="text-xs text-slate-500">While food was grown locally, raw materials were imported across vast geographical distances:</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div className="bg-amber-50 p-3.5 rounded-xl border border-amber-200 space-y-1">
+              <span className="font-extrabold text-amber-900 block">🟠 Copper (తామ్రం):</span>
+              <p className="text-amber-800 text-[11px]">Imported from <strong>Rajasthan</strong> (Khetri mines) and <strong>Oman</strong> in West Asia.</p>
+            </div>
+
+            <div className="bg-blue-50 p-3.5 rounded-xl border border-blue-200 space-y-1">
+              <span className="font-extrabold text-blue-900 block">⚪ Tin (తగరం):</span>
+              <p className="text-blue-800 text-[11px]">Imported from present-day <strong>Afghanistan</strong> and <strong>Iran</strong> (mixed with copper to make bronze).</p>
+            </div>
+
+            <div className="bg-yellow-50 p-3.5 rounded-xl border border-yellow-200 space-y-1">
+              <span className="font-extrabold text-yellow-900 block">🟡 Gold (బంగారం):</span>
+              <p className="text-yellow-800 text-[11px]">Sourced from southern India (present-day <strong>Karnataka</strong> gold mines).</p>
+            </div>
+
+            <div className="bg-emerald-50 p-3.5 rounded-xl border border-emerald-200 space-y-1">
+              <span className="font-extrabold text-emerald-900 block">💎 Precious Stones:</span>
+              <p className="text-emerald-800 text-[11px]">Sourced from <strong>Gujarat</strong>, <strong>Iran</strong>, and <strong>Afghanistan</strong> for bead manufacturing.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: GUJARAT TOWNS & DECLINE */}
+      {activeTab === "gujarat_decline" && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Dholavira */}
+            <div className="bg-emerald-900 text-white p-5 rounded-2xl space-y-2.5 shadow-md">
+              <span className="text-[10px] font-mono font-bold text-emerald-300 uppercase block">1. Dholavira (Khadir Beyt, Rann of Kutch)</span>
+              <h4 className="font-extrabold text-sm text-emerald-200">The 3-Part Fortified City</h4>
+              <p className="text-xs text-emerald-100 leading-relaxed font-serif">
+                Unlike other Harappan cities divided into 2 parts, Dholavira was uniquely divided into <strong>THREE parts</strong> (Citadel, Middle Town, Lower Town), each surrounded by massive stone walls with gateways. It featured a large open arena for public ceremonies and a famous inscription carved with 10 large white stone Harappan symbols.
+              </p>
+            </div>
+
+            {/* Lothal */}
+            <div className="bg-cyan-950 text-white p-5 rounded-2xl space-y-2.5 shadow-md">
+              <span className="text-[10px] font-mono font-bold text-cyan-300 uppercase block">2. Lothal (Sabarmati River Tributary)</span>
+              <h4 className="font-extrabold text-sm text-cyan-200">The Maritime Port & Dockyard</h4>
+              <p className="text-xs text-cyan-100 leading-relaxed font-serif">
+                Located near Gulf of Khambhat, Lothal was an important center for making objects out of stone, shell, and metal. It possessed a <strong>massive brick dockyard</strong> where ships and boats entered from the sea channel to load and unload cargo goods.
+              </p>
+            </div>
+          </div>
+
+          {/* Mystery of Decline */}
+          <div className="p-5 bg-rose-50 rounded-2xl border border-rose-200 space-y-2 text-rose-950">
+            <h4 className="font-extrabold text-sm text-rose-900 flex items-center gap-2">
+              <span>❓ The Mystery of the End (~1900 BCE / 3900 Years Ago)</span>
+            </h4>
+            <p className="text-xs text-rose-900/90 leading-relaxed font-serif">
+              Around 3,900 years ago, a major shift occurred. People stopped living in Harappan cities. Writing, seals, and chert weights were abandoned. Long-distance raw material trade ceased. Historians suggest multiple combined causes:
+            </p>
+            <ul className="list-disc list-inside text-xs text-rose-950 font-bold space-y-1 pt-1">
+              <li>Drying up of Indus rivers and tributaries</li>
+              <li>Deforestation due to fuel requirements for baking millions of bricks</li>
+              <li>Flooding or destruction of green cover by cattle overgrazing</li>
+              <li>Rulers losing control, leading to urban abandonment and migration to smaller settlements</li>
+            </ul>
           </div>
         </div>
       )}

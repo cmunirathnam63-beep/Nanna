@@ -303,7 +303,7 @@ export const GRADE_6_CHAPTERS: Chapter[] = [
     title: "🔢 Integers & Numbers",
     iconName: "Hash",
     badge: "Chapter 6",
-    topicSummary: "Positive & negative integers, representing on the number line, ordering, HCF, LCM, and prime factorization.",
+    topicSummary: "Positive & negative integers, number line representation, ordering, successor & predecessor, absolute value, additive inverse, and addition/subtraction rules.",
     colorClass: "bg-sky-50 hover:bg-sky-100 border-sky-200",
     textColorClass: "text-sky-700",
     progress: 60,
@@ -611,6 +611,16 @@ export const GRADE_6_SOCIALSCIENCE_CHAPTERS: Chapter[] = [
 
 export const GRADE_6_PHYSICS_CHAPTERS: Chapter[] = [
   {
+    id: "g6_phys_ch1",
+    title: "🌱 Chapter 1: The Wonderful World of Science & Components of Food",
+    iconName: "Sparkles",
+    badge: "Curiosity Ch 1",
+    topicSummary: "Introduction to scientific method, scientific inquiry, food components, carbohydrates, proteins, fats, vitamins, minerals, food testing, balanced diet, and deficiency diseases.",
+    colorClass: "bg-emerald-50 hover:bg-emerald-100 border-emerald-200",
+    textColorClass: "text-emerald-700",
+    progress: 90,
+  },
+  {
     id: "g6_phys_magnets",
     title: "🧲 Chapter 4: Exploring Magnets",
     iconName: "Compass",
@@ -722,6 +732,16 @@ export const GRADE_6_ENGLISH_CHAPTERS: Chapter[] = [
     colorClass: "bg-emerald-50 hover:bg-emerald-100 border-emerald-200",
     textColorClass: "text-emerald-700",
     progress: 90,
+  },
+  {
+    id: "g6_eng_grammar",
+    title: "📝 6. English Grammar & Sentence Mechanics",
+    iconName: "BookOpen",
+    badge: "Grammar & Composition",
+    topicSummary: "Master Parts of Speech (Nouns, Pronouns, Verbs, Adjectives, Adverbs, Prepositions, Conjunctions), Tenses, Articles, Active/Passive Voice, Punctuations, and Sentence Types.",
+    colorClass: "bg-purple-50 hover:bg-purple-100 border-purple-200",
+    textColorClass: "text-purple-700",
+    progress: 95,
   }
 ];
 
@@ -1127,32 +1147,57 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
   g6_soc_earliest_cities: {
     chapterId: "g6_soc_earliest_cities",
     title: "🏛️ Grade 6 Social Science: Earliest Cities & Harappan Civilization",
-    introduction: "Around 4700 years ago (c. 2500 BCE), one of the world's earliest urban civilizations flourished along the Indus Valley — the Harappan Civilization, known for grid town planning and advanced sanitation.",
+    introduction: "Around 4700 years ago (c. 2500 BCE), one of the world's earliest urban civilizations flourished along the Indus River valley. Discovered around 150 years ago during railway line construction in Punjab, Harappa was the first city excavated, leading historians to name this entire bronze-age urban culture the Harappan Civilization.",
     keyFormulas: [
       {
-        name: "Harappan City Layout",
-        formula: "Citadel (High Western Part) + Lower Town (Eastern Residential Part)",
-        explanation: "Citadel housed public buildings & grain stores; Lower Town contained brick houses with courtyards along grid streets."
+        name: "Harappan Two-Tier City Layout",
+        formula: "Citadel (High, Small Western Citadel) + Lower Town (Large Eastern Residential Area)",
+        explanation: "Citadel housed administrative & public monuments (Great Bath, Granaries); Lower Town contained two-storey baked-brick houses arranged along grid streets intersecting at right angles."
       },
       {
-        name: "Great Bath at Mohenjodaro",
-        formula: "Water-tight tank lined with baked bricks, plaster & natural tar",
-        explanation: "Used for special ritual bathing. Features steps leading down from two sides and surrounding rooms."
+        name: "Waterproofing & Drainage Engineering",
+        formula: "Baked Interlocking Bricks + Gypsum Plaster + Bitumen (Natural Tar)",
+        explanation: "The Great Bath at Mohenjo-daro was made watertight with natural tar (bitumen). Street drains were covered, sloped for smooth flow, and fitted with regular inspection holes for cleaning."
+      },
+      {
+        name: "Raw Material Sourcing Network",
+        formula: "Copper (Rajasthan & Oman) + Tin (Afghanistan) + Gold (Karnataka) + Precious Stones (Gujarat & Iran)",
+        explanation: "Harappans imported raw metals and gemstones across long distances to manufacture bronze tools, chert stone weights, carnelian beads, and steatite seals."
+      },
+      {
+        name: "Special Gujarat Harappan Towns",
+        formula: "Dholavira (3-Part Fortified City with Stone Inscription) vs. Lothal (Tidal Brick Dockyard)",
+        explanation: "Dholavira in Khadir Beyt had 3 walled sections and a large public arena. Lothal on Sabarmati tributary served as a maritime trade hub with a massive brick dockyard."
       }
     ],
     steps: [
       {
-        title: "1. Advanced Harappan Sanitation",
-        desc: "Houses had separate bathing areas and covered street drains with gentle slopes and inspection holes.",
-        example: "Harappan bricklaying used an interlocking pattern that made walls exceptionally strong for over 4,000 years!"
+        title: "1. The Story of Discovery & City Planning",
+        desc: "Engineers building railway tracks in Punjab unearthed million baked bricks from Harappa. Excavations revealed planned cities divided into Citadel (west) and Lower Town (east) with interlocking brick walls.",
+        example: "The interlocking pattern of baked bricks was so durable that Harappan city walls stood strong for over 4,000 years!"
       },
       {
-        title: "2. Trade & Crafts",
-        desc: "Harappans were skilled craftspeople making terracotta toys, stone seals, bronze statues, and bead jewelry. Lothal had a massive brick dockyard for maritime sea trade.",
-        example: "Harappan seals featuring animal motifs were used to stamp clay tags on trade bags."
+        title: "2. The Great Bath & Covered Grid Drains",
+        desc: "At Mohenjo-daro, a special tank called the Great Bath was lined with bricks, plaster, and natural tar. Every house connected to covered street drains featuring inspection holes.",
+        example: "Harappan street drains were sloped at gentle angles so wastewater flowed smoothly without clogging."
+      },
+      {
+        title: "3. Crafts, Weights, Seals & Life in the City",
+        desc: "City life included Rulers, Scribes (who wrote on seals), and Craftspersons making carnelian beads, chert stone weights, terracotta toys, and bronze statues (like the Dancing Girl).",
+        example: "Steatite seals stamped on wet clay seals ('sealings') proved trade bags were not tampered with during transit."
+      },
+      {
+        title: "4. Agriculture & Food Supply",
+        desc: "Farmers in countryside grew wheat, barley, pulses, rice, sesame, linseed, and mustard using wooden ploughs and stored water for irrigation.",
+        example: "Terracotta toy ploughs found in excavations confirm that Harappans used wooden ploughs to till agricultural land!"
+      },
+      {
+        title: "5. Gujarat Harappan Outposts & Mystery of Decline",
+        desc: "Dholavira had a unique 3-part layout with a giant 10-symbol stone inscription. Lothal was a bead-making center with a tidal brick dockyard. Around 3900 years ago (1900 BCE), cities were abandoned likely due to drying rivers, deforestation, or flooding.",
+        example: "Around 1900 BCE, write-seals, chert weights, and long-distance raw material trade disappeared as urban centers crumbled."
       }
     ],
-    didYouKnow: "Harappan cities had covered drains made of precision-cut baked bricks with inspection holes — thousands of years before modern city sewer systems!",
+    didYouKnow: "Dholavira in Gujarat is the ONLY Harappan site divided into THREE fortified parts (Citadel, Middle Town, Lower Town) and features a massive white-stone Harappan sign board inscription!",
     visualContext: "numberline"
   },
   g6_soc_value_of_work: {
@@ -1228,20 +1273,25 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         explanation: "An object is in Motion if its position changes continuously with time relative to a fixed reference point (like a tree, building, or road mark). If its position does NOT change over time, the object is at Rest."
       },
       {
-        name: "4 Fundamental Types of Motion (+ Combination)",
-        formula: "Rectilinear | Circular | Rotational | Periodic | Combination",
-        explanation: "1) Rectilinear: Moving along a straight line path.\n2) Circular: Moving along a circular path at a fixed distance from a center.\n3) Rotational: Spinning on an internal central axis without changing location.\n4) Periodic: Motion that repeats itself at equal intervals of time.\n5) Combination: Exhibiting 2 or more types of motion simultaneously."
+        name: "5 Fundamental Types of Motion (+ Combination)",
+        formula: "Rectilinear | Circular | Rotational | Periodic | Oscillatory | Combination",
+        explanation: "1) Rectilinear: Moving along a straight line path.\n2) Circular: Moving along a circular path at a fixed distance from a center.\n3) Rotational: Spinning on an internal central axis without changing location.\n4) Periodic: Motion that repeats itself at regular, fixed intervals of time.\n5) Oscillatory: To-and-fro (back-and-forth) motion of an object about its mean/rest position.\n6) Combination: Exhibiting 2 or more types of motion simultaneously."
       },
       {
-        name: "Standard SI Units of Length",
-        formula: "1 km = 1000 m | 1 m = 100 cm | 1 cm = 10 mm",
-        explanation: "Standard SI unit of length is Meter (m). Conversions allow measuring micro distances (mm) up to vast geographical distances (km)."
+        name: "Key Distinction: Oscillatory vs. Periodic Motion",
+        formula: "All Oscillatory Motions are Periodic | NOT all Periodic Motions are Oscillatory",
+        explanation: "• Oscillatory motion MUST be 'to-and-fro' about a central rest position (e.g., pendulum, swing).\n• Periodic motion repeats in equal time intervals. A planet orbiting the Sun or hands of a clock repeat periodically in a full loop, but do NOT move to-and-fro about a mean position, so they are Periodic but NOT Oscillatory."
+      },
+      {
+        name: "Standard SI Units of Length & Speed Conversions",
+        formula: "1 km = 1000 m | 1 m = 100 cm | 1 km/h = 5/18 m/s",
+        explanation: "Standard SI unit of length is Meter (m) and speed is Meter per second (m/s).\n• km/h to m/s: Multiply speed by 5/18 (e.g., 36 km/h × 5/18 = 10 m/s).\n• m/s to km/h: Multiply speed by 18/5 (e.g., 15 m/s × 18/5 = 54 km/h)."
       }
     ],
     steps: [
       {
         title: "1. What is Motion? Rest vs. Reference Point",
-        desc: "An object is said to be at REST if it does not change its position with time with respect to its surroundings. An object is said to be in MOTION if its position changes continuously over time relative to a stationary object (called the Reference Point).\n\n• Reference Point: A fixed object (like a roadside tree or house) used to determine if something has moved.\n• Example: When you sit in a moving bus, you are at rest relative to the passenger next to you, but in motion relative to the trees outside!",
+        desc: "An object is said to be at REST if it does not change its position with time with respect to its surroundings. An object is said to be in MOTION if its position changes continuously over time relative to a stationary object (called the Reference Point).\n\n• Reference Point: A fixed object (like a roadside tree or house) used to determine if something has moved.\n• Frame of Reference: Motion is relative! A passenger inside a moving bus is at rest relative to co-passengers, but in motion relative to trees outside on the roadside.",
         example: "A car parked near a lamppost is at rest. When the driver starts the engine and moves away, its distance from the lamppost increases over time, so the car is in motion."
       },
       {
@@ -1260,14 +1310,34 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         example: "Difference between Circular and Rotational: In circular motion, an object travels along a circular path (e.g., Earth around Sun). In rotational motion, the object spins around its own center (e.g., Earth turning on its axis)."
       },
       {
-        title: "5. Type 4: Periodic Motion (To-and-Fro at Regular Intervals)",
-        desc: "Periodic motion is a motion that repeats itself at regular, fixed intervals of time (equal time periods).\n\nKey Examples:\n• A pendulum of a clock swinging back and forth.\n• A child swinging on a playground swing.\n• The pluck and vibration of a guitar string or drum membrane.\n• Heartbeats in a healthy human body (~72 times per minute).\n• Earth's revolution around the Sun (repeats every 365.25 days).",
-        example: "A grandfather clock pendulum takes exactly 1 second to swing left to right and 1 second to swing back. Because the time interval is fixed, it is periodic motion!"
+        title: "5. Type 4: Periodic Motion (Repeats at Regular Intervals)",
+        desc: "Periodic motion is any motion that repeats itself at regular, fixed intervals of time (equal time periods).\n\nKey Examples:\n• Motion of the Earth revolving around the Sun (repeats every 365.25 days).\n• Movement of the hands of a clock around the dial (repeats every 60 seconds / 60 minutes).\n• Heartbeats in a healthy human body (~72 times per minute).\n• Swinging pendulum of a grandfather clock.",
+        example: "The tip of a clock hand passes the number 12 once every 60 seconds. Because it repeats precisely every 60 seconds, it is periodic motion!"
       },
       {
-        title: "6. Type 5: Combination Motion (Multiple Motions Together)",
-        desc: "In everyday life, many objects perform two or more different types of motion at the exact same time!\n\nKey Examples:\n• Rolling Bicycle Wheel / Bowling Ball: Moves forward in Rectilinear motion while simultaneously turning in Rotational motion.\n• Earth: Spins on its axis (Rotational) while orbiting the Sun (Circular & Periodic).\n• Sewing Machine Needle: Hand wheel turns in Rotational motion while the needle moves up and down in Periodic motion.",
+        title: "6. Type 5: Oscillatory Motion (To-and-Fro About a Mean Position)",
+        desc: "Oscillatory motion is a specific type of motion where an object moves back and forth ('to-and-fro') repeatedly about its central rest position (known as the Mean Position).\n\nKey Features & Concepts:\n• Mean Position: The central point where the object stays naturally at rest.\n• Extreme Positions: The maximum distance the object swings to the left or right before returning.\n• One Oscillation: Mean → Left → Mean → Right → Mean.\n\nGolden Rule:\nAll oscillatory motions are periodic (taking equal time). However, NOT all periodic motions are oscillatory! For instance, Earth revolving around the Sun is periodic but NOT oscillatory because it does not move back and forth about a mean position.",
+        example: "When you pull a pendulum bob to the side and release it, it swings through its central rest position to the other side and back again repeatedly. This to-and-fro movement is Oscillatory Motion!"
+      },
+      {
+        title: "7. Type 6: Combination Motion (Multiple Motions Together)",
+        desc: "In everyday life, many objects perform two or more different types of motion at the exact same time!\n\nKey Examples:\n• Rolling Bicycle Wheel / Bowling Ball: Moves forward in Rectilinear motion while simultaneously turning in Rotational motion.\n• Earth: Spins on its axis (Rotational) while orbiting the Sun (Circular & Periodic).\n• Sewing Machine Needle: Hand wheel turns in Rotational motion while the needle moves up and down in Oscillatory & Periodic motion.",
         example: "A football kicked across a straight pitch rolls forward (rectilinear + rotational) while spinning!"
+      },
+      {
+        title: "8. Need for Standard Units (Handspan vs. Standard Metre)",
+        desc: "In ancient times, people measured length using non-standard body parts such as Handspan (thumb to pinky tip), Cubit (elbow to middle fingertip), or Footstep. Because body sizes vary from person to person, these non-standard units led to confusion in trade and science.\n\nThe International System of Units (SI) adopted fixed standard units worldwide so measurements are identical everywhere!",
+        example: "A cloth merchant using his own forearm cubit might measure a different length of cloth than a customer!"
+      },
+      {
+        title: "9. SI Units, Ruler Precautions & Parallax Error",
+        desc: "• Standard SI Unit of Length: Metre (m). Conversions: 1 km = 1,000 m | 1 m = 100 cm | 1 cm = 10 mm.\n• Precautions with a Metric Scale:\n 1. Place the scale along the object in direct contact.\n 2. Broken Zero Mark: Start from a clear mark (e.g. 1.0 cm) and subtract it from the end reading.\n 3. Eye Position (Parallax Error): Position your eye directly in front (at 90°) of the mark being read.\n• Curved Line Measurement: Use a flexible thread traced along the curve, mark start/end, then stretch the thread straight against a scale!",
+        example: "If measurement starts at 1.0 cm and ends at 7.5 cm, actual length = 7.5 cm - 1.0 cm = 6.5 cm!"
+      },
+      {
+        title: "10. Speed & Unit Conversions (km/h to m/s and m/s to km/h)",
+        desc: "Speed is defined as distance traveled per unit time (Speed = Distance ÷ Time). In daily life, vehicle speeds are measured in kilometers per hour (km/h), while standard SI unit of speed is meters per second (m/s).\n\nConversion Factor Derivation:\n1 km/h = 1,000 m ÷ 3,600 s = 5/18 m/s ≈ 0.2778 m/s.\n\nConversion Rules:\n• km/h to m/s: Multiply by 5/18 (e.g. 36 km/h × 5/18 = 10 m/s; 90 km/h = 25 m/s).\n• m/s to km/h: Multiply by 18/5 (e.g. 15 m/s × 18/5 = 54 km/h).",
+        example: "A car cruising at 90 km/h covers 25 meters every single second!"
       }
     ],
     didYouKnow: "Light travels in straight lines (rectilinear motion) at an astonishing speed of 3,000,000 km per second—fast enough to circle planet Earth 7.5 times in just one second!",
@@ -1360,11 +1430,97 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     didYouKnow: "The electric eel (Electrophorus electricus) found in South American rivers can produce electric shocks up to 600 volts to stun predators and hunt prey!",
     visualContext: "numberline"
   },
+  g6_phys_ch1: {
+    chapterId: "g6_phys_ch1",
+    title: "🌱 Grade 6 Science: Chapter 1 - The Wonderful World of Science & Components of Food",
+    introduction: "Welcome to Grade 6 Science! Science is a systematic approach to exploring and understanding the natural world around us through curiosity, careful observation, experimentation, and logical thinking. In Chapter 1, we learn about the Scientific Method and explore the essential Components of Food—Carbohydrates, Proteins, Fats, Vitamins, Minerals, Water, and Roughage—along with food tests, balanced diets, and deficiency diseases.",
+    keyFormulas: [
+      {
+        name: "Scientific Method Steps",
+        formula: "Curiosity/Question → Observation → Hypothesis → Experimentation → Analysis → Conclusion",
+        explanation: "Scientists solve mysteries by asking questions, forming hypotheses, performing controlled experiments, and drawing evidence-based conclusions."
+      },
+      {
+        name: "7 Essential Components of Food (Nutrients)",
+        formula: "Energy (Carbs & Fats) + Growth (Proteins) + Protection (Vitamins & Minerals) + Digestion (Water & Roughage)",
+        explanation: "1. Carbohydrates (Instant Energy) 2. Fats (Stored Energy & Warmth) 3. Proteins (Growth & Repair) 4. Vitamins (Immunity) 5. Minerals (Bone & Blood Health) 6. Water (Solvent & Transport) 7. Dietary Fibre/Roughage (Digestion)."
+      },
+      {
+        name: "Laboratory Nutrient Tests Summary",
+        formula: "Starch + Iodine = Blue-Black | Protein + CuSO4 + NaOH = Violet | Fat + Paper = Translucent Spot",
+        explanation: "• Starch Test: Add Iodine solution → Blue-black color appears.\n• Protein Test: Add Copper Sulphate + Caustic Soda → Violet/Purple color appears.\n• Fat Test: Rub sample on white paper → Translucent greasy spot appears."
+      },
+      {
+        name: "Deficiency Disease Key Formulas",
+        formula: "Vit A (Night Blindness) | Vit B1 (Beriberi) | Vit C (Scurvy) | Vit D (Rickets) | Iodine (Goitre) | Iron (Anemia)",
+        explanation: "Lack of specific vitamins or minerals over a prolonged time leads to non-communicable deficiency diseases."
+      }
+    ],
+    steps: [
+      {
+        title: "1. What is Science & The Scientific Method",
+        desc: "Science comes from the Latin word 'Scientia', meaning knowledge. It is the organized study of nature based on evidence, curiosity, observation, and experimentation.\n\nSteps of Scientific Inquiry:\n1. Asking Questions: 'Why do leaves fall?' or 'How do fireflies glow?'\n2. Making Observations: Gathering data using 5 senses and instruments.\n3. Formulating Hypothesis: Proposing a testable scientific guess.\n4. Experimentation: Conducting controlled tests to gather evidence.\n5. Drawing Conclusions: Analyzing results to confirm or revise the hypothesis.",
+        example: "When Isaac Newton observed an apple falling from a tree, his curiosity led to the discovery of the Law of Universal Gravitation!"
+      },
+      {
+        title: "2. Main Branches of Science",
+        desc: "As scientific knowledge expanded, it was organized into main branches:\n• Biology: Study of living organisms (plants, animals, microbes, human anatomy).\n• Physics: Study of matter, force, energy, light, electricity, motion, and space.\n• Chemistry: Study of substances, their composition, reactions, and properties.\n• Earth & Environmental Science: Study of rocks, soil, weather, water bodies, and ecosystems.",
+        example: "Botanists study plant leaves (Biology), chemists analyze soil nutrients (Chemistry), and physicists measure sunlight intensity (Physics)!"
+      },
+      {
+        title: "3. Food Sources & Plant Parts We Eat",
+        desc: "Living organisms require food for energy, growth, repair, and defense against diseases.\n• Plants: Primary producers. We eat different plant parts:\n  - Roots: Carrot, Radish, Turnip, Beetroot\n  - Stems: Potato, Ginger, Sugarcane, Onion\n  - Leaves: Spinach, Cabbage, Coriander, Mint\n  - Flowers: Cauliflower, Broccoli, Banana flower\n  - Seeds: Rice, Wheat, Pulses (Dal), Mustard, Almonds\n  - Fruits: Mango, Apple, Tomato, Cucumber",
+        example: "Sprouted seeds (moong or chana) are rich in vitamins and enzymes and make a super-nutritious snack!"
+      },
+      {
+        title: "4. Major Nutrients: Carbohydrates & Fats (Energy Givers)",
+        desc: "Nutrients are chemical compounds in food that our body needs to function properly.\n• Carbohydrates: Provide instant energy to perform daily physical and mental work. Main types are Starch (found in rice, wheat, potato) and Sugars (found in fruits, milk, honey).\n• Fats: Provide double the energy per gram compared to carbohydrates and keep the body warm. Examples: Ghee, butter, mustard oil, nuts, and fish oil.",
+        example: "Excess unused fats get stored in the body tissue under the skin as energy reserves!"
+      },
+      {
+        title: "5. Body-Building & Protective Nutrients: Proteins, Vitamins & Minerals",
+        desc: "• Proteins (Body Builders): Essential for growth, muscle development, and tissue repair. Sources: Pulses (dal), milk, paneer, eggs, fish, meat, soybeans.\n• Vitamins (Protectors): Required in small amounts for immunity, eyesight, and organ health (Vitamins A, B-complex, C, D, E, K).\n• Minerals: Essential for structural health:\n  - Calcium: Strong bones and teeth (Milk, curd, green leafy vegetables).\n  - Iron: Production of hemoglobin in red blood cells (Spinach, apples, jaggery).\n  - Iodine: Thyroid hormone production (Iodised salt, seafood).",
+        example: "Vitamin D is unique because our skin synthesizes it naturally when exposed to sunlight!"
+      },
+      {
+        title: "6. Water & Roughage (Dietary Fibre)",
+        desc: "Although water and roughage do not provide energy, they are vital for survival:\n• Dietary Fibre (Roughage): Plant cellulose found in whole grains, fruits, and fresh vegetables. It adds bulk to food and aids in smooth bowel movement, preventing constipation.\n• Water: Makes up ~60-70% of human body weight. It absorbs nutrients from food, flushes out toxic wastes as urine/sweat, and regulates body temperature.",
+        example: "Drinking 8-10 glasses of clean water daily keeps organs hydrated and functioning efficiently!"
+      },
+      {
+        title: "7. Food Testing Experiments (Starch, Protein & Fat Tests)",
+        desc: "NCERT Laboratory Food Tests:\n\n1. Starch Test: Put a few drops of dilute Iodine solution on a food item (e.g. raw potato slice). Appearance of a Blue-Black color confirms starch!\n2. Protein Test: Mash food item (e.g. powdered dal), add 2 drops of Copper Sulphate solution + 10 drops of Caustic Soda (NaOH) solution. Shake well. A Violet / Purple color confirms protein!\n3. Fat Test: Rub a small quantity of food (e.g. groundnut seed) on a clean white sheet of paper. Hold paper against light. A translucent greasy spot confirms fat!",
+        example: "Testing a slice of bread with iodine turns it deep blue-black because bread contains abundant starch!"
+      },
+      {
+        title: "8. Balanced Diet & Mindful Eating",
+        desc: "A Balanced Diet is a daily diet that contains all essential nutrients (carbohydrates, proteins, fats, vitamins, minerals, water, and roughage) in adequate proportions required for healthy growth, age, and physical activity.\n\nKey Diet Rules:\n• Avoid overcooking or repeatedly washing vegetables after cutting (causes loss of Vitamin C and water-soluble vitamins).\n• Limit junk food, refined sugar, and deep-fried items (causes obesity and heart issues).\n• Practice Mindful Eating: Chew food thoroughly, eat at fixed times, and avoid screen distractions.",
+        example: "A classic Indian thali containing roti/rice, dal, sabzi, curd, and salad represents a well-balanced diet!"
+      },
+      {
+        title: "9. Deficiency Diseases & Malnutrition Table",
+        desc: "Diseases caused due to lack of a specific nutrient over a long period are called Deficiency Diseases:\n\n• Vitamin A Deficiency: Night Blindness (Poor vision in dim light, loss of vision).\n• Vitamin B1 Deficiency: Beriberi (Weak muscles, low energy).\n• Vitamin C Deficiency: Scurvy (Bleeding gums, wound taking longer time to heal).\n• Vitamin D Deficiency: Rickets (Bones become soft and bent/bowed).\n• Calcium Deficiency: Bone and tooth decay, brittle bones.\n• Iodine Deficiency: Goitre (Swollen neck gland, mental disability in children).\n• Iron Deficiency: Anemia (Low hemoglobin, weakness, pale skin, fatigue).\n• Protein-Energy Malnutrition (PEM): Kwashiorkor & Marasmus (Stunted growth, swelling, thin limbs).",
+        example: "Eating citrus fruits like oranges, lemons, and amla prevents Scurvy because they are rich in Vitamin C!"
+      }
+    ],
+    didYouKnow: "Amla (Indian Gooseberry) is one of the richest natural sources of Vitamin C on Earth—containing 20 times more Vitamin C than an orange!",
+    visualContext: "numberline"
+  },
   g6_phys_magnets: {
     chapterId: "g6_phys_magnets",
     title: "🧲 Grade 6 Physics: Fun with Magnets",
-    introduction: "Magnets possess a fascinating invisible force that attracts iron and steel objects! In this chapter, we discover the history of magnets, differentiate magnetic materials from non-magnetic materials, locate magnetic poles, understand how a freely suspended magnet points North-South, use a magnetic compass, and master the rules of magnetic attraction and repulsion.",
+    introduction: "Magnets possess a fascinating invisible force that attracts iron and steel objects! In this chapter, we discover the types of magnets (Natural vs Artificial, shapes of magnets, and Permanent vs Temporary), differentiate magnetic materials from non-magnetic materials, locate magnetic poles, understand how a freely suspended magnet points North-South, use a magnetic compass, and master the rules of magnetic attraction and repulsion.",
     keyFormulas: [
+      {
+        name: "Types of Magnets (Origin & Persistence)",
+        formula: "Natural vs Artificial | Permanent vs Temporary",
+        explanation: "1) Natural Magnets: Found naturally in nature (e.g., Magnetite / Lodestone). Irregular shape, weak magnetism.\n2) Artificial Magnets: Man-made from iron, steel, or alloys. Stronger and shaped into bar, horseshoe, cylindrical, or ball-ended shapes.\n3) Permanent Magnets: Retain magnetism for a long time (e.g., Alnico, Steel).\n4) Temporary Magnets: Retain magnetism only temporarily in a magnetic field or electric current (e.g., Soft Iron, Electromagnets)."
+      },
+      {
+        name: "Common Shapes of Artificial Magnets",
+        formula: "Bar | Horseshoe | Cylindrical | Ball-ended | Ring | Magnetic Needle",
+        explanation: "• Bar Magnet: Rectangular strip with N & S poles at opposite ends.\n• Horseshoe Magnet: U-shaped magnet bringing both poles close together for stronger attraction.\n• Cylindrical Magnet: Rod-shaped cylinder with poles at flat ends.\n• Ball-ended Magnet: Bar with spherical ends.\n• Magnetic Needle: Light pivoted pointer used in compasses."
+      },
       {
         name: "Magnetic vs Non-Magnetic Materials",
         formula: "Attracted by Magnet = Magnetic | Not Attracted = Non-Magnetic",
@@ -1388,19 +1544,49 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     ],
     steps: [
       {
-        title: "1. Story of Discovery",
-        desc: "According to legend, an ancient Greek shepherd named Magnes was tending his sheep in Magnesia when the iron tip of his wooden stick and the nails of his sandals stuck to a black rock! That natural magnetic rock was named Magnetite (also called lodestone).",
-        example: "Today, artificial magnets are made in various shapes: Bar Magnets, Horseshoe Magnets, Cylindrical Magnets, and Ball-ended Magnets."
+        title: "1. Story of Discovery & Natural vs Artificial Magnets",
+        desc: "According to legend, an ancient Greek shepherd named Magnes was tending his sheep in Magnesia when the iron tip of his wooden stick and the nails of his sandals stuck to a black rock! That natural magnetic rock was named Magnetite (also called lodestone).\n\nBecause natural magnets are weak and irregularly shaped, scientists developed Artificial Magnets made from iron, steel, nickel, or alloys in various convenient shapes.",
+        example: "Lodestone was the first natural magnet discovered. Today, man-made magnets are used in refrigerators, speakers, electric motors, and toys!"
       },
       {
-        title: "2. How to Make Your Own Magnet",
-        desc: "Take an iron nail or strip. Place one pole of a bar magnet at one end of the nail. Without lifting the magnet, drag it along the nail to the other end. Lift the magnet, bring it back to the starting point, and repeat in the same direction 30 to 40 times!",
+        title: "2. Different Shapes of Artificial Magnets",
+        desc: "Artificial magnets are crafted into different physical shapes according to their intended use:\n1. Bar Magnet: Rectangular bar used in classroom physics experiments.\n2. Horseshoe Magnet: U-shaped magnet that brings both N and S poles close together for lifting heavy iron objects.\n3. Cylindrical / Rod Magnet: Cylindrical rod used in magnetic catches and sensors.\n4. Ball-ended Magnet: Bar magnet with spherical ends, often used in educational demonstration kits.\n5. Ring / Button Magnet: Circular disc with a center hole used in speakers and cabinet doors.\n6. Magnetic Needle: Thin, light needle pivoted on a brass pin used inside a Magnetic Compass.",
+        example: "A horseshoe magnet is stronger at lifting iron pins because both N and S poles work together on the same object!"
+      },
+      {
+        title: "3. Permanent vs Temporary Magnets",
+        desc: "• Permanent Magnets: Made of hard magnetic materials like steel or Alnico (Aluminum-Nickel-Cobalt). They retain their magnetic power for many years.\n• Temporary Magnets: Made of soft iron. They act as magnets only when placed near a strong magnet or when electric current flows through them (like an Electromagnet), and lose magnetism quickly once removed.",
+        example: "An iron nail attracted to a bar magnet temporarily attracts steel paperclips. As soon as the bar magnet is removed, the paperclips drop because the nail was a temporary magnet!"
+      },
+      {
+        title: "4. Magnetic and Non-Magnetic Materials",
+        desc: "Substances are classified into two categories based on their interaction with magnets:\n• Magnetic Materials: Materials that are strongly attracted by a magnet (e.g. Iron, Steel, Nickel, Cobalt).\n• Non-Magnetic Materials: Materials that are NOT attracted by a magnet (e.g. Wood, Plastic, Glass, Paper, Cloth, Aluminum, Copper, Gold, Silver).",
+        example: "A carpenter uses a magnet to separate iron nails from wood shavings easily!"
+      },
+      {
+        title: "5. Poles of a Magnet (North & South Poles)",
+        desc: "When iron filings are sprinkled over a bar magnet, most filings stick near the two ends. These ends where magnetic attraction is maximum are called the Magnetic Poles.\n• North Pole (N): The end that points towards geographic North when freely suspended.\n• South Pole (S): The end that points towards geographic South.\n• Note: Magnetic poles always exist in pairs! You cannot isolate a single pole (monopole). Breaking a magnet in half creates two smaller magnets, each with its own N and S poles.",
+        example: "If a bar magnet snaps in two, each broken piece immediately forms its own North and South poles!"
+      },
+      {
+        title: "6. Directive Property & Magnetic Compass",
+        desc: "When a bar magnet is suspended freely by a thin thread or pivoted on a pin, it always comes to rest aligning in the Earth's geographic North-South direction.\n\nA Magnetic Compass is a small glass-covered box with a magnetized needle pivoted at its center so that it can rotate freely. The needle's North pole is usually painted red. Sailors, pilots, mountaineers, and travelers use compasses to find directions in unknown territories.",
+        example: "Navigators at sea rely on a magnetic compass because no landmark features exist on open water!"
+      },
+      {
+        title: "7. Law of Attraction and Repulsion",
+        desc: "When two magnets are brought close to each other:\n• Like Poles Repel: North repels North (N-N), South repels South (S-S).\n• Unlike Poles Attract: North attracts South (N-S).\n\nKey Rule: Repulsion is the surest test of magnetism! A magnet attracts both opposite magnetic poles and unmagnetized iron pieces, but it ONLY repels another magnet's like pole.",
+        example: "If an unknown metallic bar is repelled by a known magnet, the unknown bar is definitely a magnet!"
+      },
+      {
+        title: "8. How to Make Your Own Magnet (Single Touch Method)",
+        desc: "Take an iron nail or strip. Place one pole (e.g. North pole) of a bar magnet at one end of the nail. Without lifting the magnet, drag it along the nail to the other end. Lift the magnet high, bring it back to the starting point, and repeat in the exact same direction 30 to 40 times!",
         example: "Bring steel paperclips near the nail—they will stick to it, proving the nail has become a magnet!"
       },
       {
-        title: "3. Caring for Magnets",
-        desc: "Magnets lose their magnetism if they are heated, hammered, or dropped from a height! Always store bar magnets in pairs with unlike poles side-by-side separated by a piece of wood, with soft iron pieces (keepers) across their ends.",
-        example: "Keep magnets away from computers, mobiles, magnetic cassette tapes, credit cards, and televisions to prevent damage."
+        title: "9. Caring for Magnets & Storage Precautions",
+        desc: "Magnets lose their magnetism (demagnetize) if they are heated, hammered, dropped from a height, or stored improperly.\n\nPrecautions & Maintenance:\n• Store bar magnets in pairs with unlike poles side-by-side, separated by a wooden strip, with soft iron pieces (keepers) across both ends.\n• Keep magnets away from electronic devices like mobiles, computers, TVs, magnetic tapes, and credit cards.",
+        example: "Using soft iron keepers across magnet pairs prevents magnetic field leakage and preserves magnetic strength for years!"
       }
     ],
     didYouKnow: "Planet Earth behaves like a giant bar magnet! Its internal magnetic field shields our atmosphere from harmful solar wind radiation and produces spectacular northern lights (Aurora Borealis) near the polar regions.",
@@ -1409,34 +1595,89 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
   g6_phys_temp: {
     chapterId: "g6_phys_temp",
     title: "🌡️ Grade 6 Science: Chapter 7 - Temperature and its Measurement",
-    introduction: "Temperature is the quantitative measure of how hot or cold an object is. Our sense of touch can be unreliable—what feels warm to one hand may feel cool to another! In this chapter, we explore thermal energy, clinical and laboratory thermometers, reading temperature scales in Celsius (°C) and Kelvin (K), normal human body temperature (37°C or 98.6°F), and precautions when using thermometers.",
+    introduction: "What is temperature? Temperature is the reliable quantitative measure of the degree of hotness or coldness of a body. On a microscopic scale, temperature represents the average kinetic energy of moving atoms and molecules inside a substance. In this chapter, we explore thermal energy, clinical and laboratory thermometers, reading units in Celsius (°C), Fahrenheit (°F), and Kelvin (K), normal human body temperature (37°C / 98.6°F / 310.15 K), and essential precautions when taking readings.",
     keyFormulas: [
       {
-        name: "Temperature Scales & Relation",
-        formula: "K = °C + 273.15 | Normal Body Temp = 37°C (98.6°F)",
-        explanation: "The Celsius scale (°C) sets 0°C as the freezing point of water and 100°C as the boiling point. The SI unit of temperature is Kelvin (K). Normal human body temperature is 37°C."
+        name: "Definition of Temperature",
+        formula: "Degree of Hotness or Coldness | Average Kinetic Energy of Particles",
+        explanation: "Temperature tells us how hot or cold an object is relative to a standard scale. Higher temperature means the particles inside are moving faster with higher average kinetic energy!"
+      },
+      {
+        name: "Units of Temperature (°C, °F, K)",
+        formula: "SI Unit: Kelvin (K) | Common: Celsius (°C) & Fahrenheit (°F)",
+        explanation: "• Celsius (°C): Water freezes at 0°C, boils at 100°C.\n• Fahrenheit (°F): Water freezes at 32°F, boils at 212°F. Formula: °F = (°C × 9/5) + 32.\n• Kelvin (K): Official SI Unit! Starts at Absolute Zero (0 K = -273.15°C). Formula: K = °C + 273.15 (no degree symbol used for Kelvin)."
+      },
+      {
+        name: "Temperature Scales & Key Benchmarks",
+        formula: "Normal Body Temp = 37°C = 98.6°F = 310.15 K",
+        explanation: "Human body temperature is 37°C (98.6°F or 310.15 K). Freezing point of water is 0°C (32°F or 273.15 K). Boiling point of water is 100°C (212°F or 373.15 K)."
+      },
+      {
+        name: "Temperature Conversion Formulas",
+        formula: "F = (C × 9/5) + 32 | C = (F - 32) × 5/9 | K = C + 273.15 | C = K - 273.15",
+        explanation: "• °C to °F: Multiply by 9, divide by 5 (or multiply by 1.8), then add 32.\n• °F to °C: Subtract 32, then multiply by 5 and divide by 9 (or divide by 1.8).\n• °C to K: Add 273.15.\n• K to °C: Subtract 273.15."
       },
       {
         name: "Clinical vs Laboratory Thermometer",
         formula: "Clinical: 35°C to 42°C (Has Kink) | Laboratory: -10°C to 110°C (No Kink)",
         explanation: "Clinical thermometers have a constriction ('kink') near the bulb that prevents mercury level from falling automatically when taken out of a patient's mouth. Laboratory thermometers have no kink and must be read while immersed in the substance!"
+      },
+      {
+        name: "Parallax Error Prevention",
+        formula: "Line of Sight = Perpendicular (90°) to Scale & Meniscus",
+        explanation: "Parallax error is an apparent shift in reading caused by viewing the scale from an oblique angle. Always keep your eye at the exact horizontal level of the top of the liquid column (or meniscus)!"
       }
     ],
     steps: [
       {
-        title: "1. Why Sense of Touch is Unreliable",
-        desc: "If you place one hand in cold water and the other in warm water for 1 minute, and then dip both hands into lukewarm water, the lukewarm water feels warm to the cold hand but cool to the warm hand! This proves our sense of touch cannot accurately determine temperature.",
+        title: "1. What is Temperature? (Definition & Kinetic Energy)",
+        desc: "Temperature is defined as the measure of the degree of hotness or coldness of an object. While heat is the total thermal energy possessed by a body, temperature is a measure of the average kinetic energy of its constituent particles.\n\n• Hot Object (e.g. Boiling Water): Particles vibrate and move rapidly.\n• Cold Object (e.g. Ice): Particles vibrate very slowly.",
+        example: "A cup of boiling tea and a large bucket of warm bath water may have different total heat energy, but the tea has a higher temperature because its molecules move faster!"
+      },
+      {
+        title: "2. Why Our Sense of Touch is Unreliable",
+        desc: "If you place one hand in cold water and the other in warm water for 1 minute, and then dip both hands into lukewarm water, the lukewarm water feels warm to the cold hand but cool to the warm hand! This proves our sense of touch is subjective and cannot give an accurate numerical measurement of temperature.",
         example: "A thermometer provides an objective, accurate numerical value for hotness or coldness."
       },
       {
-        title: "2. Structure & Working of a Thermometer",
+        title: "3. The Three Main Units of Temperature (°C, °F, K)",
+        desc: "Temperature is measured in three primary units:\n\n1. Degree Celsius (°C): Invented by Anders Celsius. Scale divided into 100 equal divisions between freezing ice (0°C) and boiling water (100°C).\n2. Degree Fahrenheit (°F): Invented by Daniel Gabriel Fahrenheit. Scale divided into 180 divisions between freezing point (32°F) and boiling point (212°F). Normal body temp is 98.6°F.\n3. Kelvin (K): The official SI (International System of Units) unit of temperature devised by Lord Kelvin. Starts at Absolute Zero (0 K = -273.15°C). Note: We write 'K' without a degree symbol (°).",
+        example: "Water boils at 100°C, which is equal to 212°F or 373.15 K!"
+      },
+      {
+        title: "4. Temperature Conversion Formulas & Step-by-Step Solved Examples",
+        desc: "In Grade 6 physics, converting between temperature scales is a fundamental skill:\n\n1. Celsius to Fahrenheit (°C → °F):\n• Formula: F = (C × 9/5) + 32  OR  F = (1.8 × C) + 32\n• Example: Convert 37°C to °F:\n  F = (37 × 1.8) + 32 = 66.6 + 32 = 98.6°F.\n\n2. Fahrenheit to Celsius (°F → °C):\n• Formula: C = (F - 32) × 5/9  OR  C = (F - 32) ÷ 1.8\n• Example: Convert 212°F to °C:\n  C = (212 - 32) ÷ 1.8 = 180 ÷ 1.8 = 100°C.\n\n3. Celsius to Kelvin (°C → K):\n• Formula: K = C + 273.15 (or C + 273)\n• Example: Convert 0°C (freezing ice) to Kelvin:\n  K = 0 + 273.15 = 273.15 K.\n\n4. Kelvin to Celsius (K → °C):\n• Formula: C = K - 273.15\n• Example: Convert 300 K to °C:\n  C = 300 - 273.15 = 26.85°C.",
+        example: "To convert Fahrenheit directly to Kelvin, first convert °F to °C, then add 273.15 to get Kelvin!"
+      },
+      {
+        title: "5. Structure & Working of a Thermometer",
         desc: "A liquid-in-glass thermometer consists of a long narrow uniform glass tube with a bulb at one end containing mercury or colored alcohol. As temperature rises, the liquid expands and moves up the calibrated capillary tube.",
         example: "Modern digital thermometers use thermistor sensors instead of mercury to eliminate toxic mercury spill risks!"
       },
       {
-        title: "3. Precautions when Reading Thermometers",
-        desc: "• Wash clinical thermometer with an antiseptic solution before and after use.\n• Ensure mercury level is below 35°C before taking body temperature.\n• Read the temperature keeping the line of sight level with the top of the mercury column.\n• Handle with care—glass can break if hit against a hard object!",
+        title: "6. Precautions when Reading Thermometers",
+        desc: "• Wash clinical thermometer with an antiseptic solution before and after use.\n• Ensure mercury level is below 35°C before taking body temperature.\n• Read the temperature keeping the line of sight level with the top of the mercury column to avoid parallax error.\n• Handle with care—glass can break if hit against a hard object!",
         example: "Never hold the thermometer by its bulb while reading it!"
+      },
+      {
+        title: "7. Parallax Error in Measurement & How to Avoid It",
+        desc: "Parallax error is an apparent shift or inaccuracy in reading a measuring instrument (thermometer, ruler, or measuring cylinder) caused by viewing the scale or meniscus from an oblique (slanting) angle instead of direct perpendicular eye level.\n\n• Looking from ABOVE: The line of sight intersects the scale higher than the actual liquid level, giving a falsely HIGH reading.\n• Looking from BELOW: The line of sight intersects the scale lower than the actual liquid level, giving a falsely LOW reading.\n• CORRECT WAY: Position your eye directly level (perpendicular / at 90°) with the top of the liquid meniscus.",
+        example: "When taking your temperature at 37°C, looking down from above might make it look like 38.5°C, creating false panic!"
+      },
+      {
+        title: "8. Maximum-Minimum Thermometer (Weather Reporting)",
+        desc: "A Maximum-Minimum Thermometer (also known as Six's Thermometer) is a specialized U-shaped thermometer used by meteorologists to record the highest (maximum) and lowest (minimum) temperatures of a location over a 24-hour period.\n\n• Maximum Temperature: Occurs usually in the late afternoon.\n• Minimum Temperature: Occurs usually in the early morning just before sunrise.",
+        example: "Weather reports stating 'Today's max: 34°C, min: 22°C' are recorded using a Maximum-Minimum Thermometer!"
+      },
+      {
+        title: "9. Why Mercury & Alcohol are Used (Thermometric Liquids)",
+        desc: "Why use mercury or alcohol in thermometers instead of water?\n\n1. Mercury:\n• Expands uniformly with rise in temperature.\n• Shiny silvery color makes it easy to read clearly through glass.\n• Does NOT stick to the walls of the capillary tube.\n• High boiling point (357°C) & doesn't vaporize easily.\n\n2. Alcohol:\n• Very low freezing point (-114°C), making it ideal for measuring sub-zero Arctic temperatures where mercury would freeze (-39°C).\n• Colored red or blue for easy visibility.",
+        example: "Water cannot be used in thermometers because it freezes at 0°C, boils at 100°C, expands anomalously between 0°C and 4°C, and sticks to glass!"
+      },
+      {
+        title: "10. Thermal Expansion & Fixed Calibration Points",
+        desc: "The working principle of liquid thermometers relies on Thermal Expansion—substances expand on heating and contract on cooling.\n\nThermometers are calibrated using two standard reference temperatures:\n• Lower Fixed Point (Ice Point): Temperature at which pure ice melts at standard atmospheric pressure (0°C / 32°F / 273.15 K).\n• Upper Fixed Point (Steam Point): Temperature at which pure water boils into steam at standard pressure (100°C / 212°F / 373.15 K).",
+        example: "The interval between 0°C and 100°C is divided into 100 equal parts called degrees Celsius (°C)."
       }
     ],
     didYouKnow: "Galileo Galilei invented the first primitive water thermoscope in 1593! Anders Celsius introduced the centigrade scale in 1742.",
@@ -1527,7 +1768,7 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
   numbersystem: {
     chapterId: "numbersystem",
     title: "🔢 Chapter 1: Knowing Our Numbers (Number System)",
-    introduction: "In this chapter, we explore how to work with large numbers. We learn to compare numbers, understand Indian and International systems of numeration, estimate sums or differences, read ancient Roman numerals, and get introduced to Integers and Real numbers!",
+    introduction: "In this chapter, we explore how to work with large numbers. We learn to compare and form numbers, master Indian and International systems of numeration, convert measurement units, estimate outcomes, use brackets, and read ancient Roman numerals!",
     keyFormulas: [
       {
         name: "Indian Place Value Chart",
@@ -1540,46 +1781,61 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         explanation: "Commas are placed after every 3 digits from the right (e.g., 53,214,090)."
       },
       {
-        name: "Estimation Rule",
-        formula: "Round to nearest place (if digit to right is ≥ 5, round UP; else round DOWN)",
-        explanation: "Example: 73 rounds to 70 (nearest ten), whereas 78 rounds to 80."
+        name: "Unit Conversions in Practice",
+        formula: "1 km = 1,000 m = 1,00,000 cm = 10,00,000 mm | 1 kg = 1,000 g = 10,00,000 mg | 1 L = 1,000 mL",
+        explanation: "To convert from larger units to smaller units, multiply by conversion factor (e.g., 5 km = 5,000 m)."
       },
       {
-        name: "Integers (Grade 6 Intro)",
-        formula: "Integers = {..., -3, -2, -1, 0, 1, 2, 3, ...}",
-        explanation: "Positive integers, negative integers, and zero. Useful for showing opposites like temperature or profit/loss."
+        name: "Estimation & Rounding Rule",
+        formula: "If digit to right is ≥ 5, round UP; if < 5, round DOWN",
+        explanation: "Example: 73 rounds to 70 (nearest ten), 278 rounds to 300 (nearest hundred)."
       },
       {
-        name: "Real Numbers Overview",
-        formula: "Real Numbers = Rational + Irrational Numbers",
-        explanation: "Any number that can be placed on a continuous number line is a Real Number, including whole numbers, fractions, decimals, and negative numbers."
+        name: "Use of Brackets (Distributive Property)",
+        formula: "a × (b + c) = (a × b) + (a × c)",
+        explanation: "Brackets help simplify calculations. E.g., 7 × 109 = 7 × (100 + 9) = 700 + 63 = 763."
+      },
+      {
+        name: "Roman Numeral Rules",
+        formula: "I=1, V=5, X=10, L=50, C=100, D=500, M=1000",
+        explanation: "Smaller symbol on left means subtract (IV = 4, XC = 90); on right means add (VI = 6, CX = 110)."
       }
     ],
     steps: [
       {
-        title: "Step 1: Comparing Large Numbers",
-        desc: "Compare number of digits first. The number with more digits is larger. If digit count is equal, compare leftmost digits.",
-        example: "92,345 is larger than 9,998 because it has 5 digits while 9,998 has only 4 digits."
+        title: "Step 1: Comparing & Forming Numbers",
+        desc: "Compare numbers digit by digit from left to right. To form the GREATEST number from given digits without repetition, arrange digits in descending order; for the SMALLEST number, arrange in ascending order (never starting with 0).",
+        example: "With digits 2, 8, 7, 4: Greatest = 8,742 | Smallest = 2,478. Shifting digits 1 and 8 in 1823 gives 8123 (much larger!)."
       },
       {
-        title: "Step 2: Placing Commas Correctly",
-        desc: "In Indian System, first comma after 3 digits, then every 2. In International, every 3.",
-        example: "Number 1234567 becomes: Indian: 12,34,567 (Twelve Lakh...) | International: 1,234,567 (One Million...)"
+        title: "Step 2: Indian vs. International Place Value & Commas",
+        desc: "In the Indian System, commas are placed after 3 digits from right, then after every 2 digits (e.g., 12,34,567 - Twelve Lakh...). In the International System, commas are placed after every 3 digits (e.g., 1,234,567 - One Million...)",
+        example: "50,821,092 (International: 50 Million 821 Thousand 92) vs. 5,08,21,092 (Indian: 5 Crore 8 Lakh...)"
       },
       {
-        title: "Step 3: Roman Numeral Rules",
-        desc: "I=1, V=5, X=10, L=50, C=100, D=500, M=1000. If smaller symbol is on left of larger, subtract it. If on right, add it.",
-        example: "IV = 5 - 1 = 4. VI = 5 + 1 = 6. XC = 100 - 10 = 90."
+        title: "Step 3: Large Numbers in Practice & Unit Conversions",
+        desc: "Measurements of length, weight, and capacity use standard metric conversion factors:\n\n📏 LENGTH:\n• 1 km = 1,000 m\n• 1 m = 100 cm\n• 1 cm = 10 mm\n• 1 km = 10,00,000 mm\n\n⚖️ MASS (WEIGHT):\n• 1 kg = 1,000 g\n• 1 g = 1,000 mg\n• 1 kg = 10,00,000 mg\n\n🥛 CAPACITY:\n• 1 L = 1,000 mL",
+        example: "A medicine bottle holds 25 mg tablets. A box of 2,00,000 tablets weighs:\n2,00,000 × 25 mg = 50,00,000 mg = 5,000 g = 5 kg!"
       },
       {
-        title: "Step 4: Real Numbers & Real-World Scales",
-        desc: "Real numbers represent any actual physical quantity. For Grade 6, we understand that all counting numbers, zero, fractions, and even negative numbers form part of the Real Number family.",
-        example: "The height of a building (12 meters), a slice of pizza (1/4), or the temperature in Alaska (-5 degrees) are all Real Numbers!"
+        title: "Step 4: Estimation & Rounding Off",
+        desc: "Estimation gives a quick approximate answer. To round to nearest 10, check ones digit. To round to nearest 100, check tens digit. To round to nearest 1000, check hundreds digit.",
+        example: "Estimate sum of 5,290 + 17,986: Round to nearest thousand → 5,000 + 18,000 = 23,000."
       },
       {
-        title: "Step 5: Integers & Negative Quantities",
-        desc: "Integers include all positive whole numbers, zero, and negative whole numbers. Negatives are represented with a minus (-) sign and reside to the left of zero on a number line.",
-        example: "-3, -2, -1, 0, 1, 2, 3 are integers. Temperature of -10°C is an integer!"
+        title: "Step 5: Use of Brackets in Calculations",
+        desc: "Brackets ( ) group numbers together so we ALWAYS solve what's inside them FIRST! Brackets make mental math effortless without long multiplication: E.g., 6 × 108 becomes 6 × (100 + 8) = (6 × 100) + (6 × 8) = 600 + 48 = 648.",
+        example: "Shopping Example: You buy 6 notebooks at ₹100 each and 6 pens at ₹8 each. Instead of two separate multiplications, write: 6 × (100 + 8) = 6 × 108 = ₹648!"
+      },
+      {
+        title: "Step 6: Roman Numerals",
+        desc: "Roman numerals use 7 basic symbols: I (1), V (5), X (10), L (50), C (100), D (500), M (1000). A symbol cannot be repeated more than 3 times consecutively. V, L, D are never repeated or subtracted.",
+        example: "Write 69 in Roman Numerals: 60 + 9 = LX + IX = LXIX. Write 98: 90 + 8 = XC + VIII = XCVIII."
+      },
+      {
+        title: "Step 7: Overview of Integers & Real Numbers",
+        desc: "All natural numbers (1, 2, 3...), zero (0), negative whole numbers (-1, -2, -3...), fractions, and decimals together form the continuous family of Real Numbers.",
+        example: "Height above sea level (+500 m) vs depth below sea level (-50 m) are represented by integers on a real number scale."
       }
     ],
     didYouKnow: "Indian mathematicians invented the decimal place value system and the concept of zero, which revolutionized the entire world's science and commerce!",
@@ -1588,59 +1844,59 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
   fractions: {
     chapterId: "fractions",
     title: "🍕 Chapter 7: Fractions (Bhinn)",
-    introduction: "In Grade 6, we master fractions as parts of a whole and perform all four basic arithmetic operations: Addition, Subtraction, Multiplication, and Division! Fractions are used everywhere — in recipes, measurements, sharing food, and financial calculations.",
+    introduction: "In Grade 6, we master fractions as parts of a whole or collection, represent them on the number line, compare proper, improper and mixed fractions, simplify to lowest terms, and perform all arithmetic operations!",
     keyFormulas: [
       {
         name: "Fraction Structure & Types",
         formula: "Fraction = Numerator / Denominator",
-        explanation: "Proper: Numerator < Denominator (3/4) | Improper: Numerator ≥ Denominator (7/4) | Mixed: Whole + Proper (1 3/4)."
+        explanation: "Proper: Numerator < Denominator (3/5) | Improper: Numerator ≥ Denominator (7/4) | Mixed: Whole + Proper (1 3/4)."
       },
       {
-        name: "Addition & Subtraction (Like Denominators)",
-        formula: "a/c + b/c = (a + b)/c  |  a/c - b/c = (a - b)/c",
-        explanation: "When denominators are the same, directly add or subtract the numerators and keep the common denominator unchanged."
+        name: "Mixed ↔ Improper Conversion",
+        formula: "Improper = (Whole × Denominator + Numerator) / Denominator  |  Mixed = Quotient (Remainder / Denominator)",
+        explanation: "Example: 2 ¾ = (2 × 4 + 3) / 4 = 11/4. To convert 11/4: 11 ÷ 4 = 2 with remainder 3 → 2 ¾."
       },
       {
-        name: "Addition & Subtraction (Unlike Denominators)",
-        formula: "Convert to Like Fractions using LCM of Denominators",
-        explanation: "Find the LCM of the denominators, convert each fraction to an equivalent fraction with this LCM as common denominator, then add/subtract numerators."
+        name: "Equivalent Fractions & Simplest Form",
+        formula: "a/b = (a × k)/(b × k) = (a ÷ HCF)/(b ÷ HCF)",
+        explanation: "Multiplying/dividing top and bottom by the same non-zero integer yields an equivalent fraction. A fraction is in simplest form when HCF(Numerator, Denominator) = 1."
       },
       {
-        name: "Multiplication of Fractions",
-        formula: "a/b × c/d = (a × c) / (b × d)",
-        explanation: "Multiply top numbers (numerators) together and bottom numbers (denominators) together, then simplify by dividing by their HCF."
+        name: "Comparing Fractions Rules",
+        formula: "Like: larger numerator is greater | Same Numerator: smaller denominator is greater | Unlike: cross-multiply a/b vs c/d (compare a×d and b×c)",
+        explanation: "Example: 3/7 < 5/7 (like) | 4/5 > 4/9 (same numerator) | Compare 2/3 and 3/5: 2×5=10, 3×3=9, since 10 > 9, 2/3 > 3/5."
       },
       {
-        name: "Division of Fractions (Keep-Change-Flip)",
-        formula: "a/b ÷ c/d = a/b × d/c = (a × d) / (b × c)",
-        explanation: "Keep the first fraction, Change division (÷) to multiplication (×), and Flip the second fraction to its reciprocal (d/c)."
+        name: "Addition & Subtraction (Like, Unlike & Mixed)",
+        formula: "Like: (a ± b)/c  |  Unlike: Convert using LCM of Denominators",
+        explanation: "For unlike fractions or mixed numbers, convert to improper fractions or common denominators before adding/subtracting."
       }
     ],
     steps: [
       {
-        title: "Step 1: Understand Fraction Types & Equivalent Fractions",
-        desc: "A fraction represents equal parts of a whole. Proper (3/5), Improper (8/5), and Mixed (1 3/5). Equivalent fractions are formed by multiplying or dividing both top and bottom by the same non-zero integer (e.g., 2/3 = 4/6 = 6/9).",
-        example: "2/3 and 4/6 represent the exact same amount of pizza!"
+        title: "Step 1: Fraction as Part of a Whole & Types of Fractions",
+        desc: "A fraction represents equal parts of a whole or collection. Proper fractions (e.g. 3/8) are strictly less than 1. Improper fractions (e.g. 9/4) are equal to or greater than 1. Mixed fractions (e.g. 2 ¼) combine a whole number and a proper fraction.",
+        example: "3 parts out of 8 equal slices = 3/8."
       },
       {
-        title: "Step 2: Addition of Fractions (+)",
-        desc: "For like fractions: 2/7 + 3/7 = (2+3)/7 = 5/7. For unlike fractions (1/4 + 1/6): Find LCM of 4 and 6 = 12. Convert 1/4 = 3/12 and 1/6 = 2/12. Now add 3/12 + 2/12 = 5/12.",
-        example: "Ramu ate 1/4 of an apple pie in the morning and 1/6 in the evening. Total eaten = 5/12 pie."
+        title: "Step 2: Representing Fractions on a Number Line",
+        desc: "To show a fraction a/b on a number line, divide the unit length between 0 and 1 into 'b' equal parts. The 'a-th' mark represents a/b. For improper fractions, divide intervals between consecutive whole numbers.",
+        example: "To represent 3/4: divide interval [0,1] into 4 equal parts. The 3rd mark is 3/4."
       },
       {
-        title: "Step 3: Subtraction of Fractions (-)",
-        desc: "Subtract numerators after ensuring common denominators. For 5/8 - 1/4: LCM of 8 and 4 = 8. Convert 1/4 = 2/8. Subtract 5/8 - 2/8 = 3/8.",
-        example: "From 5/8 litre of milk, 2/8 litre was used for tea. Remaining milk = 3/8 litre."
+        title: "Step 3: Equivalent Fractions & Simplest (Lowest) Form",
+        desc: "Fractions representing the same value are equivalent (2/3 = 4/6 = 6/9). Reduce to simplest form by dividing numerator and denominator by their HCF.",
+        example: "18/24 reduced by dividing both by HCF=6 gives 3/4."
       },
       {
-        title: "Step 4: Multiplication of Fractions (×)",
-        desc: "Multiply numerator by numerator and denominator by denominator. For 2/3 × 4/5 = (2×4) / (3×5) = 8/15. For fraction of a whole number (3/4 of 20): (3×20)/4 = 60/4 = 15.",
-        example: "Half of 3/4 chocolate slab = 1/2 × 3/4 = 3/8."
+        title: "Step 4: Comparing & Ordering Fractions",
+        desc: "For like fractions, compare numerators. For fractions with the same numerator, the one with the smaller denominator is larger. For unlike fractions, convert to common denominator using LCM or cross-multiplication.",
+        example: "Compare 3/4 and 5/6: LCM of 4 and 6 is 12. 3/4 = 9/12 and 5/6 = 10/12. So 3/4 < 5/6."
       },
       {
-        title: "Step 5: Division of Fractions (÷)",
-        desc: "To divide a fraction by another fraction, multiply the first fraction by the reciprocal (flipped version) of the second fraction! Example: 3/4 ÷ 2/5 = 3/4 × 5/2 = (3×5)/(4×2) = 15/8 = 1 7/8.",
-        example: "How many 1/4 litre cups can be filled from 3/2 litres of juice? 3/2 ÷ 1/4 = 3/2 × 4/1 = 12/2 = 6 cups!"
+        title: "Step 5: Addition & Subtraction of Fractions and Mixed Numbers",
+        desc: "For like fractions: add/subtract numerators directly. For unlike fractions/mixed numbers: convert to improper or common denominators, solve, and simplify.",
+        example: "2 ½ + 1 ⅓ = 5/2 + 4/3 = 15/6 + 8/6 = 23/6 = 3 ⅝."
       }
     ],
     didYouKnow: "The word 'fraction' comes from the Latin 'fractio' (to break)! Ancient Egyptians only used unit fractions (fractions with numerator 1 like 1/2, 1/3, 1/4). Indian mathematician Brahmagupta in 628 CE developed the standard notation with numerator above denominator!",
@@ -1726,34 +1982,59 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
   integers: {
     chapterId: "integers",
     title: "🔢 Chapter 6: Integers (Purnank)",
-    introduction: "So far we learned about whole numbers (0, 1, 2...). But what if we go below zero? Positive numbers, negative numbers, and zero together are called Integers! They help us measure depths, losses, and temperatures.",
+    introduction: "So far we learned about whole numbers (0, 1, 2...). But what if we go below zero? Positive numbers, negative numbers, and zero together are called Integers! They help us represent opposite quantities like profit/loss, temperature above/below 0°C, and height/depth relative to sea level.",
     keyFormulas: [
       {
-        name: "Addition Rule",
-        formula: "(+) + (+) = (+), (-) + (-) = (-)",
-        explanation: "Adding two positives gives a positive. Adding two negatives gives a larger negative (adding debt)."
+        name: "Ordering & Number Line Rule",
+        formula: "Every number to the right is GREATER than numbers to its left on the number line.",
+        explanation: "Since -2 lies to the right of -5 on the number line, -2 is greater than -5 (-2 > -5)."
       },
       {
-        name: "Opposite signs rule",
-        formula: "Sign of the number with larger absolute value",
-        explanation: "For -7 + 3: subtract 3 from 7 (which is 4) and use negative sign because 7 is bigger than 3. Result: -4."
+        name: "Predecessor & Successor",
+        formula: "Successor = Number + 1 | Predecessor = Number - 1",
+        explanation: "Successor of -5 is -5 + 1 = -4. Predecessor of -5 is -5 - 1 = -6."
+      },
+      {
+        name: "Absolute Value & Additive Inverse",
+        formula: "|-a| = a | Additive Inverse of a is -a (a + (-a) = 0)",
+        explanation: "The absolute value is the distance from zero (e.g., |-7| = 7). The additive inverse of 8 is -8 because 8 + (-8) = 0."
+      },
+      {
+        name: "Addition Rules",
+        formula: "Same signs → Add magnitudes & keep common sign | Opposite signs → Subtract smaller magnitude & keep sign of larger magnitude",
+        explanation: "(-4) + (-3) = -7. For (-8) + 5: 8 - 5 = 3, sign of -8 is negative, so result is -3."
+      },
+      {
+        name: "Subtraction & Double Negative Rule",
+        formula: "a - b = a + (-b) | a - (-b) = a + b",
+        explanation: "Subtracting an integer is adding its additive inverse. Example: 6 - (-4) = 6 + 4 = 10."
       }
     ],
     steps: [
       {
-        title: "Step 1: Locate on Number Line",
-        desc: "Zero is in the center. Positive numbers are on the right, Negative numbers are on the left.",
-        example: "To find -3, go 3 steps to the left of zero."
+        title: "Step 1: Locate & Compare Integers on Number Line",
+        desc: "Zero is in the center. Positive integers (+1, +2, +3...) lie to the right; Negative integers (-1, -2, -3...) lie to the left. Any integer to the right is greater.",
+        example: "Compare -4 and 2: Since 2 is to the right of -4, 2 > -4. Compare -6 and -1: Since -1 is to the right of -6, -1 > -6."
       },
       {
-        title: "Step 2: Movement for Operations",
-        desc: "To add a positive integer, move to the RIGHT. To subtract a positive integer, move to the LEFT.",
-        example: "Start at -2, add 5: move 5 steps right to land on 3."
+        title: "Step 2: Predecessor, Successor & Absolute Value",
+        desc: "To find the successor, add 1. To find the predecessor, subtract 1. Absolute value |x| is the magnitude regardless of sign.",
+        example: "Successor of -10 is -9; Predecessor of -10 is -11. Absolute value |-15| = 15."
       },
       {
-        title: "Step 3: Double Negative Rule",
-        desc: "Subtracting a negative number is equivalent to adding its positive counterpart.",
-        example: "5 - (-3) is exactly equal to 5 + 3 = 8."
+        title: "Step 3: Additive Inverse & Opposites",
+        desc: "Two integers whose sum is zero are called additive inverses of each other.",
+        example: "Additive inverse of 7 is -7 because 7 + (-7) = 0. Additive inverse of -12 is +12."
+      },
+      {
+        title: "Step 4: Addition of Integers (On & Off Number Line)",
+        desc: "To add a positive integer, move RIGHT on the number line. To add a negative integer, move LEFT. Without number line, apply sign rules.",
+        example: "Start at -3, add -2: move 2 units LEFT to reach -5. So (-3) + (-2) = -5."
+      },
+      {
+        title: "Step 5: Subtraction of Integers",
+        desc: "Subtracting an integer is the same as adding its additive inverse. Convert subtraction to addition by changing the sign of the second number.",
+        example: "To calculate (-5) - (-8): Additive inverse of -8 is +8. So (-5) + 8 = +3."
       }
     ],
     didYouKnow: "The concept of zero and negative numbers as 'debts' and positive numbers as 'fortunes' was beautifully laid down by Brahmagupta in 628 CE!",
@@ -1770,9 +2051,9 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         explanation: "A Point specifies position. A Line Segment has 2 fixed endpoints. A Line extends infinitely both ways. A Ray has 1 endpoint and extends forever."
       },
       {
-        name: "Intersecting vs Parallel Lines",
-        formula: "Intersecting (1 common point P) | Parallel (l₁ ∥ l₂, constant distance)",
-        explanation: "Crossing paths intersect at a point P. Parallel lines stay equidistant apart forever (like railway tracks or ruler edges)."
+        name: "Intersecting, Perpendicular (⊥) & Parallel Lines",
+        formula: "Intersecting (1 point) | Perpendicular (AB ⊥ CD at 90°) | Parallel (l₁ ∥ l₂, constant distance)",
+        explanation: "Crossing lines intersect at a point P. Lines intersecting at exactly 90° are Perpendicular (⊥). Parallel lines never meet."
       },
       {
         name: "Curves & Polygons",
@@ -1780,9 +2061,9 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         explanation: "Closed curves divide space into Interior, Boundary, and Exterior regions. 3-sided polygon = Triangle; 4-sided = Quadrilateral."
       },
       {
-        name: "Circle Terms",
-        formula: "Radius (r) | Diameter (d = 2r) | Chord | Arc | Sector | Segment",
-        explanation: "Radius is distance from center to boundary. Diameter is double radius passing through center. Chord connects any 2 boundary points."
+        name: "Circle Terms, Circumference, Area & Semicircle",
+        formula: "Radius (r) | Diameter (d = 2r) | Circumference (C = 2πr) | Area (A = πr²) | Semicircle (Half Circle)",
+        explanation: "Radius is distance from center to boundary. Diameter is double radius. Circumference is boundary length (C = 2πr). Area is enclosed surface (A = πr²). Semicircle is half circle bounded by diameter (Area = πr²/2)."
       }
     ],
     steps: [
@@ -1792,9 +2073,9 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         example: "Sun rays starting from the Sun or a flashlight beam are real-life examples of rays!"
       },
       {
-        title: "Step 2: Intersecting & Parallel Lines",
-        desc: "Identify how lines relate: Intersecting lines cross at a single point of intersection (e.g., letter 'X', notebook edges at a corner). Parallel lines lie on the same plane and never meet no matter how far extended.",
-        example: "Railway tracks and opposite edges of a door frame are parallel lines!"
+        title: "Step 2: Intersecting, Perpendicular & Parallel Lines",
+        desc: "Identify line relations: Intersecting lines cross at a point. When two lines intersect at a right angle (90°), they are PERPENDICULAR lines (AB ⊥ CD). A Perpendicular Bisector is a line perpendicular to a line segment that cuts it into two equal halves.",
+        example: "The corner edges of a window frame or book cover form Perpendicular Lines (90°)! Railway tracks are Parallel Lines."
       },
       {
         title: "Step 3: Curves, Open/Closed Shapes & Regions",
@@ -1812,9 +2093,9 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
         example: "Clock hands at 3 o'clock form a 90° right angle at the central vertex point!"
       },
       {
-        title: "Step 6: Circles (Center, Radius, Diameter, Chord, Arc, Sector & Segment)",
-        desc: "A circle is a set of points equidistant from a fixed center point O. Radius (center to boundary), Diameter (passes through center, d = 2r), Chord (line segment joining any 2 boundary points), Arc (portion of boundary), Sector (region bounded by 2 radii and arc), and Segment (region bounded by a chord and arc).",
-        example: "A bicycle wheel spoke represents a Radius; a full straight line from tire to tire through the hub represents the Diameter!"
+        title: "Step 6: Circles, Circumference, Area & Semicircle (Center, Radius, Diameter, Circumference, Area, Semicircle, Chord, Arc, Sector & Segment)",
+        desc: "A circle is a set of points equidistant from a fixed center point O. Radius (center to boundary), Diameter (passes through center, d = 2r), Circumference (the perimeter or outer boundary length C = 2πr), Area (the 2D surface region enclosed inside A = πr²), Semicircle (exactly half of a circle bounded by a diameter), Chord (line segment joining 2 boundary points), Arc (portion of boundary), Sector (region bounded by 2 radii and arc), and Segment (region bounded by a chord and arc).",
+        example: "A bicycle wheel spoke represents a Radius; the outer rubber tire rim is the Circumference; a protractor or watermelon half slice is a Semicircle!"
       }
     ],
     didYouKnow: "The famous 'Sulba Sutras' written in ancient India (c. 800 BCE) contained detailed geometric rules for building precise sacrificial altars, including early applications of geometric ratios and square constructions!",
@@ -1822,43 +2103,58 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
   },
   mensuration: {
     chapterId: "mensuration",
-    title: "📏 Chapter 10: Mensuration (Kshetramiti)",
-    introduction: "Mensuration is all about measuring the physical dimensions of 2D shapes: Perimeter (the total length of the boundary) and Area (the region covered by the flat shape).",
+    title: "📏 Chapter 10: Mensuration & Circumference (Kshetramiti)",
+    introduction: "Mensuration covers measuring dimensions of 2D shapes: Perimeter (the boundary length) and Area (the enclosed region). For circles, the perimeter is specifically called the CIRCUMFERENCE!",
     keyFormulas: [
       {
-        name: "Perimeter of Rectangle",
-        formula: "Perimeter = 2 × (Length + Width)",
-        explanation: "You add length and width, then multiply by 2 because there are two lengths and two widths."
+        name: "Circumference of a Circle",
+        formula: "Circumference (C) = 2 × π × r = π × d",
+        explanation: "The total distance around the boundary of a circle. Here r = radius, d = diameter (d = 2r), and π (pi) ≈ 22/7 or 3.14159."
       },
       {
-        name: "Area of Rectangle",
-        formula: "Area = Length × Width",
-        explanation: "The number of unit squares that fit inside the rectangular region."
+        name: "Perimeter of a Semicircle",
+        formula: "Perimeter = π × r + 2r = r × (π + 2)",
+        explanation: "Includes the curved arc length (πr) PLUS the straight diameter boundary (2r)."
       },
       {
-        name: "Perimeter & Area of Square",
-        formula: "Perimeter = 4 × Side, Area = Side × Side",
-        explanation: "Since all four sides of a square are equal, we simplify the calculations."
+        name: "Distance Covered by a Rolling Wheel",
+        formula: "Distance in N Revolutions = N × Circumference = N × (2 × π × r)",
+        explanation: "In one complete revolution, a circular wheel rolls forward by a distance exactly equal to its circumference C."
+      },
+      {
+        name: "Perimeter of Rectangle & Square",
+        formula: "Rectangle P = 2 × (L + W) | Square P = 4 × Side",
+        explanation: "Sum of all outer straight boundary sides."
+      },
+      {
+        name: "Area of Rectangle, Square & Circle",
+        formula: "Rect Area = L × W | Square Area = Side² | Circle Area = π × r²",
+        explanation: "Measure of the flat 2D region enclosed inside the boundary."
       }
     ],
     steps: [
       {
-        title: "Step 1: Measure dimensions",
-        desc: "Find the length and width of the shape in centimeters (cm) or meters (m).",
-        example: "A postcard with length 15 cm and width 10 cm."
+        title: "Step 1: Understand Circumference & Pi (π)",
+        desc: "Circumference (C) is the perimeter of a circle. The ratio of any circle's circumference to its diameter (C / d) is always a constant value called Pi (π). In Grade 6, we use π = 22/7 or 3.14.",
+        example: "If radius r = 7 cm, Circumference = 2 × (22/7) × 7 = 44 cm!"
       },
       {
-        title: "Step 2: To find Perimeter",
-        desc: "Sum up all outer boundary sides.",
-        example: "Add 15 + 10 + 15 + 10 = 50 cm. Or use formula: 2 × (15 + 10) = 50 cm."
+        title: "Step 2: Calculate Circumference from Radius or Diameter",
+        desc: "When given radius r, use C = 2 × π × r. When given diameter d, use C = π × d. When given Circumference C, find radius by r = C / (2 × π).",
+        example: "A circular garden has diameter d = 14 m. Circumference C = (22/7) × 14 = 44 m."
       },
       {
-        title: "Step 3: To find Area",
-        desc: "Multiply the length by the width.",
-        example: "15 × 10 = 150 square centimeters (sq cm or cm²)."
+        title: "Step 3: Perimeter of a Semicircle & Circular Track",
+        desc: "A semicircle is half a circle. Its boundary consists of the curved half-arc (πr) plus the flat diameter (2r). Total Semicircle Perimeter = πr + 2r = r(π + 2).",
+        example: "For r = 7 cm, Semicircle Arc = (22/7) × 7 = 22 cm. Total Perimeter = 22 + 14 = 36 cm."
+      },
+      {
+        title: "Step 4: Wheel Revolutions & Wire Bending Problems",
+        desc: "Distance traveled by a wheel = Number of Revolutions × Circumference. For wire bending: if a wire of length L is bent into a circle, Circumference = L.",
+        example: "A bicycle wheel of radius 21 cm makes 100 revolutions. Distance = 100 × [2 × (22/7) × 21] = 100 × 132 cm = 13,200 cm = 132 meters!"
       }
     ],
-    didYouKnow: "When calculating area, we use 'square units' because we are counting how many tiny squares can fit on that surface!",
+    didYouKnow: "Archimedes of Syracuse (c. 250 BCE) was the first to approximate Pi (π) rigorously by placing regular polygons inside and outside a circle. Ancient Indian mathematicians Aryabhata and Bhaskara II also calculated precise values of π!",
     visualContext: "perimeter"
   },
   g1_counting: {
@@ -3319,6 +3615,11 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     introduction: "తెలుగు భాష యొక్క తీపిని, వర్ణమాలను, లేఖారచన (లేఖలు రాసే విధానం), భాషాభాగాలను, విభక్తులను, సంధులను, సమాసాలను సమగ్రంగా సాధన చేసే అధ్యాయం.",
     keyFormulas: [
       {
+        name: "శ్రుతలేఖనం & భాషాభాగాలు (Dictation & Parts of Speech)",
+        formula: "నామవాచకం (రాముడు, హైదరాబాద్, పుస్తకం, అడవి) | సర్వనామం (అతడు, ఆమె, వారు, మేము) | విశేషణం (వేగమైన, ఎర్రని, తియ్యని) | క్రియ (వెళ్ళెను) | అవ్యయం (అక్కడ)",
+        explanation: "శ్రుతలేఖనం (Dictation) ద్వారా విద్యార్థుల రాత నైపుణ్యాలు (writing skills), ఉచ్ఛారణ, మరియు స్పష్టమైన అక్షర నిర్మాణం పెంపొందుతాయి."
+      },
+      {
         name: "భాషాభాగాలు (Parts of Speech)",
         formula: "నామవాచకం | సర్వనామం | విశేషణం | క్రియ | అవ్యయం",
         explanation: "నామవాచకం: పేర్లను తెలిపేది (ఉదా: రాముడు) | సర్వనామం: బదులుగా వాడేది (ఉదా: అతను) | విశేషణం: గుణం (ఉదా: తీపి) | క్రియ: పని (ఉదా: చదివెను) | అవ్యయం: లింగ వచన రహితం (ఉదా: ఆహా!)."
@@ -3748,5 +4049,66 @@ export const LESSONS_DATA: Record<string, LessonContent> = {
     ],
     didYouKnow: "This exam paper integrates geometry concepts (lines, rays, angles) with algebra and number pattern discovery (square, triangular, and exponential sequences) as specified in NCERT & CBSE guidelines!",
     visualContext: "numberline"
+  },
+  g6_eng_grammar: {
+    chapterId: "g6_eng_grammar",
+    title: "📝 Grade 6 English Grammar & Sentence Mechanics",
+    introduction: "Grammar is the system and structure of a language that allows us to communicate clearly and effectively. In Grade 6 English Grammar & Composition, students master the 8 Parts of Speech, Types of Nouns & Pronouns, Tenses (Present, Past, Future), Subject-Verb Agreement, Prepositions, Articles (A, An, The), Active/Passive Voice, Sentence Types, and Formal & Informal Letter Writing.",
+    keyFormulas: [
+      {
+        name: "Formal Letter Structure (Leave Application / Principal)",
+        formula: "Sender's Address → Date → Receiver's Designation & Address → Subject → Salutation → Body → Subscription ('Yours obediently')",
+        explanation: "Formal letters are written for official purposes, such as requesting sick leave, fee concession, or reporting school issues. Language must be polite, concise, and professional without slang."
+      },
+      {
+        name: "Informal Letter Structure (Friends / Family)",
+        formula: "Sender's Address → Date → Salutation ('Dear [Name]') → Opening → Body → Conclusion → Subscription ('Yours lovingly')",
+        explanation: "Informal letters are written to family members, relatives, or friends. They use warm, personal, and conversational language, and do NOT require a 'Subject' line or receiver's address."
+      },
+      {
+        name: "The 8 Parts of Speech",
+        formula: "Noun + Pronoun + Verb + Adjective + Adverb + Preposition + Conjunction + Interjection",
+        explanation: "1. Noun: Naming word. 2. Pronoun: Replaces noun. 3. Verb: Action/state word. 4. Adjective: Describes noun. 5. Adverb: Modifies verb/adjective. 6. Preposition: Shows position/time. 7. Conjunction: Joining word. 8. Interjection: Expresses emotion."
+      },
+      {
+        name: "Subject-Verb Agreement Rule",
+        formula: "Singular Subject → Singular Verb (-s/-es) | Plural Subject → Plural Verb",
+        explanation: "A singular subject takes a singular verb (e.g., 'He writes', 'She runs'). A plural subject takes a plural verb (e.g., 'They write', 'We run')."
+      }
+    ],
+    steps: [
+      {
+        title: "1. Formal Letter Writing (Leave Application & Official)",
+        desc: "A Formal Letter is structured in 7 distinct blocks:\n1. Sender's Address: House No., Street, City\n2. Date: E.g., 15th August 2026\n3. Receiver's Address: The Principal, XYZ Public School, City\n4. Subject: Short summary (e.g., 'Application for 2 Days Sick Leave')\n5. Salutation: Respected Sir / Madam\n6. Body Paragraphs: Purpose of letter + details + polite request\n7. Subscription & Sign-off: Yours obediently / Yours faithfully, followed by Name & Class/Roll No.",
+        example: "Example Subject: 'Application for Leave due to High Fever'."
+      },
+      {
+        title: "2. Informal Letter Writing (Friends & Relatives)",
+        desc: "An Informal Letter is used for personal communication (invitations, sharing news, expressing gratitude):\n1. Sender's Address & Date at the top left.\n2. Salutation: 'Dear Rahul,' or 'My dear Aunt,'\n3. Friendly Opening: 'How are you? I hope this letter finds you in great health.'\n4. Main Body: Share news or invitation details.\n5. Warm Sign-off: 'Convey my regards to uncle. Yours lovingly, [Your Name]'.",
+        example: "No 'Subject' line is included in informal personal letters!"
+      },
+      {
+        title: "3. Nouns and Their Types",
+        desc: "• Proper Noun: Specific name of person, place, or thing (e.g., India, Rahul, Ganga).\n• Common Noun: General name (e.g., boy, city, river).\n• Collective Noun: Group of things (e.g., flock of birds, herd of cattle, team of players).\n• Abstract Noun: Quality, state, or idea that cannot be touched (e.g., honesty, freedom, courage, wisdom).",
+        example: "Sentence: 'Rahul (Proper) showed great honesty (Abstract) in returning the lost wallet (Common).'"
+      },
+      {
+        title: "4. Pronouns and Agreement",
+        desc: "Pronouns replace nouns to avoid awkward repetition. Types include Personal (I, you, he, she, it, we, they), Possessive (mine, yours, hers, ours), Relative (who, which, that), and Reflexive (myself, himself, themselves).",
+        example: "Instead of 'Priya lost Priya's umbrella', write 'Priya lost her umbrella.'"
+      },
+      {
+        title: "5. Verbs and Tenses (Present, Past, Future)",
+        desc: "Verbs indicate action or state of being.\n• Simple Present: Habitual actions (e.g., 'She drinks milk daily.')\n• Simple Past: Completed actions (e.g., 'They visited the museum yesterday.')\n• Simple Future: Future actions (e.g., 'We will win the match tomorrow.')\n• Continuous Forms: Ongoing actions using is/am/are/was/were + verb-ing.",
+        example: "Tense shift: 'I eat' (Present) → 'I ate' (Past) → 'I will eat' (Future)."
+      },
+      {
+        title: "6. Prepositions, Articles & Punctuation",
+        desc: "• Articles: 'A' before consonant sounds, 'An' before vowel sounds, 'The' for specific items.\n• Prepositions: Show location or time (in, on, at, under, between, among).\n• Punctuations: Standard periods, question marks, commas, and exclamation marks.",
+        example: "'An honest man (silent h) sat under a tree.'"
+      }
+    ],
+    didYouKnow: "The sentence 'The quick brown fox jumps over the lazy dog' is a pangram—a sentence that contains every single letter of the English alphabet from A to Z!",
+    visualContext: "english"
   }
 };

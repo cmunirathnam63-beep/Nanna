@@ -343,7 +343,7 @@ export default function PracticeQuiz({
   const isCorrect = selectedOption === currentProblem.correctAnswer;
 
   return (
-    <div className="w-full overflow-hidden" id="quiz_viewport">
+    <div className={`w-full ${quizMode === "topic_quiz" || quizMode === "mcq_in_one" ? "h-full flex flex-col flex-1 min-h-0 overflow-hidden" : "overflow-hidden"}`} id="quiz_viewport">
       {/* Quiz Progress header */}
       <div className="bg-natural-beige-light border-b border-natural-beige-dark p-4 flex justify-between items-center">
         <div>
@@ -379,7 +379,7 @@ export default function PracticeQuiz({
       </div>
 
       {quizMode === "topic_quiz" ? (
-        <div className="p-3 sm:p-5">
+        <div className="h-full w-full flex flex-col flex-1 min-h-0 overflow-hidden">
           <TopicQuizView
             chapterId={chapterId}
             chapterTitle={chapterTitle}
